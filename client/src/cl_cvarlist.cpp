@@ -358,8 +358,10 @@ CVAR_FUNC_DECL(		cl_screenshotname, "Odamex_%g_%d_%t",
 					"either the first PWAD or the IWAD\n// %m: Map lump\n// %%: Literal percent sign",
 					CVARTYPE_STRING, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)
 
-CVAR(				cl_autorecord, "0", "Automatically record netdemos",
-					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+CVAR(				cl_autorecord, "0", "Automatically record netdemos (1: On all gamemodes, 2: Filter gamemodes (with cl_autorecord_xxx))",
+					CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)
+
+CVAR(				cl_autorecord_filter, "0", "Byte-filtering for 'cl_autorecord 2' (1: FFA / 2: DUEL / 4: TDM / 8: CTF / 16: COOP)", CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)
 
 CVAR(				cl_autoscreenshot, "0", "Automatically capture a screenshot at the end of a match.",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)

@@ -83,6 +83,12 @@
 #pragma optimize("",off)
 #endif
 
+#define DEMOFILTER_FFA 1
+#define DEMOFILTER_DUEL 2
+#define DEMOFILTER_TDM 4
+#define DEMOFILTER_CTF 8
+#define DEMOFILTER_COOP 16
+
 // denis - fancy gfx, but no game manipulation
 bool clientside = true, serverside = false;
 baseapp_t baseapp = client;
@@ -424,12 +430,20 @@ void CL_QuitNetGame(void)
 	cvar_t::C_RestoreCVars();
 }
 
+EXTERN_CVAR (cl_autorecord_filter)
 
 void CL_Reconnect(void)
 {
 	recv_full_update = false;
 
-	if (netdemo.isRecording())
+	// Ch0wW: Autorecording. 
+	if (netdemo.isRecording() && ( (cl_autorecord == 1) || (cl_autorecord == 2 &&
+		(	(sv_gametype == GM_DM && sv_maxplayers > 2 && ((byte)cl_autorecord_filter & DEMOFILTER_FFA) )
+		||	(sv_gametype == GM_DM && sv_maxplayers == 2 && ((byte)cl_autorecord_filter & DEMOFILTER_DUEL))
+		||	(sv_gametype == GM_TEAMDM && ((byte)cl_autorecord_filter & DEMOFILTER_TDM))
+		||	(sv_gametype == GM_CTF && ((byte)cl_autorecord_filter & DEMOFILTER_CTF))
+		||  (sv_gametype == GM_COOP && ((byte)cl_autorecord_filter & DEMOFILTER_COOP)
+		)))))
 		forcenetdemosplit = true;
 
 	if (connected)
@@ -3256,7 +3270,17 @@ void CL_ConsolePlayer(void)
 //
 void CL_LoadMap(void)
 {
-	bool splitnetdemo = (netdemo.isRecording() && cl_splitnetdemos) || forcenetdemosplit;
+
+	// Ch0wW: Autorecording. 
+	bool bCheckAutoRecord = (cl_autorecord == 1 || (cl_autorecord == 2 &&
+		((sv_gametype == GM_DM && sv_maxplayers > 2 && ((byte)cl_autorecord_filter & DEMOFILTER_FFA))
+			|| (sv_gametype == GM_DM && sv_maxplayers == 2 && ((byte)cl_autorecord_filter & DEMOFILTER_DUEL))
+			|| (sv_gametype == GM_TEAMDM && ((byte)cl_autorecord_filter & DEMOFILTER_TDM))
+			|| (sv_gametype == GM_CTF && ((byte)cl_autorecord_filter & DEMOFILTER_CTF))
+			|| (sv_gametype == GM_COOP && ((byte)cl_autorecord_filter & DEMOFILTER_COOP)
+				))));
+
+	bool splitnetdemo = (netdemo.isRecording() && cl_splitnetdemos && bCheckAutoRecord) || forcenetdemosplit;
 	forcenetdemosplit = false;
 
 	if (splitnetdemo)
@@ -3331,7 +3355,7 @@ void CL_LoadMap(void)
 		if (param && Args.GetArg(param + 1))
 			filename = Args.GetArg(param + 1);
 
-		if (splitnetdemo || cl_autorecord || param)
+		if (splitnetdemo || bCheckAutoRecord || param)
 		{
 			if (filename.empty())
 				filename = CL_GenerateNetDemoFileName();
