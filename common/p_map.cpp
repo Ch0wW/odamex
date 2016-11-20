@@ -1491,7 +1491,9 @@ void P_HitSlideLine (line_t* ld)
 		{
 			tmxmove /= 2; // absorb half the momentum
 			tmymove = -tmymove/2;
-			UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
+	
+			if (!slidemo->player->spectator)
+				UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
 		}
 		else
 			tmymove = 0; // no more movement in the Y direction
@@ -1504,7 +1506,9 @@ void P_HitSlideLine (line_t* ld)
 		{
 			tmxmove = -tmxmove/2; // absorb half the momentum
 			tmymove /= 2;
-			UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
+	
+			if (!slidemo->player->spectator)
+				UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
 		}																		//   |
 		else																	// phares
 			tmxmove = 0; // no more movement in the X direction
@@ -1533,7 +1537,9 @@ void P_HitSlideLine (line_t* ld)
 
 		moveangle = lineangle - deltaangle;
 		movelen /= 2; // absorb
-		UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
+
+		if (!slidemo->player->spectator)
+			UV_SoundAvoidPlayer(slidemo, CHAN_VOICE, "player/male/grunt1", ATTN_IDLE);
 
 		moveangle >>= ANGLETOFINESHIFT;
 		tmxmove = FixedMul (movelen, finecosine[moveangle]);
