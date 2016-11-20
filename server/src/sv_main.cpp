@@ -4091,6 +4091,8 @@ void SV_SendPlayerInfo(player_t &player);
 
 void SV_ParseCommands(player_t &player)
 {
+	::Warmup::status_t wstatus = warmup.get_status();
+
 	 while(validplayer(player))
 	 {
 		clc_t cmd = (clc_t)MSG_ReadByte();
@@ -4186,7 +4188,7 @@ void SV_ParseCommands(player_t &player)
 		case clc_kill:
 			if(player.mo &&
                level.time > player.death_time + TICRATE*10 &&
-               (sv_allowcheats || sv_gametype == GM_COOP))
+               (sv_allowcheats || sv_gametype == GM_COOP || wstatus == ::Warmup::WARMUP))
             {
 				SV_Suicide (player);
             }
