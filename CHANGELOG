@@ -2,10 +2,10 @@ For a condensed, easy to read changelog of stable releases, please see
 http://odamex.net/wiki/Releases
 
 If you would like to see a more detailed list of changes, we highly recommend
-checking out the subversion repository either on the web or using a subversion
-client.  We recommend the standard svn tools or tortoisesvn (windows).
+checking out the repository either on github or using a git
+client.  We recommend using the standard git tools.
 
-Via SVN Client: http://odamex.net/svn/root
+Via Git Client: https://github.com/odamex/odamex.git
 
-Via the web: http://odamex.net/svn
+Via GitHub: https://github.com/odamex/odamex/commits/master
 
