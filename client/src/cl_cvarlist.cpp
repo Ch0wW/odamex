@@ -196,6 +196,9 @@ CVAR_RANGE_FUNC_DECL(ui_transblue, "0", "",
 // Gameplay/Other
 // --------------
 
+CVAR_RANGE(			cl_maxbodies, "16", "Maximum number of bodies displayed.", 
+					CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 64.0f)
+
 CVAR(				cl_connectalert, "1", "Plays a sound when a player joins",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 

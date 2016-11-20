@@ -157,6 +157,7 @@ EXTERN_CVAR (mute_spectators)
 EXTERN_CVAR (mute_enemies)
 
 EXTERN_CVAR (cl_autoaim)
+EXTERN_CVAR (cl_maxbodies)
 
 EXTERN_CVAR (cl_updaterate)
 EXTERN_CVAR (cl_interp)
@@ -620,6 +621,42 @@ extern BOOL advancedemo;
 QWORD nextstep = 0;
 int canceltics = 0;
 
+/*
+============
+CL_RemoveCorpses
+============
+*/
+void CL_RemoveCorpses(void)
+{
+	AActor *mo;
+	int     corpses = 0;
+
+	if (cl_maxbodies <= 0)
+		return;
+
+	if (!P_AtInterval(TICRATE))	// refresh every second
+		return;
+	else
+	{
+		TThinkerIterator<AActor> iterator;
+		while ((mo = iterator.Next()))
+		{
+			if (mo->type == MT_PLAYER && (!mo->player || mo->health <= 0))
+				corpses++;
+		}
+	}
+
+	TThinkerIterator<AActor> iterator;
+	while (corpses > cl_maxbodies && (mo = iterator.Next()))
+	{
+		if (mo->type == MT_PLAYER && !mo->player)
+		{
+			mo->Destroy();
+			corpses--;
+		}
+	}
+}
+
 void CL_StepTics(unsigned int count)
 {
 	DObject::BeginFrame ();
@@ -637,6 +674,7 @@ void CL_StepTics(unsigned int count)
 
 		C_Ticker();
 		M_Ticker();
+		CL_RemoveCorpses();	// Ch0wW
 		HU_Ticker();
 
 		if (P_AtInterval(TICRATE))
