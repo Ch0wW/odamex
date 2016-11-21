@@ -556,8 +556,8 @@ void V_DrawFPSWidget()
 
 		double delta_time_ms = 1000.0 * double(delta_time) / ONE_SECOND;
 		int len = sprintf(fpsbuff, "%5.1fms (%.2f fps)", delta_time_ms, last_fps);
-		screen->Clear(0, I_GetSurfaceHeight() - 8, len * 8, I_GetSurfaceHeight(), argb_t(0, 0, 0));
-		screen->PrintStr(0, I_GetSurfaceHeight() - 8, fpsbuff, CR_GRAY);
+		screen->Clear(I_GetSurfaceWidth() - (8*len), I_GetSurfaceHeight() - 8, I_GetSurfaceWidth(), I_GetSurfaceHeight(), argb_t(0, 0, 0));
+		screen->PrintStr(I_GetSurfaceWidth() - (8 * len), I_GetSurfaceHeight() - 8, fpsbuff, CR_GRAY);
 
 		time_accum += delta_time;
 
