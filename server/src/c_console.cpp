@@ -208,20 +208,21 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	if (str[str.length() - 1] != '\n')
 		str += '\n';
 
+	// Ch0wW: Disallow getting all the server messages. You can see them during a netplay demo.
+	// Also referenced as a cheat for seeing private/ teamchat messages.
 	// send to any rcon players
-	for (Players::iterator it = players.begin(); it != players.end(); ++it)
+	/*for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		client_t* cl = &(it->client);
 
-		// Ch0wW: Disallow getting all the server messages. You can see them during a netplay demo.
-		// Also referenced as a cheat for seeing private/teamchat messages.
-		/*if (cl->allow_rcon)	
+
+		if (cl->allow_rcon)	
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
 			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);
 			MSG_WriteString(&cl->reliablebuf, (char*)str.c_str());
-		}*/
-	}
+		}
+	}*/ 
 
 	if (LOG.is_open()) {
 		LOG << str;
