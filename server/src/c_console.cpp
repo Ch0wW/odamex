@@ -213,12 +213,14 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	{
 		client_t* cl = &(it->client);
 
-		if (cl->allow_rcon)
+		// Ch0wW: Disallow getting all the server messages. You can see them during a netplay demo.
+		// Also referenced as a cheat for seeing private/teamchat messages.
+		/*if (cl->allow_rcon)	
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
 			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);
 			MSG_WriteString(&cl->reliablebuf, (char*)str.c_str());
-		}
+		}*/
 	}
 
 	if (LOG.is_open()) {
