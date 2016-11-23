@@ -294,29 +294,20 @@ void G_Ticker (void)
 		case ga_newgame:
 			G_DoNewGame ();
 			break;
-		case ga_loadgame:
-			gameaction = ga_nothing;
-			break;
-		case ga_savegame:
-			gameaction = ga_nothing;
-			break;
-		case ga_playdemo:
 			gameaction = ga_nothing;
 			break;
 		case ga_completed:
 			G_DoCompleted ();
 			break;
-		case ga_victory:
-		    gameaction = ga_nothing;
-			break;
 		case ga_worlddone:
 			//G_DoWorldDone ();
 			break;
+		case ga_victory:
+		case ga_loadgame:
+		case ga_savegame:
+		case ga_playdemo:
 		case ga_screenshot:
-			gameaction = ga_nothing;
-			break;
 		case ga_fullconsole:
-//			C_FullConsole ();
 			gameaction = ga_nothing;
 			break;
 		case ga_nothing:
@@ -324,9 +315,6 @@ void G_Ticker (void)
 		}
 		C_AdjustBottom ();
 	}
-
-	if(demorecording)
-		G_WriteDemoTiccmd();
 
 	// do main actions
 	switch (gamestate)
