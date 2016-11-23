@@ -1048,7 +1048,7 @@ BEGIN_COMMAND (spectate)
 END_COMMAND (spectate)
 
 BEGIN_COMMAND (ready) {
-	if (warmup.get_status() != warmup.DISABLED)
+	if (warmup.get_status() != warmup.DISABLED || (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM))	// Since people in pCTF are using this...
 		MSG_WriteMarker(&net_buffer, clc_ready);
 } END_COMMAND (ready)
 
