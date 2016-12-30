@@ -1041,7 +1041,7 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 
 	MSG_WriteString	(netbuffer, "");	// sv_website.cstring()
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		MSG_WriteLong	(netbuffer, 0);		// sv_scorelimit
 		for (size_t n = 0; n < NUMTEAMS; n++)

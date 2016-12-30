@@ -1543,7 +1543,7 @@ void AM_drawPlayers(void)
 
 		if (!(it->ingame()) || !p->mo ||
 			(((sv_gametype == GM_DM && p != &conplayer) ||
-			((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) && p->userinfo.team != conplayer.userinfo.team))
+			(GAMEMODE_IsTeamGame() && p->userinfo.team != conplayer.userinfo.team))
 			&& !(netdemo.isPlaying() || netdemo.isPaused())
 			&& !demoplayback && !(conplayer.spectator)) || p->spectator)
 		{

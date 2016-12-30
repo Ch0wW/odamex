@@ -179,7 +179,7 @@ void P_ShowSpawns(mapthing2_t* mthing)
 			spawn->args[0] = 7; // White
 		}
 
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if (GAMEMODE_IsTeamGame())
 		{
 			if (mthing->type == 5080)
 			{

@@ -1102,7 +1102,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 				}
 				// [Toke] Minus a team frag for killing teammate
-				else if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
+				else if (GAMEMODE_IsTeamGame() &&
 				         (splayer->userinfo.team == tplayer->userinfo.team))
 				{
 					// [Toke - Teamplay || deathz0r - updated]
@@ -1415,7 +1415,7 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 			 mod != MOD_TELEFRAG)
 		{
 			if (sv_gametype == GM_COOP ||
-			  ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
+			  (GAMEMODE_IsTeamGame() &&
 				tplayer->userinfo.team == splayer->userinfo.team))
 			{
 				damage = 0;

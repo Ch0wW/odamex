@@ -247,4 +247,6 @@ bool G_LoadWad(	const std::vector<std::string> &newwadfiles,
 
 bool G_LoadWad(const std::string &str, const std::string &mapname = "");
 
+bool GAMEMODE_IsTeamGame(void);	// Ch9wW: UNSURE WHERE TO PUT THIS!! COMMON FUNCTION
+
 #endif //__G_LEVEL_H__

@@ -157,7 +157,7 @@ std::string HelpText() {
 		return "Game is full";
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		size_t min_players = MAXPLAYERS;
 		for (byte i = 0;i < NUMTEAMS;i++)

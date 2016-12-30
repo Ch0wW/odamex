@@ -250,6 +250,15 @@ static void SetLevelDefaults (level_pwad_info_t *levelinfo)
 	strncpy(levelinfo->fadetable, "COLORMAP", 8);
 }
 
+//============================
+// UNSURE WHERE TO PUT THIS!!
+//============================
+
+bool GAMEMODE_IsTeamGame(void)
+{
+	return (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) ? true : false;
+}
+
 //
 // G_ParseMapInfo
 // Parses the MAPINFO lumps of all loaded WADs and generates

@@ -172,7 +172,7 @@ argb_t CL_GetPlayerColor(player_t *player)
 				player->userinfo.color[2], player->userinfo.color[3]);
 
 	// Adjust the shade of color for team games
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		const float blue_hue = 240.0f, red_hue = 0.0f;
 		float intensity = 0.6f + 0.4f * V_RGBtoHSV(color).getv();
@@ -197,7 +197,7 @@ argb_t CL_GetPlayerColor(player_t *player)
 			if (r_forceenemycolor && player->id != consoleplayer_id)
 				color = argb_t(enemycolor[0], enemycolor[1], enemycolor[2], enemycolor[3]);
 		}
-		else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		else if (GAMEMODE_IsTeamGame())
 		{
 			if (r_forceteamcolor &&
 					(P_AreTeammates(consoleplayer(), *player) || player->id == consoleplayer_id))
@@ -1876,9 +1876,8 @@ void CL_Say()
 			return;
 
 		if (mute_enemies && !spectator &&
-		    (sv_gametype == GM_DM ||
-		    ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-		     player.userinfo.team != consoleplayer().userinfo.team)))
+		    (sv_gametype == GM_DM || GAMEMODE_IsTeamGame() &&
+		     player.userinfo.team != consoleplayer().userinfo.team))
 			return;
 	}
 

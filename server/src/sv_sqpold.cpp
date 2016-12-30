@@ -204,7 +204,7 @@ void SV_SendServerInfo()
 
 	MSG_WriteString(&ml_message, sv_website.cstring());
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		MSG_WriteLong(&ml_message, sv_scorelimit.asInt());
 		
