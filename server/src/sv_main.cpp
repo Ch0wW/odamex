@@ -3693,11 +3693,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		// [tm512 2014/04/18] Avoid setting spectator flags on a dead player
 		// Instead we respawn the player, move him back, and immediately spectate him afterwards
 		if (player.playerstate == PST_DEAD)
-		{
-//			player.deadspectator = true; // prevent teleport fog
 			G_DoReborn (player);
-//			player.deadspectator = false;
-		}
 
 		player.spectator = true;
 
