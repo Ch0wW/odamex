@@ -307,7 +307,7 @@ void G_DoNewGame (void)
 		if (!(it->ingame()))
 			continue;
 
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if (GAMEMODE_IsTeamGame())
 			SV_CheckTeam(*it);
 		else
 			memcpy(it->userinfo.color, it->prefcolor, 4);
@@ -765,7 +765,7 @@ void G_DoLoadLevel (int position)
 	}
 
 	// [deathz0r] It's a smart idea to reset the team points
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		for (size_t i = 0; i < NUMTEAMS; i++)
 			TEAMpoints[i] = 0;

@@ -589,7 +589,7 @@ END_COMMAND (say)
 
 BEGIN_COMMAND (messagemode2)
 {
-	if(!connected || (sv_gametype != GM_TEAMDM && sv_gametype != GM_CTF && !consoleplayer().spectator))
+	if(!connected || (!GAMEMODE_IsTeamGame() && !consoleplayer().spectator))
 		return;
 
 	HU_SetTeamChatMode();
@@ -677,7 +677,7 @@ void drawHeader(player_t *player, int y) {
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_LEFT, hud::Y_TOP,
 	              hud::ClientsSplit().c_str(), CR_GREEN, true);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		hud::DrawText(-236, y + 8, hud_scalescoreboard,
 		              hud::X_CENTER, hud::Y_MIDDLE,
 		              hud::X_LEFT, hud::Y_TOP,
@@ -1037,7 +1037,7 @@ void Scoreboard(player_t *player) {
 	byte extra_spec_rows = 0;
 	byte extra_player_rows = 0;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		height = 99;
 
 		// Team scoreboard was designed for 4 players on a team.  If
@@ -1102,7 +1102,7 @@ void Scoreboard(player_t *player) {
 	         hud::X_CENTER, hud::Y_TOP);
 
 	hud::drawHeader(player, y + 4);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		hud::drawTeamScores(player, y + 31, extra_player_rows);
 	} else {
 		hud::drawScores(player, y + 31, extra_player_rows);
@@ -1432,7 +1432,7 @@ void LowScoreboard(player_t *player) {
 	byte extra_spec_rows = 0;
 	byte extra_player_rows = 0;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		height = 129;
 
 		// Team scoreboard was designed for 4 players on a team.  If
@@ -1482,7 +1482,7 @@ void LowScoreboard(player_t *player) {
 			break;
 		}
 		extra_player_rows -= 1;
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		if (GAMEMODE_IsTeamGame()) {
 			// Removing one player row sometimes means removing two
 			// lines on the low resolution team scoreboard.
 			if (extra_player_rows + 4 < hud::CountTeamPlayers(TEAM_BLUE)) {
@@ -1511,7 +1511,7 @@ void LowScoreboard(player_t *player) {
 	         hud::X_CENTER, hud::Y_TOP);
 
 	hud::drawLowHeader(player, y + 4);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		hud::drawLowTeamScores(player, y + 15,
 		                       extra_player_rows);
 	} else {

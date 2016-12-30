@@ -592,8 +592,7 @@ bool P_AreTeammates(player_t &a, player_t &b)
 		return false;
 
 	return (sv_gametype == GM_COOP) ||
-		  ((a.userinfo.team == b.userinfo.team) &&
-		   (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF));
+		  ((a.userinfo.team == b.userinfo.team) && GAMEMODE_IsTeamGame());
 }
 
 bool P_CanSpy(player_t &viewer, player_t &other, bool demo)

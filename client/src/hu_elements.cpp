@@ -184,7 +184,7 @@ std::string SpyPlayerName(int& color) {
 		return "";
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAMEMODE_IsTeamGame()) {
 		color = teamTextColor(plyr->userinfo.team);
 	}
 
@@ -368,7 +368,7 @@ std::string PersonalSpread(int& color) {
 		// We are behind the leader.
 		buffer << (plyr->fragcount - maxfrags);
 		return buffer.str();
-	} else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	} else if (GAMEMODE_IsTeamGame()) {
 		// Team spreads are significantly easier.  Just compare two numbers.
 		// FIXME: Not if we have more than two teams!
 		std::ostringstream buffer;
@@ -411,7 +411,7 @@ std::string PersonalScore(int& color) {
 		if (sv_fraglimit.asInt() > 0) {
 			buffer << "/" << sv_fraglimit.asInt();
 		}
-	} else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	} else if (GAMEMODE_IsTeamGame()) {
 		color = teamTextColor(plyr->userinfo.team);
 		buffer << TEAMpoints[plyr->userinfo.team];
 
@@ -729,7 +729,7 @@ void EATeamPlayerNames(int x, int y, const float scale,
 		player_t* player = sortedPlayers()[i];
 		if (inTeamPlayer(player, team)) {
 			int color = CR_GREY;
-			if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+			if (GAMEMODE_IsTeamGame()) {
 				if (player->userinfo.team == TEAM_BLUE) {
 					if (player->flags[it_redflag]) {
 						color = CR_RED;
@@ -781,7 +781,7 @@ void EASpectatorNames(int x, int y, const float scale,
 		if (spectatingPlayer(player)) {
 			if (skip <= 0) {
 				int color = CR_GREY;
-				if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+				if (GAMEMODE_IsTeamGame()) {
 					if (player->ready) {
 						color = CR_GREEN;
 					} else if (player->id == displayplayer().id) {
@@ -1196,7 +1196,7 @@ void EATargets(int x, int y, const float scale,
 
 		// Pick a decent color for the player name.
 		int color;
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		if (GAMEMODE_IsTeamGame()) {
 			// In teamgames, we want to use team colors for targets.
 			color = teamTextColor(it->userinfo.team);
 		} else {

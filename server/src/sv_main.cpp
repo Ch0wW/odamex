@@ -1017,7 +1017,7 @@ bool SV_SetupUserInfo(player_t &player)
 			old_netname.c_str(), gendermessage.c_str(), player.userinfo.netname.c_str());
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		SV_CheckTeam (player);
 
@@ -1171,7 +1171,7 @@ bool SV_IsTeammate(player_t &a, player_t &b)
 	if(&a == &b)
 		return false;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		if (a.userinfo.team == b.userinfo.team)
 			return true;
@@ -1603,7 +1603,7 @@ void SV_ClientFullUpdate(player_t &pl)
 	}
 
 	// [deathz0r] send team frags/captures if teamplay is enabled
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 	{
 		MSG_WriteMarker(&cl->reliablebuf, svc_teampoints);
 		for (int i = 0;i < NUMTEAMS;i++)
@@ -2091,7 +2091,7 @@ void SV_DisconnectClient(player_t &who)
 			status = "SPECTATOR";
 		else
 		{
-			if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+			if (GAMEMODE_IsTeamGame())
 			{
 				sprintf(str, "%s TEAM, ", team_names[who.userinfo.team]);
 				status += str;
@@ -2593,7 +2593,7 @@ void STACK_ARGS SV_PlayerPrintf(int level, int player_id, const char *fmt, ...)
 
 void STACK_ARGS SV_TeamPrintf(int level, int who, const char *fmt, ...)
 {
-	if (sv_gametype != GM_TEAMDM && sv_gametype != GM_CTF)
+	if (!GAMEMODE_IsTeamGame())
 		return;
 
 	va_list argptr;
@@ -2805,7 +2805,7 @@ bool SV_Say(player_t &player)
 	{
 		if (spectator)
 			SVC_SpecSay(player, message.c_str());
-		else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		else if (GAMEMODE_IsTeamGame())
 			SVC_TeamSay(player, message.c_str());
 		else
 			SVC_Say(player, message.c_str());
@@ -3553,7 +3553,7 @@ void SV_ChangeTeam (player_t &player)  // [Toke - Teams]
 
 	SV_BroadcastPrintf (PRINT_HIGH, "%s has joined the %s team.\n", player.userinfo.netname.c_str(), team_names[team]);
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAMEMODE_IsTeamGame())
 		if (player.mo && player.userinfo.team != old_team)
 			P_DamageMobj (player.mo, 0, 0, 1000, 0);
 }
@@ -3623,7 +3623,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 				return;
 
 			// Check to make sure we're not exceeding sv_maxplayersperteam.
-			if (sv_maxplayersperteam && (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF))
+			if (sv_maxplayersperteam && GAMEMODE_IsTeamGame())
 			{
 				if (P_NumPlayersOnTeam(player.userinfo.team) >= sv_maxplayersperteam)
 				{
@@ -3653,7 +3653,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 
 			if (!silent)
 			{
-				if (sv_gametype != GM_TEAMDM && sv_gametype != GM_CTF)
+				if (!GAMEMODE_IsTeamGame())
 					SV_BroadcastPrintf(PRINT_HIGH, "%s joined the game.\n", player.userinfo.netname.c_str());
 				else
 					SV_BroadcastPrintf(PRINT_HIGH, "%s joined the game on the %s team.\n",
@@ -4419,7 +4419,7 @@ void SV_TimelimitCheck()
 				SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. Game is a draw!\n");
 			else
 				SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. Game won by %s!\n", winplayer->userinfo.netname.c_str());
-		} else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		} else if (GAMEMODE_IsTeamGame()) {
 			team_t winteam = SV_WinningTeam ();
 
 			if(winteam == TEAM_NONE)
@@ -4796,7 +4796,7 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	if (sv_gametype == GM_COOP)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;
 
-	if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
+	if (GAMEMODE_IsTeamGame() &&
 		attacker && attacker->player &&
 		self->player->userinfo.team == attacker->player->userinfo.team)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;

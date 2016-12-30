@@ -186,7 +186,7 @@ next:
         MSG_WriteShort(&ml_message, timeleft);
     
 	// Teams
-	if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if(GAMEMODE_IsTeamGame())
 	{
 		// Team data
 		MSG_WriteByte(&ml_message, 2);
@@ -240,7 +240,7 @@ next:
 		for (int i = 3; i >= 0; i--)
 			MSG_WriteByte(&ml_message, it->userinfo.color[i]);
 
-		if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if(GAMEMODE_IsTeamGame())
 			MSG_WriteByte(&ml_message, it->userinfo.team);
 
 		MSG_WriteShort(&ml_message, it->ping);
