@@ -385,6 +385,7 @@ BEGIN_COMMAND (exec)
 		return;
 	}
 
+	Printf(PRINT_HIGH, "Executing config file \"%s\"\n", argv[1]);	// Ch0wW: Visual indicator for the logs.
 	exec_stack.push_back(argv[1]);
 
 	while(ifs)

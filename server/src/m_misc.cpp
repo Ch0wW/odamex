@@ -55,8 +55,12 @@ static CVAR (configver, CONFIGVERSIONSTR, "", CVARTYPE_STRING, CVAR_ARCHIVE | CV
  */
 std::string M_GetConfigPath(void)
 {
-	const char *p = Args.CheckValue("-config");
+	const char *p;
+	
+	p = Args.CheckValue("-config");
 
+	if (!p)
+		p = Args.CheckValue("-cfg");
 	if (p)
 		return p;
 
