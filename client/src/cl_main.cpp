@@ -523,7 +523,7 @@ void CL_SpyCycle(Iterator begin, Iterator end)
 	if (players.empty())
 		return;
 
-	if (!validplayer(displayplayer()))
+	if (!validplayer(displayplayer()) || gamestate == GS_INTERMISSION )
 	{
 		CL_CheckDisplayPlayer();
 		return;
