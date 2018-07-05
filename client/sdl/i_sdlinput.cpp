@@ -1379,6 +1379,9 @@ void ISDL20KeyboardInputDevice::initKeyTranslation()
 	mSDLKeyTransTable[SDLK_PERIOD]			= '.';
 	mSDLKeyTransTable[SDLK_SLASH]			= '/';
 	mSDLKeyTransTable[SDLK_SEMICOLON]		= ';'; 
+	mSDLKeyTransTable[SDLK_COLON]			= ':';
+	mSDLKeyTransTable[SDLK_EXCLAIM]			= '!';
+	mSDLKeyTransTable[178]					= '`';	// SDLK_WORLD_18 for ²
 	mSDLKeyTransTable[SDLK_EQUALS]			= '='; 
 	mSDLKeyTransTable[SDLK_LEFTBRACKET]		= '['; 
 	mSDLKeyTransTable[SDLK_RIGHTBRACKET]	= ']'; 
