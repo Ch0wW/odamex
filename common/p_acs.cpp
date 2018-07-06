@@ -262,14 +262,8 @@ extern BOOL P_CheckAmmo (player_t *player);
 
 static void TakeAmmo(player_t* player, int ammo, int amount)
 {
-	if (amount == 0)
-	{
-		player->ammo[ammo] = 0;
-	}
-	else
-	{
-		player->ammo[ammo] = MAX(player->ammo[ammo]-amount, 0);
-	}
+		player->ammo[ammo] = amount <= 0 ? 0 : MAX(player->ammo[ammo]-amount, 0);
+
 	if (player->pendingweapon != wp_nochange)
 	{
 		// Make sure we have the ammo for the weapon being switched to
