@@ -34,7 +34,7 @@
 #include <queue>
 #include <cassert>
 
-CVAR(in_kb_azerty, "0", "Experimental AZERTY input", CVARTYPE_BYTE, CVAR_ARCHIVE)
+CVAR(in_kb_azerty, "0", "Experimental AZERTY input (Need to restart to take effects)", CVARTYPE_BYTE, CVAR_ARCHIVE)
 
 //
 // I_SDLMouseAvailible
@@ -1833,6 +1833,9 @@ void ISDL20KeyboardInputDevice::gatherEvents()
 		{
 			const SDL_Event& sdl_ev = sdl_events[i];
 			assert(sdl_ev.type == SDL_KEYDOWN || sdl_ev.type == SDL_KEYUP);
+
+			if (sdl_ev.key.repeat == 1)	// Ch0wW : Fixes a problem of ultra-fast repeats.
+				continue;
 
 			if (sdl_ev.key.keysym.sym == SDLK_F4 && sdl_ev.key.keysym.mod & (KMOD_LALT | KMOD_RALT))
 			{
