@@ -256,10 +256,7 @@ AActor::AActor (fixed_t ix, fixed_t iy, fixed_t iz, mobjtype_t itype) :
 	if (sv_skill != sk_nightmare)
 		reactiontime = info->reactiontime;
 
-    if (clientside)
-        lastlook = P_Random() % MAXPLAYERS_VANILLA;
-    else
-        lastlook = P_Random() % MAXPLAYERS;
+    lastlook = P_Random() % (clientside ? MAXPLAYERS_VANILLA : MAXPLAYERS);
 
     // do not set the state with P_SetMobjState,
     // because action routines can not be called yet
@@ -281,20 +278,16 @@ AActor::AActor (fixed_t ix, fixed_t iy, fixed_t iz, mobjtype_t itype) :
 	dropoffz = floorz;
 	floorsector = subsector->sector;
 
-	if (iz == ONFLOORZ)
-	{
+	if (iz == ONFLOORZ) {
 		z = floorz;
 	}
-	else if (iz == ONCEILINGZ)
-	{
+	else if (iz == ONCEILINGZ) {
 		z = ceilingz - height;
 	}
-	else if (flags2 & MF2_FLOATBOB)
-	{
+	else if (flags2 & MF2_FLOATBOB) {
 		z = floorz + iz;		// artifact z passed in as height
 	}
-	else
-	{
+	else {
 		z = iz;
 	}
 

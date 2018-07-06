@@ -348,9 +348,9 @@ static void DoTakeInv(player_t* player, const char* type, int amount)
 
 static void TakeInventory(AActor* activator, const char* type, int amount)
 {
-	if (amount < 0)
-	{
-	}
+	if (amount <= 0 || type == NULL)
+		return;
+
 	if (activator == NULL)
 	{
 		Players::iterator it;
