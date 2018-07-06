@@ -547,7 +547,7 @@ void I_StartTic (void)
 // Initialize member constants
 // Key repeat delay and interval times are the default values for SDL 1.2.15
 const uint64_t IInputSubsystem::mRepeatDelay = I_ConvertTimeFromMs(500);
-const uint64_t IInputSubsystem::mRepeatInterval = I_ConvertTimeFromMs(30);
+const uint64_t IInputSubsystem::mRepeatInterval = I_ConvertTimeFromMs(50);
 
 
 //
@@ -674,6 +674,7 @@ void IInputSubsystem::addToEventRepeaters(event_t& ev)
 					{
 						// update existing repeater with this new event
 						EventRepeater& repeater = it->second;
+						repeater.repeating = false;		// start off waiting for mRepeatDelay before repeating
 						memcpy(&repeater.event, &ev, sizeof(repeater.event));
 					}
 					else
