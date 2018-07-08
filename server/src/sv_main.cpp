@@ -1901,7 +1901,7 @@ void SV_ConnectClient()
 
 	// generate a random string
 	std::stringstream ss;
-	ss << time(NULL) << level.time << VERSION << NET_AdrToString(net_from);
+	ss << time(NULL) << level.time << NET_PROTOCOL << NET_AdrToString(net_from);
 	cl->digest = MD5SUM(ss.str());
 
 	// Set player time

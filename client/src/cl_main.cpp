@@ -1516,7 +1516,7 @@ void CL_RequestConnectInfo(void)
 std::string missing_file, missing_hash;
 bool CL_PrepareConnect(void)
 {
-	G_CleanupDemo();	// stop dmeos from playing before D_DoomWadReboot wipes out Zone memory
+	G_CleanupDemo();	// stop demos from playing before D_DoomWadReboot wipes out Zone memory
 
 	cvar_t::C_BackupCVars(CVAR_SERVERINFO);
 
@@ -1524,7 +1524,7 @@ bool CL_PrepareConnect(void)
 	DWORD server_token = MSG_ReadLong();
 	server_host = MSG_ReadString();
 
-	bool recv_teamplay_stats = 0;
+	byte gamemode;
 	gameversiontosend = 0;
 
 	byte playercount = MSG_ReadByte(); // players
@@ -1541,10 +1541,8 @@ bool CL_PrepareConnect(void)
 	for(i = 0; i < server_wads; i++)
 		newwadfiles[i] = MSG_ReadString();
 
-	MSG_ReadBool();							// deathmatch
-	MSG_ReadByte();							// skill
-	recv_teamplay_stats |= MSG_ReadBool();	// teamplay
-	recv_teamplay_stats |= MSG_ReadBool();	// ctf
+	gamemode = MSG_ReadByte();	// Gamemode
+	MSG_ReadByte();							// Skill
 
 	for(i = 0; i < playercount; i++)
 	{
@@ -1564,7 +1562,7 @@ bool CL_PrepareConnect(void)
 	MSG_ReadString();
 
 	// Receive conditional teamplay information
-	if (recv_teamplay_stats)
+	if (gamemode == GM_TEAMDM || gamemode == GM_CTF)	// Ch0wW : TODO : Change that statement with a function
 	{
 		MSG_ReadLong();
 
@@ -1581,13 +1579,13 @@ bool CL_PrepareConnect(void)
 
 	Printf(PRINT_HIGH, "> Server protocol version: %i\n", version);
 
-	if(version > VERSION)
-		version = VERSION;
+	if(version > NET_PROTOCOL)
+		version = NET_PROTOCOL;
 	if(version < 62)
 		version = 62;
 
 	/* GhostlyDeath -- Need the actual version info */
-	if (version == 65)
+	if (version == NET_PROTOCOL)
 	{
 		size_t l;
 		MSG_ReadString();

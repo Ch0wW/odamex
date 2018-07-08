@@ -1050,7 +1050,7 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 		}
 	}	
 
-    MSG_WriteShort	(netbuffer, VERSION);
+    MSG_WriteShort	(netbuffer, NET_PROTOCOL);
   
   	// Note: these are ignored by clients when the client connects anyway
   	// so they don't need real data

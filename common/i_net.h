@@ -40,7 +40,7 @@
 
 #define CHALLENGE 5560020  // challenge
 #define LAUNCHER_CHALLENGE 777123  // csdl challenge
-#define VERSION 65	// GhostlyDeath -- this should remain static from now on
+#define NET_PROTOCOL 65	// GhostlyDeath -- this should remain static from now on
 
 extern int   localport;
 extern int   msg_badread;

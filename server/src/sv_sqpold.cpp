@@ -179,10 +179,8 @@ void SV_SendServerInfo()
 	for (i = 1; i < numwads; ++i)
 		MSG_WriteString(&ml_message, D_CleanseFileName(wadfiles[i], "wad").c_str());
 
-	MSG_WriteBool(&ml_message, (sv_gametype == GM_DM || sv_gametype == GM_TEAMDM));
+	MSG_WriteByte(&ml_message, sv_gametype.asInt());
 	MSG_WriteByte(&ml_message, sv_skill.asInt());
-	MSG_WriteBool(&ml_message, (sv_gametype == GM_TEAMDM));
-	MSG_WriteBool(&ml_message, (sv_gametype == GM_CTF));
 
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
@@ -219,7 +217,7 @@ void SV_SendServerInfo()
 		}
 	}
 	
-	MSG_WriteShort(&ml_message, VERSION);
+	MSG_WriteShort(&ml_message, NET_PROTOCOL);
 
 //bond===========================
 	MSG_WriteString(&ml_message, (char *)sv_email.cstring());
