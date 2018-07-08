@@ -1886,13 +1886,29 @@ void DLevelScript::RunScript ()
 			break;
 
 		case PCD_DIVIDE:
-			STACK(2) = STACK(2) / STACK(1);
-			sp--;
+			if (STACK(1) == 0)
+			{
+				DPrintf("DIVISION BY ZERO FOUND!\n");
+				state = SCRIPT_PleaseRemove;
+			}
+			else
+			{
+				STACK(2) = STACK(2) / STACK(1);
+				sp--;
+			}
 			break;
 
 		case PCD_MODULUS:
-			STACK(2) = STACK(2) % STACK(1);
-			sp--;
+			if (STACK(1) == 0)
+			{
+				DPrintf("MODULUS BY ZERO FOUND!\n");
+				state = SCRIPT_PleaseRemove;
+			}
+			else
+			{
+				STACK(2) = STACK(2) % STACK(1);
+				sp--;
+			}
 			break;
 
 		case PCD_EQ:
