@@ -1407,6 +1407,7 @@ void CL_UpdateFrags(void)
 		p.killcount = MSG_ReadShort();
 	p.deathcount = MSG_ReadShort();
 	p.points = MSG_ReadShort();
+	p.fragcombo = MSG_ReadShort();
 }
 
 //

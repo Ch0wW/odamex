@@ -32,6 +32,7 @@
 bool unnatural_level_progression;
 
 void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...) {}
+void SV_MidPrint(const char *msg, player_t *p, int msgtime) {}
 
 void D_SendServerInfoChange(const cvar_t *cvar, const char *value) {}
 void D_DoServerInfoChange(byte **stream) {}

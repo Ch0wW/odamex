@@ -935,6 +935,7 @@ player_s::player_s()
 	fragcount = 0;
 	deathcount = 0;
 	killcount = 0;
+	fragcombo = 0;
 	pendingweapon = wp_nochange;
 	readyweapon = wp_nochange;
 	for (i = 0; i < NUMWEAPONS; i++)
@@ -1021,6 +1022,7 @@ player_s &player_s::operator =(const player_s &other)
 	fragcount = other.fragcount;
 	deathcount = other.deathcount;
 	killcount = other.killcount;
+	fragcombo = 0;
 
 	pendingweapon = other.pendingweapon;
 	readyweapon = other.readyweapon;
