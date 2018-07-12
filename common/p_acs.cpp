@@ -217,7 +217,7 @@ static void DoGiveInv(player_t* player, const char* type, int amount)
 	}
 
 	// Unknown item.
-	Printf(PRINT_HIGH, "I don't know what %s is\n", type);
+	DPrintf("Unknown item %s.\n", type);
 }
 
 static void GiveInventory(AActor* activator, const char* type, int amount)
@@ -262,14 +262,8 @@ extern BOOL P_CheckAmmo (player_t *player);
 
 static void TakeAmmo(player_t* player, int ammo, int amount)
 {
-	if (amount == 0)
-	{
-		player->ammo[ammo] = 0;
-	}
-	else
-	{
-		player->ammo[ammo] = MAX(player->ammo[ammo]-amount, 0);
-	}
+		player->ammo[ammo] = amount <= 0 ? 0 : MAX(player->ammo[ammo]-amount, 0);	// Deplete ammo.
+
 	if (player->pendingweapon != wp_nochange)
 	{
 		// Make sure we have the ammo for the weapon being switched to
@@ -338,19 +332,23 @@ static void DoTakeInv(player_t* player, const char* type, int amount)
 		if (strcmp(DoomKeyNames[i], type) == 0)
 		{
 			player->cards[i] = 0;
+			return;
 		}
 	}
 	if (strcmp("Backpack", type) == 0)
 	{
 		TakeBackpack(player);
+		return;
 	}
+
+	DPrintf("Unknown item %s.\n", type);
 }
 
 static void TakeInventory(AActor* activator, const char* type, int amount)
 {
-	if (amount < 0)
-	{
-	}
+	if (amount <= 0 || type == NULL)
+		return;
+
 	if (activator == NULL)
 	{
 		Players::iterator it;
@@ -1888,13 +1886,29 @@ void DLevelScript::RunScript ()
 			break;
 
 		case PCD_DIVIDE:
-			STACK(2) = STACK(2) / STACK(1);
-			sp--;
+			if (STACK(1) == 0)
+			{
+				DPrintf("DIVISION BY ZERO FOUND!\n");
+				state = SCRIPT_PleaseRemove;
+			}
+			else
+			{
+				STACK(2) = STACK(2) / STACK(1);
+				sp--;
+			}
 			break;
 
 		case PCD_MODULUS:
-			STACK(2) = STACK(2) % STACK(1);
-			sp--;
+			if (STACK(1) == 0)
+			{
+				DPrintf("MODULUS BY ZERO FOUND!\n");
+				state = SCRIPT_PleaseRemove;
+			}
+			else
+			{
+				STACK(2) = STACK(2) % STACK(1);
+				sp--;
+			}
 			break;
 
 		case PCD_EQ:
