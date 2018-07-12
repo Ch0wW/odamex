@@ -1479,6 +1479,19 @@ static bool C_HandleKey(const event_t* ev)
 		CmdLine.insertString(I_GetClipboardText());
 		TabbedLast = false;
 		break;
+	case KEY_F1:
+	case KEY_F2:
+	case KEY_F3:
+	case KEY_F4:
+	case KEY_F5:
+	case KEY_F6:
+	case KEY_F7:
+	case KEY_F8:
+	case KEY_F9:
+	case KEY_F10:
+	case KEY_F11:
+	case KEY_F12:
+		break;	// Ch0wW: Disallow text inputs from console (else, will post blocks of empty text.)
 	default:
 		// Execute command line (ENTER)
 		if (ev->data2 == '\r')

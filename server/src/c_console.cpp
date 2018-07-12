@@ -193,7 +193,8 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	{
 		client_t* cl = &(it->client);
 
-		if (cl->allow_rcon)
+		// Ch0wW What's with printing a message already shown locally?
+		if (cl->allow_rcon && printlevel >= PRINT_CHAT)	
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
 			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);

@@ -30,8 +30,11 @@
 #include "d_event.h"
 #include "i_system.h"
 #include "doomkeys.h"
+#include "c_cvars.h"
 #include <queue>
 #include <cassert>
+
+CVAR(in_kb_azerty, "0", "Experimental AZERTY input (Need to restart to take effects)", CVARTYPE_BYTE, CVAR_ARCHIVE)
 
 //
 // I_SDLMouseAvailible
@@ -1379,6 +1382,9 @@ void ISDL20KeyboardInputDevice::initKeyTranslation()
 	mSDLKeyTransTable[SDLK_PERIOD]			= '.';
 	mSDLKeyTransTable[SDLK_SLASH]			= '/';
 	mSDLKeyTransTable[SDLK_SEMICOLON]		= ';'; 
+	mSDLKeyTransTable[SDLK_COLON]			= ':';
+	mSDLKeyTransTable[SDLK_EXCLAIM]			= '!';
+	mSDLKeyTransTable[178]					= '`';	// SDLK_WORLD_18 for ²
 	mSDLKeyTransTable[SDLK_EQUALS]			= '='; 
 	mSDLKeyTransTable[SDLK_LEFTBRACKET]		= '['; 
 	mSDLKeyTransTable[SDLK_RIGHTBRACKET]	= ']'; 
@@ -1495,16 +1501,33 @@ void ISDL20KeyboardInputDevice::initKeyTextTranslation()
 	mSDLKeyTextTransTable[SDLK_MINUS] = '-';
 	mSDLKeyTextTransTable[SDLK_PERIOD] = '.';
 	mSDLKeyTextTransTable[SDLK_SLASH] = '/';
-	mSDLKeyTextTransTable[SDLK_0] = '0';
-	mSDLKeyTextTransTable[SDLK_1] = '1';
-	mSDLKeyTextTransTable[SDLK_2] = '2';
-	mSDLKeyTextTransTable[SDLK_3] = '3';
-	mSDLKeyTextTransTable[SDLK_4] = '4';
-	mSDLKeyTextTransTable[SDLK_5] = '5';
-	mSDLKeyTextTransTable[SDLK_6] = '6';
-	mSDLKeyTextTransTable[SDLK_7] = '7';
-	mSDLKeyTextTransTable[SDLK_8] = '8';
-	mSDLKeyTextTransTable[SDLK_9] = '9';
+
+	if (in_kb_azerty == 1)
+	{
+		mSDLKeyTextTransTable[SDLK_0] = 'à';
+		mSDLKeyTextTransTable[SDLK_1] = '&';
+		mSDLKeyTextTransTable[SDLK_2] = 'é';
+		mSDLKeyTextTransTable[SDLK_3] = '"';
+		mSDLKeyTextTransTable[SDLK_4] = '\'';
+		mSDLKeyTextTransTable[SDLK_5] = '(';
+		mSDLKeyTextTransTable[SDLK_6] = '-';
+		mSDLKeyTextTransTable[SDLK_7] = 'è';
+		mSDLKeyTextTransTable[SDLK_8] = '_';
+		mSDLKeyTextTransTable[SDLK_9] = 'ç';
+	}
+	else
+	{
+		mSDLKeyTextTransTable[SDLK_0] = '0';
+		mSDLKeyTextTransTable[SDLK_1] = '1';
+		mSDLKeyTextTransTable[SDLK_2] = '2';
+		mSDLKeyTextTransTable[SDLK_3] = '3';
+		mSDLKeyTextTransTable[SDLK_4] = '4';
+		mSDLKeyTextTransTable[SDLK_5] = '5';
+		mSDLKeyTextTransTable[SDLK_6] = '6';
+		mSDLKeyTextTransTable[SDLK_7] = '7';
+		mSDLKeyTextTransTable[SDLK_8] = '8';
+		mSDLKeyTextTransTable[SDLK_9] = '9';
+	}
 	mSDLKeyTextTransTable[SDLK_COLON] = ':';
 	mSDLKeyTextTransTable[SDLK_SEMICOLON] = ';';
 	mSDLKeyTextTransTable[SDLK_LESS] = '<';
@@ -1615,27 +1638,60 @@ void ISDL20KeyboardInputDevice::initKeyTextTranslation()
 	mShiftTransTable['X'] = 'x';
 	mShiftTransTable['Y'] = 'y';
 	mShiftTransTable['Z'] = 'z';
-	mShiftTransTable['1'] = '!';
-	mShiftTransTable['2'] = '@';
-	mShiftTransTable['3'] = '#';
-	mShiftTransTable['4'] = '$';
-	mShiftTransTable['5'] = '%';
-	mShiftTransTable['6'] = '^';
-	mShiftTransTable['7'] = '&';
-	mShiftTransTable['8'] = '*';
-	mShiftTransTable['9'] = '(';
-	mShiftTransTable['0'] = ')';
-	mShiftTransTable['`'] = '~';
-	mShiftTransTable['-'] = '_';
-	mShiftTransTable['='] = '+';
-	mShiftTransTable['['] = '{';
-	mShiftTransTable[']'] = '}';
-	mShiftTransTable['\\'] = '|';
-	mShiftTransTable[';'] = ':';
-	mShiftTransTable['\''] = '\"';
-	mShiftTransTable[','] = '<';
-	mShiftTransTable['.'] = '>';
-	mShiftTransTable['/'] = '?';
+
+	if (in_kb_azerty == 1)
+	{
+		mShiftTransTable['&'] = '1';
+		mShiftTransTable['é'] = '2';
+		mShiftTransTable['"'] = '3';
+		mShiftTransTable['\''] = '4';
+		mShiftTransTable['('] = '5';
+		mShiftTransTable['-'] = '6';
+		mShiftTransTable['è'] = '7';
+		mShiftTransTable['_'] = '8';
+		mShiftTransTable['ç'] = '9';
+		mShiftTransTable['à'] = '0';
+		mShiftTransTable['`'] = '~';
+		mShiftTransTable[':'] = '/';
+		mShiftTransTable[';'] = '.';
+		mShiftTransTable[','] = '?';
+		mShiftTransTable['!'] = '§';
+		mShiftTransTable['/'] = '?';
+		mShiftTransTable[SDLK_0] = 'à';
+		mShiftTransTable[SDLK_1] = '&';
+		mShiftTransTable[SDLK_2] = 'é';
+		mShiftTransTable[SDLK_3] = '"';
+		mShiftTransTable[SDLK_4] = '\'';
+		mShiftTransTable[SDLK_5] = '(';
+		mShiftTransTable[SDLK_6] = '-';
+		mShiftTransTable[SDLK_7] = 'è';
+		mShiftTransTable[SDLK_8] = '_';
+		mShiftTransTable[SDLK_9] = 'ç';
+	}
+	else
+	{
+		mShiftTransTable['1'] = '!';
+		mShiftTransTable['2'] = '@';
+		mShiftTransTable['3'] = '#';
+		mShiftTransTable['4'] = '$';
+		mShiftTransTable['5'] = '%';
+		mShiftTransTable['6'] = '^';
+		mShiftTransTable['7'] = '&';
+		mShiftTransTable['8'] = '*';
+		mShiftTransTable['9'] = '(';
+		mShiftTransTable['0'] = ')';
+		mShiftTransTable['`'] = '~';
+		mShiftTransTable['-'] = '_';
+		mShiftTransTable['='] = '+';
+		mShiftTransTable['['] = '{';
+		mShiftTransTable[']'] = '}';
+		mShiftTransTable['\\'] = '|';
+		mShiftTransTable[';'] = ':';
+		mShiftTransTable['\''] = '\"';
+		mShiftTransTable[','] = '<';
+		mShiftTransTable['.'] = '>';
+		mShiftTransTable['/'] = '?';
+	}
 }
 
 
@@ -1777,6 +1833,9 @@ void ISDL20KeyboardInputDevice::gatherEvents()
 		{
 			const SDL_Event& sdl_ev = sdl_events[i];
 			assert(sdl_ev.type == SDL_KEYDOWN || sdl_ev.type == SDL_KEYUP);
+
+			if (sdl_ev.key.repeat == 1)	// Ch0wW : Fixes a problem of ultra-fast repeats.
+				continue;
 
 			if (sdl_ev.key.keysym.sym == SDLK_F4 && sdl_ev.key.keysym.mod & (KMOD_LALT | KMOD_RALT))
 			{
