@@ -86,7 +86,10 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 	if (!warmup.checkscorechange())
 		return;
 
-	char* combomsg;
+	const char* combomsg;
+
+	if (clientside)
+		return;
 
 	if (bPositive)
 	{
@@ -95,7 +98,7 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 		Printf(PRINT_HIGH, "Fragcombo : %d\n", player->fragcombo);
 		int palier = (player->fragcombo / 5);
 
-		if ( palier >= 1 && player->fragcombo % 5 == 0)
+		if (palier >= 1 && player->fragcombo % 5 == 0)
 		{
 			if (palier == 1)
 				combomsg = "is on a killing spree !";
@@ -116,12 +119,15 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 	}
 	else
 	{
-		player->fragcombo = 0;
+		if (player->fragcombo / 5 >= 1)
+		{
+			if (bSuicide)
+				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
+			else
+				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+		}
 
-		if (bSuicide)
-			SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
-		else
-			SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+		player->fragcombo = 0;
 	}
 }
 
@@ -1167,6 +1173,12 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 				{
 					P_GiveFrags(sPlayer, 1);
 					P_GiveFragCombo(sPlayer, true);
+
+					if (target->player->fragcombo / 5 >= 1)
+						SV_BroadcastPrintf(PRINT_HIGH, "%s's killing spree has been ended by %s", target->player->userinfo.netname.c_str(), source->player->userinfo.netname.c_str());
+
+					target->player->fragcombo = 0;	// Reset combosprees for the killed
+
 					// [Toke] Add a team frag
 					if (sv_gametype == GM_TEAMDM)
 					{
