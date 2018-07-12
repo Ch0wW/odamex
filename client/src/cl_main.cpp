@@ -838,7 +838,8 @@ BEGIN_COMMAND (playerinfo)
 
 	Printf (PRINT_HIGH, "---------------[player info]----------- \n");
 	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.netname.c_str());
-	Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
+	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) 
+		Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
 	Printf(PRINT_HIGH, " userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
 	Printf(PRINT_HIGH, " userinfo.unlag   - %d \n",		player->userinfo.unlag);
 	Printf(PRINT_HIGH, " userinfo.color   - %s \n",		color);
@@ -853,10 +854,10 @@ END_COMMAND (playerinfo)
 
 BEGIN_COMMAND (kill)
 {
-    if (sv_allowcheats || sv_gametype == GM_COOP)
+    if (sv_allowcheats || sv_gametype == GM_COOP || warmup.get_status() == warmup.WARMUP)
         MSG_WriteMarker(&net_buffer, clc_kill);
     else
-        Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' or disable sv_keepkeys to enable this command.\n");
+        Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
 }
 END_COMMAND (kill)
 
@@ -995,7 +996,8 @@ BEGIN_COMMAND (spectate)
 END_COMMAND (spectate)
 
 BEGIN_COMMAND (ready) {
-	MSG_WriteMarker(&net_buffer, clc_ready);
+	if (warmup.get_status() != warmup.DISABLED)
+		MSG_WriteMarker(&net_buffer, clc_ready);
 } END_COMMAND (ready)
 
 BEGIN_COMMAND (join)
@@ -2768,6 +2770,7 @@ void CL_UpdateSector(void)
 
 	unsigned short fp = MSG_ReadShort();
 	unsigned short cp = MSG_ReadShort();
+	short special = MSG_ReadShort();
 
 	if (!sectors || sectornum >= numsectors)
 		return;
@@ -2785,6 +2788,7 @@ void CL_UpdateSector(void)
 		cp = numflats;
 
 	sector->ceilingpic = cp;
+	sector->special = special;
 	sector->moveable = true;
 
 	P_ChangeSector(sector, false);
@@ -2829,7 +2833,7 @@ void CL_UpdateMovingSector(void)
 		snap.setFloorSpecial(MSG_ReadShort());
 		snap.setFloorTexture(MSG_ReadShort());
 		snap.setFloorDestination(MSG_ReadShort() << FRACBITS);
-		snap.setFloorSpeed(MSG_ReadShort() << FRACBITS);
+		snap.setFloorSpeed(MSG_ReadLong());
 		snap.setResetCounter(MSG_ReadLong());
 		snap.setOrgHeight(MSG_ReadShort() << FRACBITS);
 		snap.setDelay(MSG_ReadLong());
@@ -2851,7 +2855,7 @@ void CL_UpdateMovingSector(void)
 	{
 		// Platforms/Lifts
 		snap.setFloorMoverType(SEC_PLAT);
-		snap.setFloorSpeed(MSG_ReadShort() << FRACBITS);
+		snap.setFloorSpeed(MSG_ReadLong());
 		snap.setFloorLow(MSG_ReadShort() << FRACBITS);
 		snap.setFloorHigh(MSG_ReadShort() << FRACBITS);
 		snap.setFloorWait(MSG_ReadLong());
@@ -2872,9 +2876,9 @@ void CL_UpdateMovingSector(void)
 		snap.setCeilingType(MSG_ReadByte());
 		snap.setCeilingLow(MSG_ReadShort() << FRACBITS);
 		snap.setCeilingHigh(MSG_ReadShort() << FRACBITS);
-		snap.setCeilingSpeed(MSG_ReadShort() << FRACBITS);
-		snap.setCrusherSpeed1(MSG_ReadShort() << FRACBITS);
-		snap.setCrusherSpeed2(MSG_ReadShort() << FRACBITS);
+		snap.setCeilingSpeed(MSG_ReadLong());
+		snap.setCrusherSpeed1(MSG_ReadLong());
+		snap.setCrusherSpeed2(MSG_ReadLong());
 		snap.setCeilingCrush(MSG_ReadBool());
 		snap.setSilent(MSG_ReadBool());
 		snap.setCeilingDirection(char(MSG_ReadByte()));
@@ -2890,7 +2894,7 @@ void CL_UpdateMovingSector(void)
 		snap.setCeilingMoverType(SEC_DOOR);
 		snap.setCeilingType(static_cast<DDoor::EVlDoor>(MSG_ReadByte()));
 		snap.setCeilingHigh(MSG_ReadShort() << FRACBITS);
-		snap.setCeilingSpeed(MSG_ReadShort() << FRACBITS);
+		snap.setCeilingSpeed(MSG_ReadLong());
 		snap.setCeilingWait(MSG_ReadLong());
 		snap.setCeilingCounter(MSG_ReadLong());
 		snap.setCeilingStatus(MSG_ReadByte());
@@ -2917,7 +2921,7 @@ void CL_UpdateMovingSector(void)
 		snap.setFloorDirection(snap.getCeilingDirection());
 		snap.setFloorDestination(MSG_ReadShort() << FRACBITS);
 		snap.setCeilingDestination(MSG_ReadShort() << FRACBITS);
-		snap.setCeilingSpeed(MSG_ReadShort() << FRACBITS);
+		snap.setCeilingSpeed(MSG_ReadLong());
 		snap.setFloorSpeed(snap.getCeilingSpeed());
 	}
 
@@ -2930,8 +2934,8 @@ void CL_UpdateMovingSector(void)
 		snap.setFloorType(snap.getCeilingType());
 		snap.setCeilingStatus(MSG_ReadByte());
 		snap.setFloorStatus(snap.getCeilingStatus());
-		snap.setFloorSpeed(MSG_ReadShort() << FRACBITS);
-		snap.setCeilingSpeed(MSG_ReadShort() << FRACBITS);
+		snap.setFloorSpeed(MSG_ReadLong());
+		snap.setCeilingSpeed(MSG_ReadLong());
 		snap.setFloorDestination(MSG_ReadShort() << FRACBITS);
 		snap.setCeilingDestination(MSG_ReadShort() << FRACBITS);
 		snap.setCeilingCrush(MSG_ReadBool());

@@ -1358,7 +1358,7 @@ P_CrossSpecialLine
 {
     line_t*	line = &lines[linenum];
 
-	if (!P_CanActivateSpecials(line))
+	if (!P_CanActivateSpecials(thing, line))
 		return;
 
 	if(thing)
@@ -1467,7 +1467,7 @@ P_ShootSpecialLine
   line_t*	line,
   bool      FromServer)
 {
-	if (!P_CanActivateSpecials(line))
+	if (!P_CanActivateSpecials(thing, line))
 		return;
 
 	if(thing)
@@ -1512,7 +1512,7 @@ P_UseSpecialLine
   int		side,
   bool      FromServer)
 {
-	if (!P_CanActivateSpecials(line))
+	if (!P_CanActivateSpecials(thing, line))
 		return false;
 
 	// Err...
@@ -1592,7 +1592,7 @@ P_PushSpecialLine
   int		side,
   bool      FromServer)
 {
-	if (!P_CanActivateSpecials(line))
+	if (!P_CanActivateSpecials(thing, line))
 		return false;
 
 	// Err...
@@ -1973,7 +1973,7 @@ void P_SpawnSpecials (void)
 			if ((sector->special & 0xff) >= Scroll_North_Slow &&
 				(sector->special & 0xff) <= Scroll_SouthWest_Fast)
 			{
-				static char hexenScrollies[24][2] =
+				static signed char hexenScrollies[24][2] =
 				{
 					{  0,  1 }, {  0,  2 }, {  0,  4 },
 					{ -1,  0 }, { -2,  0 }, { -4,  0 },

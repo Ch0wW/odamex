@@ -97,6 +97,9 @@ CVAR_RANGE(			sv_itemrespawntime, "30", "If sv_itemsrespawn is set, items will r
 					"time (in seconds)",
 					CVARTYPE_WORD, CVAR_SERVERARCHIVE | CVAR_SERVERINFO | CVAR_NOENABLEDISABLE, 0.0f, 500.0f)
 
+CVAR(				sv_spawnmpthings, "1", "Spawn multiplayer things on the map",
+					CVARTYPE_BOOL, CVAR_SERVERARCHIVE | CVAR_SERVERINFO | CVAR_LATCH)
+
 CVAR(				sv_monstersrespawn,  "0", "Monsters will respawn after a period of time",
 					CVARTYPE_BOOL, CVAR_SERVERARCHIVE | CVAR_SERVERINFO)
 
@@ -225,8 +228,11 @@ CVAR(				sv_coopunassignedvoodoodollsfornplayers, "255", "",
 CVAR(				cl_deathcam, "1", "Dead player's view follows the actor who killed them",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
-CVAR(				cl_predictsectors, "1", "Move floors and ceilings immediately instead of waiting for confirmation",
-					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+CVAR_RANGE(			cl_predictsectors, "1", "Move floors and ceilings immediately instead of waiting for confirmation, values are:\n"
+					"// 0 - Don't predict any sectors\n" \
+					"// 1 - Predict all sectors based only on actor movements\n" \
+					"// 2 - Predict only sectors activated by you\n",
+					CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 2.0f)
 
 CVAR(				cl_predictpickup, "1", "Predict weapon pickups",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
@@ -252,6 +258,18 @@ CVAR_RANGE_FUNC_DECL(sv_splashfactor, "1.0", "Rocket explosion thrust effect?",
 
 CVAR(               cl_waddownloaddir, "", "Set custom WAD download directory",
 					CVARTYPE_STRING, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)
+
+CVAR(				cl_spectator_autofly, "1", "Automatically flies as a spectator", 
+					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+	
+CVAR_RANGE(			cl_spectator_flybob, "1.0", "Fly bobbing as a spectator", 
+					CVARTYPE_FLOAT, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 1.0f)
+	
+CVAR(				cl_spectator_allow_teleport, "1", "go through teleporters as a spectator",
+					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+	
+CVAR(				cl_spectator_freelook_force, "1", "Forces freelook as a spectator even if the server doesn't allow it", 
+					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
 // Misc stuff
 // ----------
