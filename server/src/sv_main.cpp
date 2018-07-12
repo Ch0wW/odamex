@@ -829,6 +829,7 @@ void SV_UpdateFrags(player_t &player)
 			MSG_WriteShort(&cl->reliablebuf, player.killcount);
 		MSG_WriteShort (&cl->reliablebuf, player.deathcount);
 		MSG_WriteShort(&cl->reliablebuf, player.points);
+		MSG_WriteShort(&cl->reliablebuf, player.fragcombo);
 	}
 }
 
@@ -1606,6 +1607,7 @@ void SV_ClientFullUpdate(player_t &pl)
 			MSG_WriteShort(&cl->reliablebuf, it->killcount);
 		MSG_WriteShort(&cl->reliablebuf, it->deathcount);
 		MSG_WriteShort(&cl->reliablebuf, it->points);
+		MSG_WriteShort(&cl->reliablebuf, it->fragcombo);
 
 		MSG_WriteMarker (&cl->reliablebuf, svc_spectate);
 		MSG_WriteByte (&cl->reliablebuf, it->id);
@@ -1915,7 +1917,7 @@ void SV_ConnectClient()
 
 	// generate a random string
 	std::stringstream ss;
-	ss << time(NULL) << level.time << VERSION << NET_AdrToString(net_from);
+	ss << time(NULL) << level.time << NET_PROTOCOL << NET_AdrToString(net_from);
 	cl->digest = MD5SUM(ss.str());
 
 	// Set player time
@@ -3680,6 +3682,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			player.fragcount = 0;
 			player.deathcount = 0;
 			player.killcount = 0;
+			player.fragcombo = 0;
 			SV_UpdateFrags(player);
 
 			// [AM] Set player unready if we're in warmup mode.

@@ -528,6 +528,7 @@ void G_DoLoadLevel (int position)
 		it->deathcount = 0; // [Toke - Scores - deaths]
 		it->killcount = 0; // [deathz0r] Coop kills
 		it->points = 0;
+		it->fragcombo = 0;
 	}
 
 	// initialize the msecnode_t freelist.					phares 3/25/98

@@ -74,7 +74,7 @@ typedef struct server
 	int players, maxplayers;
 	string map;
 	vector<string> pwads;
-	int gametype, skill, teamplay, ctfmode;
+	int gametype, skill;
 	vector<string> playernames;
 	vector<int> playerfrags;
 	vector<int> playerpings;
@@ -83,7 +83,7 @@ typedef struct server
 	unsigned int key_sent;
 	bool pinged, verified;
 
-	server() : age(0), players(0), maxplayers(0), gametype(0), skill(0), teamplay(0), ctfmode(0), key_sent(0), pinged(0), verified(0) { memset(&addr, 0, sizeof(addr)); }
+	server() : age(0), players(0), maxplayers(0), gametype(0), skill(0), key_sent(0), pinged(0), verified(0) { memset(&addr, 0, sizeof(addr)); }
 
 } SServer;
 
@@ -195,8 +195,6 @@ void addServerInfo(netadr_t addr)
 
 		s.gametype = net_message.ReadByte();
 		s.skill = net_message.ReadByte();
-		s.teamplay = net_message.ReadByte();
-		s.ctfmode = net_message.ReadByte();
 
 		byte playercount = net_message.ReadByte();
 
@@ -289,15 +287,21 @@ void dumpServersToFile(const char *file = "./latest")
 			continue;
 		}
 
-        string detectgametype = "ERROR";
-		if((*itr).gametype == 0)
-			detectgametype = "COOP";
-		else
-			detectgametype = "DM";
-		if((*itr).gametype == 1 && (*itr).teamplay == 1)
-			detectgametype = "TEAM DM";
-		if((*itr).ctfmode == 1)
-			detectgametype = "CTF";
+        string detectgametype;
+
+		switch ((*itr).gametype)
+		{
+		case 0:
+			detectgametype = "COOP"; break;
+		case 1:
+			detectgametype = (*itr).maxplayers == 2 ? "DUEL" : "DM"; break;
+		case 2:
+			detectgametype = "TEAM DM"; break;
+		case 3:
+			detectgametype = "CTF"; break;
+		default:
+			detectgametype = "UNKNOWN"; break;
+		}
 
 		string str_wads;
 		for(size_t j = 0; j < (*itr).pwads.size(); j++)

@@ -81,6 +81,50 @@ void WeaponPickupMessage(AActor *toucher, weapontype_t &Weapon);
 // GET STUFF
 //
 
+void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
+{
+	if (!warmup.checkscorechange())
+		return;
+
+	char* combomsg;
+
+	if (bPositive)
+	{
+		player->fragcombo += 1;
+
+		Printf(PRINT_HIGH, "Fragcombo : %d\n", player->fragcombo);
+		int palier = (player->fragcombo / 5);
+
+		if ( palier >= 1 && player->fragcombo % 5 == 0)
+		{
+			if (palier == 1)
+				combomsg = "is on a killing spree !";
+			else if (palier == 2)
+				combomsg = "is on a rampage !";
+			else if (palier == 3)
+				combomsg = "is dominating !";
+			else if (palier == 4)
+				combomsg = "is unstoppable !";
+			else if (palier == 5)
+				combomsg = "is taking the highgrounds !";
+			else if (palier == 6)
+				combomsg = "is among the gods !";
+			
+			if (palier <= 6)
+				SV_BroadcastPrintf(PRINT_HIGH, "%s %s\n", player->userinfo.netname.c_str(), combomsg);
+		}
+	}
+	else
+	{
+		player->fragcombo = 0;
+
+		if (bSuicide)
+			SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
+		else
+			SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+	}
+}
+
 // Give frags to a player
 void P_GiveFrags(player_t* player, int num)
 {
@@ -1030,7 +1074,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 {
 	SV_SendKillMobj(source, target, inflictor, joinkill);
 	AActor *mo;
-	player_t *splayer;
+	player_t *sPlayer;
 	player_t *tplayer;
 
 	target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
@@ -1068,11 +1112,11 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 
 	if (source)
 	{
-		splayer = source->player;
+		sPlayer = source->player;
 	}
 	else
 	{
-		splayer = 0;
+		sPlayer = 0;
 	}
 
 	tplayer = target->player;
@@ -1095,57 +1139,60 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			{
 				if (target->player == source->player) // [RH] Cumulative frag count
 				{
-					P_GiveFrags(splayer, -1);
+					P_GiveFrags(sPlayer, -1);
+					P_GiveFragCombo(sPlayer, false, true);
 					// [Toke] Minus a team frag for suicide
 					if (sv_gametype == GM_TEAMDM)
 					{
-						P_GiveTeamPoints(splayer, -1);
+						P_GiveTeamPoints(sPlayer, -1);
 					}
 				}
 				// [Toke] Minus a team frag for killing teammate
 				else if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-				         (splayer->userinfo.team == tplayer->userinfo.team))
+				         (sPlayer->userinfo.team == tplayer->userinfo.team))
 				{
 					// [Toke - Teamplay || deathz0r - updated]
-					P_GiveFrags(splayer, -1);
+					P_GiveFrags(sPlayer, -1);
+					P_GiveFragCombo(sPlayer, false);
 					if (sv_gametype == GM_TEAMDM)
 					{
-						P_GiveTeamPoints(splayer, -1);
+						P_GiveTeamPoints(sPlayer, -1);
 					}
 					else if (sv_gametype == GM_CTF)
 					{
-						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *splayer);
+						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
 					}
 				}
 				else
 				{
-					P_GiveFrags(splayer, 1);
+					P_GiveFrags(sPlayer, 1);
+					P_GiveFragCombo(sPlayer, true);
 					// [Toke] Add a team frag
 					if (sv_gametype == GM_TEAMDM)
 					{
-						P_GiveTeamPoints(splayer, 1);
+						P_GiveTeamPoints(sPlayer, 1);
 					}
 					else if (sv_gametype == GM_CTF)
 					{
-						if (tplayer->flags[(flag_t)splayer->userinfo.team])
+						if (tplayer->flags[(flag_t)sPlayer->userinfo.team])
 						{
-							SV_CTFEvent((flag_t)0, SCORE_CARRIERKILL, *splayer);
+							SV_CTFEvent((flag_t)0, SCORE_CARRIERKILL, *sPlayer);
 						}
 						else
 						{
-							SV_CTFEvent((flag_t)0, SCORE_KILL, *splayer);
+							SV_CTFEvent((flag_t)0, SCORE_KILL, *sPlayer);
 						}
 					}
 				}
 			}
-			SV_UpdateFrags(*splayer);
+			SV_UpdateFrags(*sPlayer);
 		}
 		// [deathz0r] Stats for co-op scoreboard
 		if (sv_gametype == GM_COOP &&
             ((target->flags & MF_COUNTKILL) || (target->type == MT_SKULL)))
 		{
-			P_GiveKills(splayer, 1);
-			SV_UpdateFrags(*splayer);
+			P_GiveKills(sPlayer, 1);
+			SV_UpdateFrags(*sPlayer);
 		}
 	}
 
@@ -1232,13 +1279,13 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	{
 		// [Toke] Better sv_fraglimit
 		if (sv_gametype == GM_DM && sv_fraglimit &&
-            splayer->fragcount >= sv_fraglimit && !shotclock)
+			sPlayer->fragcount >= sv_fraglimit && !shotclock)
 		{
             // [ML] 04/4/06: Added !sv_fragexitswitch
             SV_BroadcastPrintf(
                 PRINT_HIGH,
                 "Frag limit hit. Game won by %s!\n",
-                splayer->userinfo.netname.c_str()
+				sPlayer->userinfo.netname.c_str()
             );
             shotclock = TICRATE*2;
 		}
