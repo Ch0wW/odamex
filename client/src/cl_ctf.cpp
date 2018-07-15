@@ -359,7 +359,7 @@ void CTF_DrawHud (void)
     int tintglowtype;
     bool hasflag = false, hasflags[NUMFLAGS];
 
-	if(sv_gametype != GM_CTF)
+	if(GAME.IsCTF() == false)
 		return;
 
 	player_t &player = displayplayer();

@@ -103,11 +103,11 @@ std::vector<player_t *> sortedPlayers(void) {
 		sortedplayers.push_back(&*it);
 	}
 
-	if (sv_gametype == GM_COOP) {
+	if (GAME.IsCooperation()) {
 		std::sort(sortedplayers.begin(), sortedplayers.end(), cmpKills);
 	} else {
 		std::sort(sortedplayers.begin(), sortedplayers.end(), cmpFrags);
-		if (sv_gametype == GM_CTF) {
+		if (GAME.IsCTF()) {
 			std::sort(sortedplayers.begin(), sortedplayers.end(), cmpPoints);
 		}
 	}
@@ -157,7 +157,7 @@ std::string HelpText() {
 		return "Game is full";
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		size_t min_players = MAXPLAYERS;
 		for (byte i = 0;i < NUMTEAMS;i++)
@@ -184,7 +184,7 @@ std::string SpyPlayerName(int& color) {
 		return "";
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		color = teamTextColor(plyr->userinfo.team);
 	}
 
@@ -1196,7 +1196,7 @@ void EATargets(int x, int y, const float scale,
 
 		// Pick a decent color for the player name.
 		int color;
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		if (GAME.IsTeamGame()) {
 			// In teamgames, we want to use team colors for targets.
 			color = teamTextColor(it->userinfo.team);
 		} else {

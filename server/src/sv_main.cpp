@@ -1020,7 +1020,7 @@ bool SV_SetupUserInfo(player_t &player)
 			old_netname.c_str(), gendermessage.c_str(), player.userinfo.netname.c_str());
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		SV_CheckTeam (player);
 
@@ -1174,14 +1174,14 @@ bool SV_IsTeammate(player_t &a, player_t &b)
 	if(&a == &b)
 		return false;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		if (a.userinfo.team == b.userinfo.team)
 			return true;
 		else
 			return false;
 	}
-	else if (sv_gametype == GM_COOP)
+	else if (GAME.IsCooperation())
 		return true;
 
 	else return false;
@@ -2109,7 +2109,7 @@ void SV_DisconnectClient(player_t &who)
 			status = "SPECTATOR";
 		else
 		{
-			if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+			if (GAME.IsTeamGame())
 			{
 				sprintf(str, "%s TEAM, ", team_names[who.userinfo.team]);
 				status += str;
@@ -4526,7 +4526,7 @@ void SV_IntermissionTimeCheck()
 //
 void SV_GameTics (void)
 {
-	if (sv_gametype == GM_CTF)
+	if (GAME.IsCTF())
 		CTF_RunTics();
 
 	switch (gamestate)
@@ -4866,8 +4866,7 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	if (sv_gametype == GM_COOP)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;
 
-	if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-		attacker && attacker->player &&
+	if (GAME.IsTeamGame() && attacker && attacker->player &&
 		self->player->userinfo.team == attacker->player->userinfo.team)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;
 

@@ -45,7 +45,7 @@ bool Pickup_DistributePlayers(size_t num_players, std::string &error, bool isRan
 	bool bIsMapPicker;
 	std::string FirstPicker, MapPicker;
 
-	bool bIsTeamGame = (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM);
+	bool bIsTeamGame = GAME.IsTeamGame();
 
 	// This function shouldn't do anything unless you're in a teamgame.
 	if (!bIsTeamGame) {

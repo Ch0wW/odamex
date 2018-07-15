@@ -1154,8 +1154,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 				}
 				// [Toke] Minus a team frag for killing teammate
-				else if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-				         (sPlayer->userinfo.team == tplayer->userinfo.team))
+				else if ( GAME.IsTeamGame() && (sPlayer->userinfo.team == tplayer->userinfo.team))
 				{
 					// [Toke - Teamplay || deathz0r - updated]
 					P_GiveFrags(sPlayer, -1);
@@ -1164,7 +1163,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					{
 						P_GiveTeamPoints(sPlayer, -1);
 					}
-					else if (sv_gametype == GM_CTF)
+					else if (GAME.IsCTF())
 					{
 						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
 					}
@@ -1186,7 +1185,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					{
 						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
 						{
-							if (level.time < sPlayer->lastfrag + (TICRATE * 5)) {
+							if (level.time < sPlayer->lastfrag + (TICRATE * 4)) {	// Ch0wW : 4 seconds max for combos ! [ZD uses 5, ZAND uses 3.]
 								sPlayer->fragcombo += 1;
 								sPlayer->lastfrag = level.time;
 								CL_SetEventComboFrags(sPlayer->fragcombo);
@@ -1199,11 +1198,10 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 
 					// [Toke] Add a team frag
-					if (sv_gametype == GM_TEAMDM)
-					{
+					if (GAME.IsTeamDM()) {
 						P_GiveTeamPoints(sPlayer, 1);
 					}
-					else if (sv_gametype == GM_CTF)
+					else if (GAME.IsCTF())
 					{
 						if (tplayer->flags[(flag_t)sPlayer->userinfo.team])
 						{
@@ -1230,7 +1228,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	if (target->player)
 	{
 		// [Toke - CTF]
-		if (sv_gametype == GM_CTF)
+		if (GAME.IsCTF())
 			CTF_CheckFlags(*target->player);
 
 		if (!joinkill && !shotclock)
@@ -1498,9 +1496,8 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		if (!sv_friendlyfire && source && splayer && target != source &&
 			 mod != MOD_TELEFRAG)
 		{
-			if (sv_gametype == GM_COOP ||
-			  ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-				tplayer->userinfo.team == splayer->userinfo.team))
+			if (GAME.IsCooperation() ||
+			   (GAME.IsTeamGame()	 &&	tplayer->userinfo.team == splayer->userinfo.team))
 			{
 				damage = 0;
 			}

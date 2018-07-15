@@ -42,6 +42,7 @@
 #include "cl_main.h"
 #include "c_effect.h"
 #include "c_console.h"
+#include "c_gamemodes.h"
 #include "d_main.h"
 #include "p_ctf.h"
 #include "m_random.h"
@@ -173,7 +174,7 @@ argb_t CL_GetPlayerColor(player_t *player)
 				player->userinfo.color[2], player->userinfo.color[3]);
 
 	// Adjust the shade of color for team games
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		const float blue_hue = 240.0f, red_hue = 0.0f;
 		float intensity = 0.6f + 0.4f * V_RGBtoHSV(color).getv();
@@ -188,17 +189,17 @@ argb_t CL_GetPlayerColor(player_t *player)
 	// apply r_teamcolor & r_enemycolor overrides
 	if (!consoleplayer().spectator)
 	{
-		if (sv_gametype == GM_COOP)
+		if (GAME.IsCooperation())
 		{
 			if (r_forceteamcolor && player->id != consoleplayer_id)
 				color = argb_t(teamcolor[0], teamcolor[1], teamcolor[2], teamcolor[3]);
 		}
-		else if (sv_gametype == GM_DM)
+		else if (GAME.IsDeathmatch())
 		{
 			if (r_forceenemycolor && player->id != consoleplayer_id)
 				color = argb_t(enemycolor[0], enemycolor[1], enemycolor[2], enemycolor[3]);
 		}
-		else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		else if (GAME.IsTeamGame())
 		{
 			if (r_forceteamcolor &&
 					(P_AreTeammates(consoleplayer(), *player) || player->id == consoleplayer_id))
@@ -382,7 +383,7 @@ void CL_QuitNetGame(void)
 		MSG_WriteMarker(&net_buffer, clc_disconnect);
 		NET_SendPacket(net_buffer, serveraddr);
 		SZ_Clear(&net_buffer);
-		sv_gametype = GM_COOP;
+		GAME.Set_Gamemode(GM_COOP);
 	}
 
 	if (paused)
@@ -629,7 +630,7 @@ void CL_StepTics(unsigned int count)
 		if (P_AtInterval(TICRATE))
 			CL_PlayerTimes();
 
-		if (sv_gametype == GM_CTF)
+		if (GAME.IsCTF())
 			CTF_RunTics ();
 
 		Maplist_Runtic();
@@ -839,7 +840,7 @@ BEGIN_COMMAND (playerinfo)
 
 	Printf (PRINT_HIGH, "---------------[player info]----------- \n");
 	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.netname.c_str());
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) 
+	if (GAME.IsTeamGame()) 
 		Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
 	Printf(PRINT_HIGH, " userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
 	Printf(PRINT_HIGH, " userinfo.unlag   - %d \n",		player->userinfo.unlag);
@@ -1016,7 +1017,7 @@ END_COMMAND (join)
 
 BEGIN_COMMAND (flagnext)
 {
-	if (sv_gametype == GM_CTF && (consoleplayer().spectator || netdemo.isPlaying()))
+	if (GAME.IsCTF() && (consoleplayer().spectator || netdemo.isPlaying()))
 	{
 		for (int i = 0; i < NUMTEAMS; i++)
 		{
@@ -1566,7 +1567,7 @@ bool CL_PrepareConnect(void)
 	MSG_ReadString();
 
 	// Receive conditional teamplay information
-	if (gamemode == GM_TEAMDM || gamemode == GM_CTF)	// Ch0wW : TODO : Change that statement with a function
+	if (GAME.IsTeamGame())
 	{
 		MSG_ReadLong();
 
@@ -1877,10 +1878,9 @@ void CL_Say()
 		if (spectator && mute_spectators)
 			return;
 
-		if (mute_enemies && !spectator &&
-		    (sv_gametype == GM_DM ||
-		    ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-		     player.userinfo.team != consoleplayer().userinfo.team)))
+		if (mute_enemies && !spectator  &&
+		    (GAME.IsDeathmatch()		||
+		    (GAME.IsTeamGame() && player.userinfo.team != consoleplayer().userinfo.team)))
 			return;
 	}
 

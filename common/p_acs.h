@@ -361,11 +361,6 @@ public:
 		GAME_NET_CTF = 4
 	};
 	enum {
-		CLASS_FIGHTER =			0,
-		CLASS_CLERIC =			1,
-		CLASS_MAGE =			2
-	};
-	enum {
 		SKILL_VERY_EASY =		0,
 		SKILL_EASY =			1,
 		SKILL_NORMAL =			2,

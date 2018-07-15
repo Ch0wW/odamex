@@ -640,23 +640,10 @@ void drawHeader(player_t *player, int y) {
 	std::ostringstream buffer;
 	std::string str;
 
-	// Center
-	if (sv_gametype == GM_COOP) {
-		str = "COOPERATIVE";
-	} else if (sv_gametype == GM_DM && sv_maxplayers == 2) {
-		str = "DUEL";
-	} else if (sv_gametype == GM_DM) {
-		str = "DEATHMATCH";
-	} else if (sv_gametype == GM_TEAMDM) {
-		str = "TEAM DEATHMATCH";
-	} else if (sv_gametype == GM_CTF) {
-		str = "CAPTURE THE FLAG";
-	}
-
 	hud::DrawText(0, y, hud_scalescoreboard,
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_CENTER, hud::Y_TOP,
-	              str.c_str(), CR_GOLD, true);
+	              GAME.GetFullName(), CR_GOLD, true);
 
 	brokenlines_t *hostname = V_BreakLines(192, sv_hostname.cstring());
 	for (size_t i = 0; i < 2 && hostname[i].width > 0; i++)
@@ -1037,7 +1024,7 @@ void Scoreboard(player_t *player) {
 	byte extra_spec_rows = 0;
 	byte extra_player_rows = 0;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		height = 99;
 
 		// Team scoreboard was designed for 4 players on a team.  If
@@ -1102,7 +1089,7 @@ void Scoreboard(player_t *player) {
 	         hud::X_CENTER, hud::Y_TOP);
 
 	hud::drawHeader(player, y + 4);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		hud::drawTeamScores(player, y + 31, extra_player_rows);
 	} else {
 		hud::drawScores(player, y + 31, extra_player_rows);
@@ -1115,23 +1102,10 @@ void Scoreboard(player_t *player) {
 void drawLowHeader(player_t *player, int y) {
 	std::string str;
 
-	// Center
-	if (sv_gametype == GM_COOP) {
-		str = "COOPERATIVE";
-	} else if (sv_gametype == GM_DM && sv_maxplayers == 2) {
-		str = "DUEL";
-	} else if (sv_gametype == GM_DM) {
-		str = "DEATHMATCH";
-	} else if (sv_gametype == GM_TEAMDM) {
-		str = "TEAM DEATHMATCH";
-	} else if (sv_gametype == GM_CTF) {
-		str = "CAPTURE THE FLAG";
-	}
-
 	hud::DrawText(0, y, hud_scalescoreboard,
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_CENTER, hud::Y_TOP,
-	              str.c_str(), CR_GOLD, true);
+				  GAME.GetFullName(), CR_GOLD, true);
 
 	// Line
 	for (short xi = -146 + 1;xi < 146;xi += 2) {

@@ -699,7 +699,7 @@ void G_DeathMatchSpawnPlayer (player_t &player)
 	if(sv_gametype == GM_COOP)
 		return;
 
-	if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if( GAME.IsTeamGame() )
 	{
 		G_TeamSpawnPlayer (player);
 		return;
@@ -748,7 +748,7 @@ void G_DoReborn (player_t &player)
 		player.mo->player = NULL;
 
 	// spawn at random team spot if in team game
-	if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if( GAME.IsTeamGame() )
 	{
 		G_TeamSpawnPlayer (player);
 		return;
