@@ -1483,17 +1483,14 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		tplayer->health -= damage;		// mirror mobj health here for Dave
 
 		if (tplayer->health <= 0)
-        {
 			tplayer->health = 0;
-        }
 
 		tplayer->attacker = source ? source->ptr() : AActor::AActorPtr();
 		tplayer->damagecount += damage;	// add damage after armor / invuln
 
 		if (tplayer->damagecount > 100)
-        {
 			tplayer->damagecount = 100;	// teleport stomp does 10k points...
-        }
+        
 		SV_SendDamagePlayer(tplayer, target->health - damage);
 	}
 

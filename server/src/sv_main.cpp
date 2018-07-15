@@ -1619,7 +1619,7 @@ void SV_ClientFullUpdate(player_t &pl)
 	}
 
 	// [deathz0r] send team frags/captures if teamplay is enabled
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		MSG_WriteMarker(&cl->reliablebuf, svc_teampoints);
 		for (int i = 0;i < NUMTEAMS;i++)
@@ -2845,7 +2845,7 @@ bool SV_Say(player_t &player)
 	{
 		if (spectator)
 			SVC_SpecSay(player, message.c_str());
-		else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)	// Ch0wW: Simplify it to simply know if it's a teamgame?
+		else if (GAME.IsTeamGame())
 			SVC_TeamSay(player, message.c_str());
 		else
 			SVC_Say(player, message.c_str());
@@ -3593,7 +3593,7 @@ void SV_ChangeTeam (player_t &player)  // [Toke - Teams]
 
 	SV_BroadcastPrintf (PRINT_HIGH, "%s has joined the %s team.\n", player.userinfo.netname.c_str(), team_names[team]);
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 		if (player.mo && player.userinfo.team != old_team)
 			P_DamageMobj (player.mo, 0, 0, 1000, 0);
 }
