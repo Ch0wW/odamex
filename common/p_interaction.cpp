@@ -96,8 +96,6 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 	if (bPositive)
 	{
 		player->fragspree += 1;
-
-		Printf(PRINT_HIGH, "Fragcombo : %d\n", player->fragspree);
 		int palier = (player->fragspree / 5);
 
 		if (palier >= 1 && player->fragspree % 5 == 0)
