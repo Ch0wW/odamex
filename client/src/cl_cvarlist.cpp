@@ -339,6 +339,8 @@ CVAR(				cl_run, "0", "Always run",
 CVAR(				cl_showspawns, "0", "Show spawn points as particle fountains",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE | CVAR_LATCH)
 
+CVAR(cl_showcombos, "0", "Show combo frags.", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+
 // Netdemo Preferences
 // --------------------
 

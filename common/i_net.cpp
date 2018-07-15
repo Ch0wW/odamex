@@ -1109,6 +1109,22 @@ void I_SetPort(netadr_t &addr, int port)
    addr.port = htons(port);
 }
 
+//=========================
+// n
+//=========================
+netadr_t::netadr_t()
+{
+	ip[0] = ip[1] = ip[2] = ip[3] = 0;
+	port = 0;
+}
+
+const char* netadr_t::ToString() const
+{
+	static char bufferaddr[64];
+	sprintf(bufferaddr, "%i.%i.%i.%i:%i", ip[0], ip[1], ip[2], ip[3], ntohs(port));
+	return (bufferaddr);
+}
+
 VERSION_CONTROL (i_net_cpp, "$Id$")
 
 

@@ -266,7 +266,7 @@ next:
 		MSG_WriteShort(&ml_message, it->fragcount);
 		MSG_WriteShort(&ml_message, it->killcount);
 		MSG_WriteShort(&ml_message, it->deathcount);
-		MSG_WriteShort(&ml_message, it->fragcombo);
+		MSG_WriteShort(&ml_message, it->fragspree);
 	}
 }
 

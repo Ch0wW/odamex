@@ -180,7 +180,9 @@ public:
 	int			deathcount;
 	int			killcount, itemcount, secretcount;		// for intermission
 
-	int			fragcombo;								// Ch0wW : Sprees
+	int			fragspree;								// Ch0wW : Sprees
+	unsigned long lastfrag;								// Ch0wW : Last Frag
+	int				fragcombo;							// Ch0wW : designed for combos (NOT YET DESIGNED)
 
     // Is wp_nochange if not changing.
 	weapontype_t	pendingweapon;
@@ -236,7 +238,6 @@ public:
 
 	byte		spying;					// [SL] id of player being spynext'd by this player
 	bool		spectator;				// [GhostlyDeath] spectating?
-//	bool		deadspectator;			// [tm512] spectating as a dead player?
 	int			joinafterspectatortime; // Nes - Join after spectator time.
 	int			timeout_callvote;       // [AM] Tic when a vote last finished.
 	int			timeout_vote;           // [AM] Tic when a player last voted.

@@ -470,7 +470,6 @@ bool G_CheckSpot (player_t &player, mapthing2_t *mthing)
 		return false;
 
 	// spawn a teleport fog
-//	if (!player.spectator && !player.deadspectator)	// ONLY IF THEY ARE NOT A SPECTATOR
 	if (!player.spectator)	// ONLY IF THEY ARE NOT A SPECTATOR
 	{
 		// emulate out-of-bounds access to finecosine / finesine tables

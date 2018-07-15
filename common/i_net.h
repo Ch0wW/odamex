@@ -201,12 +201,16 @@ enum svc_compressed_masks
 	minilzo_mask = 8
 };
 
-typedef struct
+struct netadr_t
 {
    byte    ip[4];
    unsigned short  port;
    unsigned short  pad;
-} netadr_t;
+
+   netadr_t();
+   const char* ToString() const;
+
+};
 
 extern  netadr_t  net_from;  // address of who sent the packet
 

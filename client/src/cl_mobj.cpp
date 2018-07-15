@@ -76,10 +76,6 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 		G_PlayerReborn(player);
 
 	AActor* mobj;
-//	if (player.deadspectator && player.mo)
-//		mobj = new AActor(player.mo->x, player.mo->y, ONFLOORZ, MT_PLAYER);
-//	else
-//		mobj = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ, MT_PLAYER);
 	mobj = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ, MT_PLAYER);
 
 	// set color translations for player sprites
@@ -93,16 +89,6 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 			R_CopyTranslationRGB(0, player.id);
 	}
 
-//	if (player.deadspectator && player.mo)
-//	{
-//		mobj->angle = player.mo->angle;
-//		mobj->pitch = player.mo->pitch;
-//	}
-//	else
-//	{
-//		mobj->angle = ANG45 * (mthing->angle/45);
-//		mobj->pitch = 0;
-//	}
 	mobj->angle = ANG45 * (mthing->angle/45);
 	mobj->pitch = 0;
 
@@ -115,7 +101,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	player.refire = 0;
 	player.damagecount = 0;
 	player.bonuscount = 0;
-	player.fragcombo = 0;
+	player.fragspree = 0;
 	player.extralight = 0;
 	player.fixedcolormap = 0;
 	player.viewheight = VIEWHEIGHT;

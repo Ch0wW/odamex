@@ -1018,10 +1018,8 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 		MSG_WriteString	(netbuffer, tmpname.c_str());
 	}
 		
-	MSG_WriteBool	(netbuffer, 0);		// deathmatch?
-	MSG_WriteByte	(netbuffer, 0);		// sv_skill
-	MSG_WriteBool	(netbuffer, (sv_gametype == GM_TEAMDM));
-	MSG_WriteBool	(netbuffer, (sv_gametype == GM_CTF));
+	MSG_WriteBool	(netbuffer, sv_gametype);		// deathmatch?
+	MSG_WriteByte	(netbuffer, 0);					// sv_skill
 
 	for (Players::const_iterator it = players.begin();it != players.end();++it)
 	{
@@ -1081,7 +1079,7 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 		{
 			MSG_WriteShort(netbuffer, it->killcount);
 			MSG_WriteShort(netbuffer, it->deathcount);
-			MSG_WriteShort(netbuffer, it->fragcombo);
+			MSG_WriteShort(netbuffer, it->fragspree);
 			
 			int timeingame = (time(NULL) - it->JoinTime) / 60;
 			if (timeingame < 0)

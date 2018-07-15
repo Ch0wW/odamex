@@ -92,6 +92,10 @@ enum EColorRange
 #define TEXTCOLOR_NORMAL		"\\c-"
 #define TEXTCOLOR_BOLD			"\\c+"
 
+// Ch0wW: Those values are set from function CL_Print
+#define TEXTCOLOR_CHAT			"\\c*"
+#define TEXTCOLOR_TEAMCHAT		"\\c!"
+
 int V_StringWidth(const byte* str);
 inline int V_StringWidth(const char* str) { return V_StringWidth((const byte*)str); }
 
