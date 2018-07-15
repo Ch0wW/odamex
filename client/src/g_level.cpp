@@ -529,6 +529,8 @@ void G_DoLoadLevel (int position)
 		it->killcount = 0; // [deathz0r] Coop kills
 		it->points = 0;
 		it->fragspree = 0;
+		it->fragcombo = 0;
+		it->lastfrag = level.time;
 	}
 
 	// initialize the msecnode_t freelist.					phares 3/25/98

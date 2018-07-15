@@ -951,6 +951,8 @@ player_s::player_s()
 	deathcount = 0;
 	killcount = 0;
 	fragspree = 0;
+	fragcombo = 0;
+	lastfrag = level.time;
 	pendingweapon = wp_nochange;
 	readyweapon = wp_nochange;
 	for (i = 0; i < NUMWEAPONS; i++)

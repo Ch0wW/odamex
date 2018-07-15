@@ -3707,6 +3707,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			player.deathcount = 0;
 			player.killcount = 0;
 			player.fragspree = 0;
+			player.fragcombo = 0;
+			player.lastfrag = level.time;
 			SV_UpdateFrags(player);
 
 			// [AM] Set player unready if we're in warmup mode.

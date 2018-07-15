@@ -1178,6 +1178,8 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 						SV_BroadcastPrintf(PRINT_HIGH, "%s's killing spree has been ended by %s", target->player->userinfo.netname.c_str(), source->player->userinfo.netname.c_str());
 
 					target->player->fragspree = 0;	// Reset combosprees for the fragged player.
+					target->player->fragcombo = 0;
+					target->player->lastfrag = level.time;
 
 
 					if (clientside)	// Frag combos should be only displayed clientside.

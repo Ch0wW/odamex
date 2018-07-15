@@ -102,6 +102,8 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	player.damagecount = 0;
 	player.bonuscount = 0;
 	player.fragspree = 0;
+	player.fragcombo = 0;
+	player.lastfrag = level.time;
 	player.extralight = 0;
 	player.fixedcolormap = 0;
 	player.viewheight = VIEWHEIGHT;
