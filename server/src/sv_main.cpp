@@ -1020,7 +1020,7 @@ bool SV_SetupUserInfo(player_t &player)
 			old_netname.c_str(), gendermessage.c_str(), player.userinfo.netname.c_str());
 	}
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		SV_CheckTeam (player);
 
@@ -1174,14 +1174,14 @@ bool SV_IsTeammate(player_t &a, player_t &b)
 	if(&a == &b)
 		return false;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		if (a.userinfo.team == b.userinfo.team)
 			return true;
 		else
 			return false;
 	}
-	else if (sv_gametype == GM_COOP)
+	else if (GAME.IsCooperation())
 		return true;
 
 	else return false;
@@ -1619,7 +1619,7 @@ void SV_ClientFullUpdate(player_t &pl)
 	}
 
 	// [deathz0r] send team frags/captures if teamplay is enabled
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		MSG_WriteMarker(&cl->reliablebuf, svc_teampoints);
 		for (int i = 0;i < NUMTEAMS;i++)
@@ -2074,8 +2074,6 @@ void SV_ConnectClient()
 	SV_MidPrint((char*)sv_motd.cstring(), player, 6);
 }
 
-extern bool singleplayerjustdied;
-
 //
 // SV_DisconnectClient
 //
@@ -2109,7 +2107,7 @@ void SV_DisconnectClient(player_t &who)
 			status = "SPECTATOR";
 		else
 		{
-			if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+			if (GAME.IsTeamGame())
 			{
 				sprintf(str, "%s TEAM, ", team_names[who.userinfo.team]);
 				status += str;
@@ -2847,7 +2845,7 @@ bool SV_Say(player_t &player)
 	{
 		if (spectator)
 			SVC_SpecSay(player, message.c_str());
-		else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)	// Ch0wW: Simplify it to simply know if it's a teamgame?
+		else if (GAME.IsTeamGame())
 			SVC_TeamSay(player, message.c_str());
 		else
 			SVC_Say(player, message.c_str());
@@ -3595,7 +3593,7 @@ void SV_ChangeTeam (player_t &player)  // [Toke - Teams]
 
 	SV_BroadcastPrintf (PRINT_HIGH, "%s has joined the %s team.\n", player.userinfo.netname.c_str(), team_names[team]);
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 		if (player.mo && player.userinfo.team != old_team)
 			P_DamageMobj (player.mo, 0, 0, 1000, 0);
 }
@@ -3707,6 +3705,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			player.deathcount = 0;
 			player.killcount = 0;
 			player.fragspree = 0;
+			player.fragcombo = 0;
+			player.lastfrag = level.time;
 			SV_UpdateFrags(player);
 
 			// [AM] Set player unready if we're in warmup mode.
@@ -4524,7 +4524,7 @@ void SV_IntermissionTimeCheck()
 //
 void SV_GameTics (void)
 {
-	if (sv_gametype == GM_CTF)
+	if (GAME.IsCTF())
 		CTF_RunTics();
 
 	switch (gamestate)
@@ -4864,8 +4864,7 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	if (sv_gametype == GM_COOP)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;
 
-	if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-		attacker && attacker->player &&
+	if (GAME.IsTeamGame() && attacker && attacker->player &&
 		self->player->userinfo.team == attacker->player->userinfo.team)
 		MeansOfDeath |= MOD_FRIENDLY_FIRE;
 

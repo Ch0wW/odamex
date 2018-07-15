@@ -573,7 +573,7 @@ void P_DeathThink (player_t *player)
 
 	if(serverside)
 	{
-		bool overtime_respawn = sv_gametype == GM_CTF && warmup.get_overtime();
+		bool overtime_respawn = GAME.IsCTF() && warmup.get_overtime();
 
 		bool force_respawn =	(!clientside && sv_forcerespawn &&
 								level.time >= player->death_time + sv_forcerespawntime * TICRATE);
@@ -600,9 +600,7 @@ bool P_AreTeammates(player_t &a, player_t &b)
 	if (a.id == b.id)
 		return false;
 
-	return (sv_gametype == GM_COOP) ||
-		  ((a.userinfo.team == b.userinfo.team) &&
-		   (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF));
+	return GAME.IsCooperation() || ((a.userinfo.team == b.userinfo.team) && GAME.IsTeamGame());
 }
 
 bool P_CanSpy(player_t &viewer, player_t &other, bool demo)
@@ -951,6 +949,8 @@ player_s::player_s()
 	deathcount = 0;
 	killcount = 0;
 	fragspree = 0;
+	fragcombo = 0;
+	lastfrag = level.time;
 	pendingweapon = wp_nochange;
 	readyweapon = wp_nochange;
 	for (i = 0; i < NUMWEAPONS; i++)

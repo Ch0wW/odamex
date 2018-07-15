@@ -102,6 +102,8 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	player.damagecount = 0;
 	player.bonuscount = 0;
 	player.fragspree = 0;
+	player.fragcombo = 0;
+	player.lastfrag = level.time;
 	player.extralight = 0;
 	player.fixedcolormap = 0;
 	player.viewheight = VIEWHEIGHT;
@@ -166,7 +168,7 @@ void P_ShowSpawns(mapthing2_t* mthing)
 			spawn->args[0] = 7; // White
 		}
 
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if (GAME.IsTeamGame())
 		{
 			if (mthing->type == 5080)
 			{

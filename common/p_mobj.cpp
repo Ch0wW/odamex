@@ -2639,7 +2639,7 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 		mobj->subsector->sector->SecActTarget = mobj->ptr();
 	}
 
-	if (sv_gametype == GM_CTF) {
+	if (GAME.IsCTF()) {
 		// [Toke - CTF] Setup flag sockets
 		if (mthing->type == ID_BLUE_FLAG)
 		{

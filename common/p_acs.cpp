@@ -2538,12 +2538,13 @@ void DLevelScript::RunScript ()
 			PushToStack (CountPlayers ());
 			break;
 
+		// Ch0wW : We could have to rewrite this !
 		case PCD_GAMETYPE:
-		    if (sv_gametype == 3)
+		    if (GAME.IsCTF())
                 PushToStack (GAME_NET_CTF);
-            else if (sv_gametype == 2)
+            else if (GAME.IsTeamDM())
                 PushToStack (GAME_NET_TEAMDEATHMATCH);
-			else if (sv_gametype == 1)
+			else if (GAME.IsDeathmatch())
 				PushToStack (GAME_NET_DEATHMATCH);
 			else if (multiplayer)
 				PushToStack (GAME_NET_COOPERATIVE);

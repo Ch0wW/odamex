@@ -339,7 +339,7 @@ CVAR(				cl_run, "0", "Always run",
 CVAR(				cl_showspawns, "0", "Show spawn points as particle fountains",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE | CVAR_LATCH)
 
-CVAR(cl_showcombos, "0", "Show combo frags.", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+CVAR(				cl_showcombos, "1", "Show combo frags", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
 // Netdemo Preferences
 // --------------------
@@ -495,6 +495,9 @@ CVAR_RANGE(		hud_transparency, "0.5", "HUD transparency",
 
 CVAR(			hud_heldflag, "1", "Show the held flag border",
 				CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+
+CVAR_RANGE(		hud_hide_scoreboard, "0", "0: Always draw it | 1: Hide when spectating only | 2: Always hide it",
+				CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 2.0f)
 
 #ifdef _XBOX
 CVAR (chatmacro0, "Hi.", "",	CVARTYPE_STRING, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)                       // A

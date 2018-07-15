@@ -82,6 +82,7 @@ EXTERN_CVAR(noisedebug)
 EXTERN_CVAR(screenblocks)
 EXTERN_CVAR(idmypos)
 
+EXTERN_CVAR(hud_hide_scoreboard)
 
 static int crosshair_lump;
 
@@ -525,9 +526,14 @@ void HU_Drawer()
 
 	if (multiplayer && consoleplayer().camera && !(demoplayback && democlassic))
 	{
-		if ((Actions[ACTION_SHOWSCORES] && gamestate != GS_INTERMISSION) ||
-		    (displayplayer().health <= 0 && !displayplayer().spectator && gamestate != GS_INTERMISSION))
-			HU_DrawScores(&displayplayer());
+		if (gamestate != GS_INTERMISSION)
+		{
+			if (Actions[ACTION_SHOWSCORES] ||
+				(hud_hide_scoreboard == 0 && displayplayer().health <= 0 && !displayplayer().spectator) ||
+				(hud_hide_scoreboard == 1 && displayplayer().health <= 0 && !consoleplayer().spectator))
+
+				HU_DrawScores(&displayplayer());
+		}
 	}
 
 	if (gamestate == GS_LEVEL)
@@ -640,23 +646,10 @@ void drawHeader(player_t *player, int y) {
 	std::ostringstream buffer;
 	std::string str;
 
-	// Center
-	if (sv_gametype == GM_COOP) {
-		str = "COOPERATIVE";
-	} else if (sv_gametype == GM_DM && sv_maxplayers == 2) {
-		str = "DUEL";
-	} else if (sv_gametype == GM_DM) {
-		str = "DEATHMATCH";
-	} else if (sv_gametype == GM_TEAMDM) {
-		str = "TEAM DEATHMATCH";
-	} else if (sv_gametype == GM_CTF) {
-		str = "CAPTURE THE FLAG";
-	}
-
 	hud::DrawText(0, y, hud_scalescoreboard,
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_CENTER, hud::Y_TOP,
-	              str.c_str(), CR_GOLD, true);
+	              GAME.GetFullName(), CR_GOLD, true);
 
 	brokenlines_t *hostname = V_BreakLines(192, sv_hostname.cstring());
 	for (size_t i = 0; i < 2 && hostname[i].width > 0; i++)
@@ -677,7 +670,7 @@ void drawHeader(player_t *player, int y) {
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_LEFT, hud::Y_TOP,
 	              hud::ClientsSplit().c_str(), CR_GREEN, true);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		hud::DrawText(-236, y + 8, hud_scalescoreboard,
 		              hud::X_CENTER, hud::Y_MIDDLE,
 		              hud::X_LEFT, hud::Y_TOP,
@@ -1037,7 +1030,7 @@ void Scoreboard(player_t *player) {
 	byte extra_spec_rows = 0;
 	byte extra_player_rows = 0;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		height = 99;
 
 		// Team scoreboard was designed for 4 players on a team.  If
@@ -1102,7 +1095,7 @@ void Scoreboard(player_t *player) {
 	         hud::X_CENTER, hud::Y_TOP);
 
 	hud::drawHeader(player, y + 4);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		hud::drawTeamScores(player, y + 31, extra_player_rows);
 	} else {
 		hud::drawScores(player, y + 31, extra_player_rows);
@@ -1115,23 +1108,10 @@ void Scoreboard(player_t *player) {
 void drawLowHeader(player_t *player, int y) {
 	std::string str;
 
-	// Center
-	if (sv_gametype == GM_COOP) {
-		str = "COOPERATIVE";
-	} else if (sv_gametype == GM_DM && sv_maxplayers == 2) {
-		str = "DUEL";
-	} else if (sv_gametype == GM_DM) {
-		str = "DEATHMATCH";
-	} else if (sv_gametype == GM_TEAMDM) {
-		str = "TEAM DEATHMATCH";
-	} else if (sv_gametype == GM_CTF) {
-		str = "CAPTURE THE FLAG";
-	}
-
 	hud::DrawText(0, y, hud_scalescoreboard,
 	              hud::X_CENTER, hud::Y_MIDDLE,
 	              hud::X_CENTER, hud::Y_TOP,
-	              str.c_str(), CR_GOLD, true);
+				  GAME.GetFullName(), CR_GOLD, true);
 
 	// Line
 	for (short xi = -146 + 1;xi < 146;xi += 2) {
@@ -1432,7 +1412,7 @@ void LowScoreboard(player_t *player) {
 	byte extra_spec_rows = 0;
 	byte extra_player_rows = 0;
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		height = 129;
 
 		// Team scoreboard was designed for 4 players on a team.  If
@@ -1482,7 +1462,7 @@ void LowScoreboard(player_t *player) {
 			break;
 		}
 		extra_player_rows -= 1;
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		if (GAME.IsTeamGame()) {
 			// Removing one player row sometimes means removing two
 			// lines on the low resolution team scoreboard.
 			if (extra_player_rows + 4 < hud::CountTeamPlayers(TEAM_BLUE)) {
@@ -1511,7 +1491,7 @@ void LowScoreboard(player_t *player) {
 	         hud::X_CENTER, hud::Y_TOP);
 
 	hud::drawLowHeader(player, y + 4);
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+	if (GAME.IsTeamGame()) {
 		hud::drawLowTeamScores(player, y + 15,
 		                       extra_player_rows);
 	} else {

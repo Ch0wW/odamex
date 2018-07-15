@@ -1542,8 +1542,8 @@ void AM_drawPlayers(void)
 		mpoint_t pt;
 
 		if (!(it->ingame()) || !p->mo ||
-			(((sv_gametype == GM_DM && p != &conplayer) ||
-			((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) && p->userinfo.team != conplayer.userinfo.team))
+			(((GAME.IsDeathmatch() && p != &conplayer) ||
+			(GAME.IsTeamGame() && p->userinfo.team != conplayer.userinfo.team))
 			&& !(netdemo.isPlaying() || netdemo.isPaused())
 			&& !demoplayback && !(conplayer.spectator)) || p->spectator)
 		{

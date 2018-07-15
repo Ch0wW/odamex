@@ -946,7 +946,7 @@ void D_DoomMain()
 			sv_freelook = "1";
 			sv_allowjump = "1";
 			sv_allowredscreen = "1";
-			sv_gametype = GM_COOP;
+			GAME.Set_Gamemode(GM_COOP);
 
 			players.clear();
 			players.push_back(player_t());

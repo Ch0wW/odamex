@@ -38,7 +38,6 @@
 #include "g_warmup.h"
 
 extern bool predicting;
-extern bool singleplayerjustdied;
 
 EXTERN_CVAR(sv_doubleammo)
 EXTERN_CVAR(sv_weaponstay)
@@ -1154,8 +1153,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 				}
 				// [Toke] Minus a team frag for killing teammate
-				else if ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-				         (sPlayer->userinfo.team == tplayer->userinfo.team))
+				else if ( GAME.IsTeamGame() && (sPlayer->userinfo.team == tplayer->userinfo.team))
 				{
 					// [Toke - Teamplay || deathz0r - updated]
 					P_GiveFrags(sPlayer, -1);
@@ -1164,7 +1162,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					{
 						P_GiveTeamPoints(sPlayer, -1);
 					}
-					else if (sv_gametype == GM_CTF)
+					else if (GAME.IsCTF())
 					{
 						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
 					}
@@ -1178,13 +1176,15 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 						SV_BroadcastPrintf(PRINT_HIGH, "%s's killing spree has been ended by %s", target->player->userinfo.netname.c_str(), source->player->userinfo.netname.c_str());
 
 					target->player->fragspree = 0;	// Reset combosprees for the fragged player.
+					target->player->fragcombo = 0;
+					target->player->lastfrag = level.time;
 
 
 					if (clientside)	// Frag combos should be only displayed clientside.
 					{
 						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
 						{
-							if (level.time < sPlayer->lastfrag + (TICRATE * 5)) {
+							if (level.time < sPlayer->lastfrag + (TICRATE * 4)) {	// Ch0wW : 4 seconds max for combos ! [ZD uses 5, ZAND uses 3.]
 								sPlayer->fragcombo += 1;
 								sPlayer->lastfrag = level.time;
 								CL_SetEventComboFrags(sPlayer->fragcombo);
@@ -1197,20 +1197,15 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 
 					// [Toke] Add a team frag
-					if (sv_gametype == GM_TEAMDM)
-					{
+					if (GAME.IsTeamDM()) {
 						P_GiveTeamPoints(sPlayer, 1);
 					}
-					else if (sv_gametype == GM_CTF)
+					else if (GAME.IsCTF())
 					{
 						if (tplayer->flags[(flag_t)sPlayer->userinfo.team])
-						{
 							SV_CTFEvent((flag_t)0, SCORE_CARRIERKILL, *sPlayer);
-						}
 						else
-						{
 							SV_CTFEvent((flag_t)0, SCORE_KILL, *sPlayer);
-						}
 					}
 				}
 			}
@@ -1228,30 +1223,19 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	if (target->player)
 	{
 		// [Toke - CTF]
-		if (sv_gametype == GM_CTF)
+		if (GAME.IsCTF())
 			CTF_CheckFlags(*target->player);
 
 		if (!joinkill && !shotclock)
-		{
 			P_GiveDeaths(tplayer, 1);
-		}
 
 		// Death script execution, care of Skull Tag
 		if (level.behavior != NULL)
-		{
 			level.behavior->StartTypedScripts (SCRIPT_Death, target);
-		}
 
 		// count environment kills against you
 		if (!source && !joinkill && !shotclock)
-		{
-			// [RH] Cumulative frag count
-			P_GiveFrags(tplayer, -1);
-		}
-
-		// [NightFang] - Added this, thought it would be cooler
-		// [Fly] - No, it's not cooler
-		// target->player->cheats = CF_CHASECAM;
+			P_GiveFrags(tplayer, -1);			// [RH] Cumulative frag count
 
 		SV_UpdateFrags(*tplayer);
 
@@ -1259,41 +1243,24 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon(target->player);
 
-		if (!multiplayer)
-		{
-			singleplayerjustdied = true;
-		}
-
 		tplayer->death_time = level.time;
 
 		if (target == consoleplayer().camera)
-		{
-			// don't die in auto map, switch view prior to dying
-			AM_Stop();
-		}
+			AM_Stop(); // don't die in auto map, switch view prior to dying
 	}
 
 	if (target->health > 0) // denis - when this function is used standalone
-	{
 		target->health = 0;
-	}
 
-    if (target->health < -target->info->spawnhealth
-        && target->info->xdeathstate)
-    {
+    if (target->health < -target->info->spawnhealth && target->info->xdeathstate)
         P_SetMobjState(target, target->info->xdeathstate);
-    }
     else
-    {
         P_SetMobjState(target, target->info->deathstate);
-    }
 
 	target->tics -= P_Random(target) & 3;
 
 	if (target->tics < 1)
-	{
 		target->tics = 1;
-	}
 
 	// [RH] Death messages
 	// Nes - Server now broadcasts obituaries.
@@ -1306,16 +1273,11 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	// Check sv_fraglimit.
 	if (source && source->player && target->player && level.time)
 	{
-		// [Toke] Better sv_fraglimit
-		if (sv_gametype == GM_DM && sv_fraglimit &&
+		// [Toke] Better sv_fraglimit -- Ch0wW : Can it be even more improved
+		if (GAME.IsDeathmatch() && sv_fraglimit &&
 			sPlayer->fragcount >= sv_fraglimit && !shotclock)
 		{
-            // [ML] 04/4/06: Added !sv_fragexitswitch
-            SV_BroadcastPrintf(
-                PRINT_HIGH,
-                "Frag limit hit. Game won by %s!\n",
-				sPlayer->userinfo.netname.c_str()
-            );
+            SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. Game won by %s!\n", sPlayer->userinfo.netname.c_str());
             shotclock = TICRATE*2;
 		}
 
@@ -1326,11 +1288,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			{
 				if (TEAMpoints[i] >= sv_fraglimit)
 				{
-					SV_BroadcastPrintf(
-                        PRINT_HIGH,
-                        "Frag limit hit. %s team wins!\n",
-                        team_names[i]
-                    );
+					SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. %s team wins!\n", team_names[i] );
 					shotclock = TICRATE * 2;
 					break;
 				}
@@ -1339,9 +1297,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	}
 
 	if (gamemode == retail_chex)	// [ML] Chex Quest mode - monsters don't drop items
-    {
 		return;
-    }
 
 	// Drop stuff.
 	// This determines the kind of object spawned
@@ -1496,9 +1452,8 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		if (!sv_friendlyfire && source && splayer && target != source &&
 			 mod != MOD_TELEFRAG)
 		{
-			if (sv_gametype == GM_COOP ||
-			  ((sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) &&
-				tplayer->userinfo.team == splayer->userinfo.team))
+			if (GAME.IsCooperation() ||
+			   (GAME.IsTeamGame()	 &&	tplayer->userinfo.team == splayer->userinfo.team))
 			{
 				damage = 0;
 			}
@@ -1528,17 +1483,14 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		tplayer->health -= damage;		// mirror mobj health here for Dave
 
 		if (tplayer->health <= 0)
-        {
 			tplayer->health = 0;
-        }
 
 		tplayer->attacker = source ? source->ptr() : AActor::AActorPtr();
 		tplayer->damagecount += damage;	// add damage after armor / invuln
 
 		if (tplayer->damagecount > 100)
-        {
 			tplayer->damagecount = 100;	// teleport stomp does 10k points...
-        }
+        
 		SV_SendDamagePlayer(tplayer, target->health - damage);
 	}
 

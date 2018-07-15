@@ -80,10 +80,15 @@ extern BOOL            network_game;
 // Game mode
 EXTERN_CVAR (sv_gametype)
 
-#define GM_COOP		0.0f
-#define GM_DM		1.0f
-#define GM_TEAMDM	2.0f
-#define GM_CTF		3.0f
+typedef enum
+{
+	GM_COOP = 0,
+	GM_DM,
+	GM_TEAMDM,
+	GM_CTF
+} gametype_t;
+
+#include "c_gamemodes.h"
 
 
 // -------------------------

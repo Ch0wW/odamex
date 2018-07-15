@@ -307,7 +307,7 @@ void G_DoNewGame (void)
 		if (!(it->ingame()))
 			continue;
 
-		if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if (GAME.IsTeamGame())
 			SV_CheckTeam(*it);
 		else
 			memcpy(it->userinfo.color, it->prefcolor, 4);
@@ -636,6 +636,8 @@ void G_DoResetLevel(bool full_reset)
 			it->killcount = 0;
 			it->points = 0;
 			it->fragspree = 0;
+			it->fragcombo = 0;
+			it->lastfrag = level.time;
 			it->joinafterspectatortime = level.time;
 
 			// [AM] Only touch ready state if warmup mode is enabled.
@@ -748,6 +750,8 @@ void G_DoLoadLevel (int position)
 		it->deathcount = 0; // [Toke - Scores - deaths]
 		it->killcount = 0; // [deathz0r] Coop kills
 		it->fragspree = 0;
+		it->lastfrag = level.time;
+		it->fragcombo = 0;
 		it->points = 0;
 
 		// [AM] Only touch ready state if warmup mode is enabled.
@@ -767,7 +771,7 @@ void G_DoLoadLevel (int position)
 	}
 
 	// [deathz0r] It's a smart idea to reset the team points
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		for (size_t i = 0; i < NUMTEAMS; i++)
 			TEAMpoints[i] = 0;
