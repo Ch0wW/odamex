@@ -168,6 +168,7 @@ typedef uint64_t			dtime_t;
 
 // [RH] This gets used all over; define it here:
 int STACK_ARGS Printf (int printlevel, const char *, ...);
+int STACK_ARGS Printf(const char *format, ...);
 // [Russell] Prints a bold green message to the console
 int STACK_ARGS Printf_Bold (const char *format, ...);
 // [RH] Same here:
@@ -182,12 +183,18 @@ extern const char *LOG_FILE; //  Default is "odamex.log"
 extern std::ifstream CON;
 
 // game print flags
-#define	PRINT_LOW			0		// pickup messages
-#define	PRINT_MEDIUM		1		// death messages
-#define	PRINT_HIGH			2		// critical messages
-#define	PRINT_CHAT			3		// chat messages
-#define PRINT_TEAMCHAT		4		// chat messages from a teammate
-#define PRINT_SERVERCHAT	5		// chat messages from the server
+typedef enum
+{
+	PRINT_LOW = 0,		// pickup messages
+	PRINT_MEDIUM,		// death messages
+	PRINT_HIGH,			// critical messages
+	PRINT_RCON,			// Allow RCON output from server. Also acts like a PRINT_HIGH otherwise.
+	PRINT_CHAT,			// chat messages
+	PRINT_TEAMCHAT,		// chat messages from a teammate
+	PRINT_SERVERCHAT,	// chat messages from the server
+
+	PRINT_LOG,			// Ch0wW: Logfile
+} printlevel_t;
 
 #ifdef __forceinline
 	#define forceinline __forceinline

@@ -212,8 +212,7 @@ bool Banlist::add(player_t &player, const time_t expire,
                   const std::string &reason)
 {
 	// Player must be valid.
-	if (!validplayer(player))
-	{
+	if (!validplayer(player)) {
 		return false;
 	}
 

@@ -635,7 +635,7 @@ void G_DoResetLevel(bool full_reset)
 			it->deathcount = 0;
 			it->killcount = 0;
 			it->points = 0;
-			it->fragcombo = 0;
+			it->fragspree = 0;
 			it->joinafterspectatortime = level.time;
 
 			// [AM] Only touch ready state if warmup mode is enabled.
@@ -747,7 +747,7 @@ void G_DoLoadLevel (int position)
 		it->secretcount = 0;
 		it->deathcount = 0; // [Toke - Scores - deaths]
 		it->killcount = 0; // [deathz0r] Coop kills
-		it->fragcombo = 0;
+		it->fragspree = 0;
 		it->points = 0;
 
 		// [AM] Only touch ready state if warmup mode is enabled.

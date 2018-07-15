@@ -154,7 +154,7 @@ bool SV_AddMaster(const char *masterip)
 	{
 		if(masters[i].masterip == m.masterip)
 		{
-			Printf(PRINT_MEDIUM, "Master %s [%s] is already on the list", m.masterip.c_str(), NET_AdrToString(m.masteraddr));
+			Printf(PRINT_MEDIUM, "Master %s [%s] is already on the list", m.masterip.c_str(), m.masteraddr.ToString());
 			return false;
 		}
 	}
@@ -166,7 +166,7 @@ bool SV_AddMaster(const char *masterip)
 	}
 	else
 	{
-		Printf(PRINT_MEDIUM, "Added master: %s [%s]", m.masterip.c_str(), NET_AdrToString(m.masteraddr));
+		Printf(PRINT_MEDIUM, "Added master: %s [%s]", m.masterip.c_str(), m.masteraddr.ToString());
 		masters.push_back(m);
 	}
 
@@ -190,7 +190,7 @@ void SV_ListMasters(void)
 	Printf(PRINT_MEDIUM, "Use addmaster/delmaster commands to modify this list");
 
 	for(size_t index = 0; index < masters.size(); index++)
-		Printf(PRINT_MEDIUM, "%s [%s]", masters[index].masterip.c_str(), NET_AdrToString(masters[index].masteraddr));
+		Printf(PRINT_MEDIUM, "%s [%s]", masters[index].masterip.c_str(), masters[index].masteraddr.ToString());
 }
 
 //

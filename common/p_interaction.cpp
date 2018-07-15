@@ -76,6 +76,7 @@ void SV_SendDamageMobj(AActor *target, int pain);
 void SV_ActorTarget(AActor *actor);
 void PickupMessage(AActor *toucher, const char *message);
 void WeaponPickupMessage(AActor *toucher, weapontype_t &Weapon);
+void CL_SetEventComboFrags(int fragcombo);
 
 //
 // GET STUFF
@@ -93,12 +94,12 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 
 	if (bPositive)
 	{
-		player->fragcombo += 1;
+		player->fragspree += 1;
 
-		Printf(PRINT_HIGH, "Fragcombo : %d\n", player->fragcombo);
-		int palier = (player->fragcombo / 5);
+		Printf(PRINT_HIGH, "Fragcombo : %d\n", player->fragspree);
+		int palier = (player->fragspree / 5);
 
-		if (palier >= 1 && player->fragcombo % 5 == 0)
+		if (palier >= 1 && player->fragspree % 5 == 0)
 		{
 			if (palier == 1)
 				combomsg = "is on a killing spree !";
@@ -119,7 +120,7 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 	}
 	else
 	{
-		if (player->fragcombo / 5 >= 1)
+		if (player->fragspree / 5 >= 1)
 		{
 			if (bSuicide)
 				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
@@ -127,7 +128,7 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
 		}
 
-		player->fragcombo = 0;
+		player->fragspree = 0;
 	}
 }
 
@@ -1174,10 +1175,32 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					P_GiveFrags(sPlayer, 1);
 					P_GiveFragCombo(sPlayer, true);
 
-					if (target->player->fragcombo / 5 >= 1)
+					if (target->player->fragspree / 5 >= 1)
 						SV_BroadcastPrintf(PRINT_HIGH, "%s's killing spree has been ended by %s", target->player->userinfo.netname.c_str(), source->player->userinfo.netname.c_str());
 
-					target->player->fragcombo = 0;	// Reset combosprees for the killed
+					target->player->fragspree = 0;	// Reset combosprees for the fragged player.
+
+
+					if (clientside)	// Frag combos should be only displayed clientside.
+					{
+						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
+						{
+							if (level.time < sPlayer->lastfrag + (TICRATE * 5))
+							{
+								sPlayer->fragcombo += 1;
+								sPlayer->lastfrag = level.time;
+
+								CL_SetEventComboFrags(sPlayer->fragcombo);
+								
+							}
+
+							else
+							{
+								sPlayer->lastfrag = level.time;
+								sPlayer->fragcombo = 1;
+							}
+						}
+					}
 
 					// [Toke] Add a team frag
 					if (sv_gametype == GM_TEAMDM)

@@ -151,6 +151,7 @@ EXTERN_CVAR (mute_spectators)
 EXTERN_CVAR (mute_enemies)
 
 EXTERN_CVAR (cl_autoaim)
+EXTERN_CVAR (cl_showcombos)
 
 EXTERN_CVAR (cl_updaterate)
 EXTERN_CVAR (cl_interp)
@@ -1409,7 +1410,7 @@ void CL_UpdateFrags(void)
 		p.killcount = MSG_ReadShort();
 	p.deathcount = MSG_ReadShort();
 	p.points = MSG_ReadShort();
-	p.fragcombo = MSG_ReadShort();
+	p.fragspree = MSG_ReadShort();
 }
 
 //
@@ -1502,7 +1503,7 @@ void CL_RequestConnectInfo(void)
 	{
 		connecttimeout = 140;
 
-		Printf(PRINT_HIGH, "connecting to %s\n", NET_AdrToString(serveraddr));
+		Printf(PRINT_HIGH, "connecting to %s\n", serveraddr.ToString());
 
 		SZ_Clear(&net_buffer);
 		MSG_WriteLong(&net_buffer, LAUNCHER_CHALLENGE);
@@ -1786,7 +1787,7 @@ void CL_TryToConnect(DWORD server_token)
 	{
 		connecttimeout = 140; // 140 tics = 4 seconds
 
-		Printf(PRINT_HIGH, "challenging %s\n", NET_AdrToString(serveraddr));
+		Printf(PRINT_HIGH, "challenging %s\n", serveraddr.ToString());
 
 		SZ_Clear(&net_buffer);
 		MSG_WriteLong(&net_buffer, CHALLENGE); // send challenge
@@ -1828,11 +1829,11 @@ void CL_Print (void)
 	const char *str = MSG_ReadString();
 
 	if (level == PRINT_CHAT)
-		Printf(level, "\\c*%s", str);
+		Printf(level, "%s%s", TEXTCOLOR_CHAT, str);
 	else if (level == PRINT_TEAMCHAT)
-		Printf(level, "\\c!%s", str);
+		Printf(level, "%s%s", TEXTCOLOR_TEAMCHAT, str);
 	else if (level == PRINT_SERVERCHAT)
-		Printf(level, "\\ck%s", str);
+		Printf(level, "%s%s", TEXTCOLOR_ORANGE, str);
 	else
 		Printf(level, "%s", str);
 
@@ -1885,26 +1886,25 @@ void CL_Say()
 
 	const char* name = player.userinfo.netname.c_str();
 
-	if (message_visibility == 0)
-	{
-		if (strnicmp(message, "/me ", 4) == 0)
-			Printf(PRINT_CHAT, "* %s %s\n", name, &message[4]);
-		else
-			Printf(PRINT_CHAT, "%s: %s\n", name, message);
+	int levelchat;
+	char* soundinfo;
 
-		if (show_messages)
-			S_Sound(CHAN_INTERFACE, gameinfo.chatSound, 1, ATTN_NONE);
+	if (message_visibility == 0) {
+		levelchat = PRINT_CHAT;
+		soundinfo = gameinfo.chatSound;
 	}
-	else if (message_visibility == 1)
-	{
-		if (strnicmp(message, "/me ", 4) == 0)
-			Printf(PRINT_TEAMCHAT, "* %s %s\n", name, &message[4]);
-		else
-			Printf(PRINT_TEAMCHAT, "%s: %s\n", name, message);
+	else {
+		levelchat = PRINT_TEAMCHAT;
+		soundinfo = "misc/teamchat";
+	}
 
-		if (show_messages)
-			S_Sound(CHAN_INTERFACE, "misc/teamchat", 1, ATTN_NONE);
-	}
+	if (strnicmp(message, "/me ", 4) == 0)
+		Printf(levelchat, "* %s %s\n", name, &message[4]);
+	else
+		Printf(levelchat, "%s: %s\n", name, message);
+
+	if (show_messages)
+		S_Sound(CHAN_INTERFACE, soundinfo, 1, ATTN_NONE);
 }
 
 //
@@ -4055,5 +4055,20 @@ void CL_SimulateWorld()
 
 void OnChangedSwitchTexture (line_t *line, int useAgain) {}
 void OnActivatedLine (line_t *line, AActor *mo, int side, int activationType) {}
+
+void CL_SetEventComboFrags(int fragcombo)
+{
+	if (!cl_showcombos)
+		return;
+
+	if (fragcombo == 2)
+		Printf("Double Kill !\n");
+	else if (fragcombo == 3)
+		Printf("Triple Kill !\n");
+	else if (fragcombo == 4)
+		Printf("Ultra Kill !\n");
+	else if (fragcombo >= 5)
+		Printf("MONSTER Kill !\n");
+}
 
 VERSION_CONTROL (cl_main_cpp, "$Id$")
