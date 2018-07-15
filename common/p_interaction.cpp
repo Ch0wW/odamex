@@ -38,7 +38,6 @@
 #include "g_warmup.h"
 
 extern bool predicting;
-extern bool singleplayerjustdied;
 
 EXTERN_CVAR(sv_doubleammo)
 EXTERN_CVAR(sv_weaponstay)
@@ -1204,13 +1203,9 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					else if (GAME.IsCTF())
 					{
 						if (tplayer->flags[(flag_t)sPlayer->userinfo.team])
-						{
 							SV_CTFEvent((flag_t)0, SCORE_CARRIERKILL, *sPlayer);
-						}
 						else
-						{
 							SV_CTFEvent((flag_t)0, SCORE_KILL, *sPlayer);
-						}
 					}
 				}
 			}
@@ -1232,26 +1227,15 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			CTF_CheckFlags(*target->player);
 
 		if (!joinkill && !shotclock)
-		{
 			P_GiveDeaths(tplayer, 1);
-		}
 
 		// Death script execution, care of Skull Tag
 		if (level.behavior != NULL)
-		{
 			level.behavior->StartTypedScripts (SCRIPT_Death, target);
-		}
 
 		// count environment kills against you
 		if (!source && !joinkill && !shotclock)
-		{
-			// [RH] Cumulative frag count
-			P_GiveFrags(tplayer, -1);
-		}
-
-		// [NightFang] - Added this, thought it would be cooler
-		// [Fly] - No, it's not cooler
-		// target->player->cheats = CF_CHASECAM;
+			P_GiveFrags(tplayer, -1);			// [RH] Cumulative frag count
 
 		SV_UpdateFrags(*tplayer);
 
@@ -1259,41 +1243,24 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon(target->player);
 
-		if (!multiplayer)
-		{
-			singleplayerjustdied = true;
-		}
-
 		tplayer->death_time = level.time;
 
 		if (target == consoleplayer().camera)
-		{
-			// don't die in auto map, switch view prior to dying
-			AM_Stop();
-		}
+			AM_Stop(); // don't die in auto map, switch view prior to dying
 	}
 
 	if (target->health > 0) // denis - when this function is used standalone
-	{
 		target->health = 0;
-	}
 
-    if (target->health < -target->info->spawnhealth
-        && target->info->xdeathstate)
-    {
+    if (target->health < -target->info->spawnhealth && target->info->xdeathstate)
         P_SetMobjState(target, target->info->xdeathstate);
-    }
     else
-    {
         P_SetMobjState(target, target->info->deathstate);
-    }
 
 	target->tics -= P_Random(target) & 3;
 
 	if (target->tics < 1)
-	{
 		target->tics = 1;
-	}
 
 	// [RH] Death messages
 	// Nes - Server now broadcasts obituaries.
@@ -1306,16 +1273,11 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	// Check sv_fraglimit.
 	if (source && source->player && target->player && level.time)
 	{
-		// [Toke] Better sv_fraglimit
-		if (sv_gametype == GM_DM && sv_fraglimit &&
+		// [Toke] Better sv_fraglimit -- Ch0wW : Can it be even more improved
+		if (GAME.IsDeathmatch() && sv_fraglimit &&
 			sPlayer->fragcount >= sv_fraglimit && !shotclock)
 		{
-            // [ML] 04/4/06: Added !sv_fragexitswitch
-            SV_BroadcastPrintf(
-                PRINT_HIGH,
-                "Frag limit hit. Game won by %s!\n",
-				sPlayer->userinfo.netname.c_str()
-            );
+            SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. Game won by %s!\n", sPlayer->userinfo.netname.c_str());
             shotclock = TICRATE*2;
 		}
 
@@ -1326,11 +1288,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			{
 				if (TEAMpoints[i] >= sv_fraglimit)
 				{
-					SV_BroadcastPrintf(
-                        PRINT_HIGH,
-                        "Frag limit hit. %s team wins!\n",
-                        team_names[i]
-                    );
+					SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. %s team wins!\n", team_names[i] );
 					shotclock = TICRATE * 2;
 					break;
 				}
@@ -1339,9 +1297,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	}
 
 	if (gamemode == retail_chex)	// [ML] Chex Quest mode - monsters don't drop items
-    {
 		return;
-    }
 
 	// Drop stuff.
 	// This determines the kind of object spawned
