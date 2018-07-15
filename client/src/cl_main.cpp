@@ -1893,7 +1893,7 @@ void CL_Say()
 		levelchat = PRINT_CHAT;
 		soundinfo = gameinfo.chatSound;
 	}
-	else {
+	else if (message_visibility == 1) {
 		levelchat = PRINT_TEAMCHAT;
 		soundinfo = "misc/teamchat";
 	}

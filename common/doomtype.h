@@ -188,11 +188,10 @@ typedef enum
 	PRINT_LOW = 0,		// pickup messages
 	PRINT_MEDIUM,		// death messages
 	PRINT_HIGH,			// critical messages
-	PRINT_RCON,			// Allow RCON output from server. Also acts like a PRINT_HIGH otherwise.
 	PRINT_CHAT,			// chat messages
 	PRINT_TEAMCHAT,		// chat messages from a teammate
 	PRINT_SERVERCHAT,	// chat messages from the server
-
+	PRINT_NO_RCON,		// Ch0wW: message that won't be printed for a RCON player.
 	PRINT_LOG,			// Ch0wW: Logfile
 } printlevel_t;
 

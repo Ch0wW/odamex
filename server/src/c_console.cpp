@@ -193,7 +193,7 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	{
 		client_t* cl = &(it->client);
 
-		if (cl->allow_rcon && printlevel == PRINT_RCON)	
+		if (cl->allow_rcon && printlevel >= PRINT_NO_RCON)	// Ch0wW : redo that.
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
 			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);
