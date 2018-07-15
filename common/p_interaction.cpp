@@ -1185,17 +1185,12 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					{
 						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
 						{
-							if (level.time < sPlayer->lastfrag + (TICRATE * 5))
-							{
+							if (level.time < sPlayer->lastfrag + (TICRATE * 5)) {
 								sPlayer->fragcombo += 1;
 								sPlayer->lastfrag = level.time;
-
 								CL_SetEventComboFrags(sPlayer->fragcombo);
-								
 							}
-
-							else
-							{
+							else {
 								sPlayer->lastfrag = level.time;
 								sPlayer->fragcombo = 1;
 							}

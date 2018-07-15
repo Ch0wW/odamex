@@ -2535,11 +2535,14 @@ void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...)
 
 	Printf(level, "%s", string);  // print to the console
 
+	if (level == PRINT_RCON)	// You shouldn't be able to give public RCON info 
+		return;		
+
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		cl = &(it->client);
 
-		if (cl->allow_rcon && level == PRINT_RCON) // [mr.crispy -- sept 23 2013] RCON guy already got it when it printed to the console
+		if (cl->allow_rcon) // [mr.crispy -- sept 23 2013] RCON guy already got it when it printed to the console
 			continue;
 
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
@@ -2560,6 +2563,9 @@ void STACK_ARGS SV_SpectatorPrintf(int level, const char *fmt, ...)
 	va_end(argptr);
 
 	Printf(level, "%s", string);  // print to the console
+
+	if (level == PRINT_RCON)	// You shouldn't be able to give public RCON info 
+		return;
 
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
@@ -2622,6 +2628,9 @@ void STACK_ARGS SV_TeamPrintf(int level, int who, const char *fmt, ...)
 	va_end(argptr);
 
 	Printf(level, "%s", string);  // print to the console
+
+	if (level == PRINT_RCON)	// You shouldn't be able to give public RCON info 
+		return;
 
 	player_t* player = &idplayer(who);
 
@@ -3894,7 +3903,7 @@ void SV_RConLogout (player_t &player)
 
 	if (cl->allow_rcon)
 	{
-		Printf(PRINT_HIGH, "rcon logout from %s - %s", player.userinfo.netname.c_str(), cl->address.ToString());
+		Printf(PRINT_RCON, "rcon logout from %s - %s", player.userinfo.netname.c_str(), cl->address.ToString());
 		cl->allow_rcon = false;
 	}
 }
@@ -3918,11 +3927,11 @@ void SV_RConPassword (player_t &player)
 	if (!password.empty() && MD5SUM(password + cl->digest) == challenge)
 	{
 		cl->allow_rcon = true;
-		Printf(PRINT_HIGH, "rcon login from %s - %s", player.userinfo.netname.c_str(), cl->address.ToString());
+		Printf(PRINT_RCON, "[RCON] Login from %s (%s)\n", player.userinfo.netname.c_str(), cl->address.ToString());
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "rcon login failure from %s - %s", player.userinfo.netname.c_str(), cl->address.ToString());
+		Printf(PRINT_RCON, "[RCON] Login failure from %s (%s)\n", player.userinfo.netname.c_str(), cl->address.ToString());
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
 		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
 		MSG_WriteString (&cl->reliablebuf, "Bad password\n");
