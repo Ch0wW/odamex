@@ -2676,7 +2676,7 @@ BOOL PTR_NoWayTraverse (intercept_t *in)
 //
 void P_UseLines (player_t *player)
 {
-	int 		angle;
+	int 		angle, distance;
 	fixed_t 	x1;
 	fixed_t 	y1;
 	fixed_t 	x2;
@@ -2694,15 +2694,15 @@ void P_UseLines (player_t *player)
 
 	x1 = player->mo->x;
 	y1 = player->mo->y;
-	x2 = x1 + (USERANGE>>FRACBITS)*finecosine[angle];
-	y2 = y1 + (USERANGE>>FRACBITS)*finesine[angle];
+	x2 = x1 + FixedMul(USERANGE, finecosine[angle]);
+	y2 = y1 + FixedMul(USERANGE, finesine[angle]);
 
 	if (P_PathTraverse (x1, y1, x2, y2, PT_ADDLINES, PTR_UseTraverse)) {
 		// [RH] Give sector a chance to eat the use
 		sector_t *sec = usething->subsector->sector;
 		int spac = SECSPAC_Use;
-		if (foundline)
-			spac |= SECSPAC_UseWall;
+		if (foundline) spac |= SECSPAC_UseWall;
+
 		if ((!sec->SecActTarget || !A_TriggerAction(sec->SecActTarget, usething, spac)) &&
 		    (co_boomphys && !P_PathTraverse(x1, y1, x2, y2, PT_ADDLINES, PTR_NoWayTraverse)))
 		{

@@ -800,14 +800,17 @@ void P_PlayerThink (player_t *player)
 	else
 		player->fixedcolormap = 0;
 
-	// Handle air supply
-	if (player->mo->waterlevel < 3 || player->powers[pw_ironfeet])
+	// Handle air supply 
+	// Ch0wW : don't forget we can also be invulnerable to avoid drowning...
+	if (player->mo->waterlevel < 3  || 
+		player->powers[pw_ironfeet] || player->powers[pw_invulnerability] ||
+		player->cheats & CF_GODMODE)
 	{
 		player->air_finished = level.time + 10*TICRATE;
 	}
 	else if (player->air_finished <= level.time && !(level.time & 31))
 	{
-		P_DamageMobj (player->mo, NULL, NULL, 2 + 2*((level.time-player->air_finished)/TICRATE), MOD_WATER, DMG_NO_ARMOR);
+		P_DamageMobj (player->mo, NULL, NULL, 2 + ((level.time-player->air_finished)/TICRATE), MOD_WATER, DMG_NO_ARMOR);	// Ch0wW : Update it with ZDoom's algorythmics.
 	}
 }
 
