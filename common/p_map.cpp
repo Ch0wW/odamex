@@ -2127,7 +2127,7 @@ fixed_t P_AimLineAttack (AActor *t1, angle_t angle, fixed_t distance)
 	angle_t topangle = t1->pitch - ANG(32);
 	angle_t bottomangle = t1->pitch + ANG(32);
 
-	if (topangle <= ANG360 - ANG180)
+	if (topangle <= ANGLE_MAX - ANG180)
 		topslope = finetangent[FINEANGLES/2-1];
 	else
 		topslope = finetangent[FINEANGLES/4-((signed)topangle>>ANGLETOFINESHIFT)];

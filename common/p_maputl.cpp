@@ -1179,9 +1179,9 @@ bool P_ActorInFOV(AActor* origin, AActor* mo , float f, fixed_t dist)
 
 	tx = abs(tx);		// just to make calculations simplier
 	if (tx > ty)
-		ang = 360.0f * (ANG90 - 1 - tantoangle_acc[SlopeDiv(ty, tx)]) / ANG360;
+		ang = 360.0f * (ANG90 - 1 - tantoangle_acc[SlopeDiv(ty, tx)]) / ANGLE_MAX;
 	else
-		ang = 360.0f * tantoangle_acc[SlopeDiv(tx, ty)] / ANG360;
+		ang = 360.0f * tantoangle_acc[SlopeDiv(tx, ty)] / ANGLE_MAX;
 
 	// is the actor mo within the FOV specified by f?
 	if (ang > f / 2.0f)

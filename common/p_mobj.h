@@ -123,6 +123,7 @@ void P_SpawnBlood(fixed_t x, fixed_t y, fixed_t z, angle_t dir, int damage);
 bool P_CheckMissileSpawn(AActor* th);
 AActor* P_SpawnMissile(AActor *source, AActor *dest, mobjtype_t type);
 AActor *P_SpawnPlayerMissile(AActor *source, mobjtype_t type);
+AActor *P_SpawnPlayerMissile(AActor *source, fixed_t x, fixed_t y, fixed_t z, const mobjtype_t type, angle_t angle);
 bool P_VisibleToPlayers(AActor *mo);
 
 // [ML] From EE

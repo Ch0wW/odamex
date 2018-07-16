@@ -2064,16 +2064,25 @@ AActor* P_SpawnMissile (AActor *source, AActor *dest, mobjtype_t type)
 // P_SpawnPlayerMissile
 // Tries to aim at a nearby monster
 //
-AActor *P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
+// Ch0wW : There's a bug ATM I cannot find a solution.
+// Whenever the missile speed is quite high (70*FRACUNIT),
+// the missile's angle isn't right and will go larger than
+// the original angle of the missile.
+//
+AActor *P_SpawnPlayerMissile(AActor *source, mobjtype_t type)
+{
+	return P_SpawnPlayerMissile(source, source->x, source->y, source->z, type, source->angle);
+}
+
+AActor *P_SpawnPlayerMissile (AActor *source, fixed_t x, fixed_t y, fixed_t z, const mobjtype_t type, angle_t angle)
 {
 	if(!serverside || source == NULL)
 		return NULL;
 
-	fixed_t slope;
-	fixed_t pitchslope = finetangent[FINEANGLES/4 - (source->pitch>>ANGLETOFINESHIFT)];
-
 	// see which target is to be aimed at
 	angle_t an = source->angle;
+	fixed_t slope;
+	fixed_t pitchslope = finetangent[FINEANGLES/4 - (source->pitch>>ANGLETOFINESHIFT)];
 
 	// [AM] Refactored autoaim into a single function.
 	if (co_fineautoaim)
@@ -2082,7 +2091,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
 		slope = P_AutoAimLineAttack(source, an, 1 << 26, 1, 16 * 64 * FRACUNIT);
 
 	if (!linetarget)
-		an = source->angle;
+		an = angle;
 
 	// If a target was not found, or one was found, but outside the
 	// player's autoaim range, use the actor's pitch for the slope.
@@ -2095,18 +2104,18 @@ AActor *P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
 		slope = pitchslope;
 	}
 
-	AActor *th = new AActor (source->x, source->y, source->z + 4*8*FRACUNIT, type);
+	AActor *MissileActor = new AActor (x, y, z + 4*8*FRACUNIT, type);
 
-	if (th->info->seesound)
-		S_Sound (th, CHAN_VOICE, th->info->seesound, 1, ATTN_NORM);
+	if (MissileActor->info->seesound)
+		S_Sound (MissileActor, CHAN_VOICE, MissileActor->info->seesound, 1, ATTN_NORM);
 
-	th->target = source->ptr();
-	th->angle = an;
+	MissileActor->target = source->ptr();
+	MissileActor->angle = an;
 
 	if (co_zdoomphys)
 	{
 		v3float_t velocity;
-		float speed = FIXED2FLOAT (th->info->speed);
+		float speed = FIXED2FLOAT (MissileActor->info->speed);
 
 		velocity.x = FIXED2FLOAT (finecosine[an>>ANGLETOFINESHIFT]);
 		velocity.y = FIXED2FLOAT (finesine[an>>ANGLETOFINESHIFT]);
@@ -2114,21 +2123,21 @@ AActor *P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
 
 		M_NormalizeVec3f(&velocity, &velocity);
 
-		th->momx = FLOAT2FIXED (velocity.x * speed);
-		th->momy = FLOAT2FIXED (velocity.y * speed);
-		th->momz = FLOAT2FIXED (velocity.z * speed);
+		MissileActor->momx = FLOAT2FIXED (velocity.x * speed);
+		MissileActor->momy = FLOAT2FIXED (velocity.y * speed);
+		MissileActor->momz = FLOAT2FIXED (velocity.z * speed);
 	}
 	else
 	{
-		fixed_t speed = th->info->speed;
+		fixed_t speed = MissileActor->info->speed;
 
-		th->momx = FixedMul(speed, finecosine[an>>ANGLETOFINESHIFT]);
-		th->momy = FixedMul(speed, finesine[an>>ANGLETOFINESHIFT]);
-		th->momz = FixedMul(speed, slope);
+		MissileActor->momx = FixedMul(speed, finecosine[an>>ANGLETOFINESHIFT]);
+		MissileActor->momy = FixedMul(speed, finesine[an>>ANGLETOFINESHIFT]);
+		MissileActor->momz = FixedMul(speed, slope);
 	}
 
-	if (P_CheckMissileSpawn (th))
-		return th;
+	if (P_CheckMissileSpawn (MissileActor))
+		return MissileActor;
 
 	return NULL;
 }

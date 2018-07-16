@@ -234,7 +234,7 @@ BOOL EV_RotatePoly (line_t *line, int polyNum, int speed, int byteAngle,
 	}
 	else
 	{
-		pe->m_Dist = ANG360-1;
+		pe->m_Dist = ANGLE_MAX -1;
 	}
 	pe->m_Speed = (speed*direction*(ANG90/64))>>3;
 	poly->specialdata = pe;
@@ -262,7 +262,7 @@ BOOL EV_RotatePoly (line_t *line, int polyNum, int speed, int byteAngle,
 		}
 		else
 		{
-			pe->m_Dist = ANG360-1;
+			pe->m_Dist = ANGLE_MAX -1;
 		}
 		if( (poly = GetPolyobj(polyNum)) )
 		{
@@ -399,7 +399,7 @@ void DPolyDoor::RunThink ()
 					m_Dist = m_TotalDist;
 					m_Close = true;
 					m_Tics = m_WaitTics;
-					m_Direction = (ANG360>>ANGLETOFINESHIFT)-
+					m_Direction = (ANGLE_MAX >>ANGLETOFINESHIFT)-
 						m_Direction;
 					m_xSpeed = -m_xSpeed;
 					m_ySpeed = -m_ySpeed;					
@@ -424,7 +424,7 @@ void DPolyDoor::RunThink ()
 			else
 			{ // open back up
 				m_Dist = m_TotalDist - m_Dist;
-				m_Direction = (ANG360>>ANGLETOFINESHIFT)-
+				m_Direction = (ANGLE_MAX>>ANGLETOFINESHIFT)-
 					m_Direction;
 				m_xSpeed = -m_xSpeed;
 				m_ySpeed = -m_ySpeed;
