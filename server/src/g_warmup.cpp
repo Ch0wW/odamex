@@ -151,15 +151,15 @@ bool Warmup::checkreadytoggle()
 }
 
 // Add death penalty if there's an overtime only in CTF.
-short Warmup::get_ctf_overtime_penalty()
+short Warmup::get_ctf_penalty()
 {
-	if (sv_gametype != GM_CTF)
+	if (GAME.IsCTF())
 		return 0;
 
 	if (this->status != Warmup::INGAME)
 		return 0;
 
-	return (this->overtime_count > CTF_OVERTIME_RESPAWNTIME_CAP) ? CTF_OVERTIME_RESPAWNTIME_CAP : this->overtime_count;
+	return MAX((int)this->overtime_count, CTF_OVERTIME_RESPAWNTIME_CAP);
 }
 
 extern size_t P_NumPlayersInGame();

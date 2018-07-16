@@ -4467,7 +4467,7 @@ void SV_TimelimitCheck()
 				if (sv_warmup_overtime_enable && warmup.get_status() == warmup.INGAME)
 				{
 					warmup.add_overtime();
-					SV_BroadcastPrintf(PRINT_HIGH, "Overtime \#%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1 ? "s" : ""));
+					SV_BroadcastPrintf(PRINT_HIGH, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1 ? "s" : ""));
 					return;
 				}
 				else
@@ -4475,7 +4475,8 @@ void SV_TimelimitCheck()
 			}
 			else
 				SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. Game won by %s!\n", winplayer->userinfo.netname.c_str());
-		} else if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF) {
+		}
+		else if (GAME.IsTeamGame()) {
 			team_t winteam = SV_WinningTeam ();
 
 			if (winteam == TEAM_NONE)
@@ -4483,10 +4484,10 @@ void SV_TimelimitCheck()
 				if (sv_warmup_overtime_enable && warmup.get_status() == warmup.INGAME)
 				{
 					warmup.add_overtime();
-					SV_BroadcastPrintf(PRINT_HIGH, "Overtime \#%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
+					SV_BroadcastPrintf(PRINT_HIGH, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
 
 					if (sv_gametype == GM_CTF)
-						SV_BroadcastPrintf(PRINT_HIGH, "Respawning penalty time: %d seconds.\n", warmup.get_ctf_overtime_penalty());
+						SV_BroadcastPrintf(PRINT_HIGH, "Respawning penalty time: %d seconds.\n", warmup.get_ctf_penalty());
 
 					return;
 				}

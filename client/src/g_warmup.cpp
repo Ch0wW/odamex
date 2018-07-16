@@ -26,6 +26,8 @@
 
 Warmup warmup;
 
+short Warmup::get_ctf_penalty() { return 0; }	// Serverside function only.
+
 // Status getter
 Warmup::status_t Warmup::get_status()
 {
@@ -56,17 +58,6 @@ bool Warmup::checkfireweapon()
 void Warmup::set_client_status(Warmup::status_t new_status)
 {
 	this->status = new_status;
-}
-
-short Warmup::get_ctf_overtime_penalty()
-{
-	if (sv_gametype != GM_CTF)
-		return 0;
-
-	if (this->status != Warmup::INGAME)
-		return 0;
-
-	return (this->overtime_count > CTF_OVERTIME_RESPAWNTIME_CAP) ? CTF_OVERTIME_RESPAWNTIME_CAP : this->overtime_count;
 }
 
 short Warmup::get_overtime()

@@ -581,7 +581,7 @@ void P_DeathThink (player_t *player)
 		int respawn_time;
 		// [SL] Can we respawn yet?
 		if (overtime_respawn)
-			respawn_time = player->death_time + warmup.get_ctf_overtime_penalty() * TICRATE;
+			respawn_time = player->death_time + warmup.get_ctf_penalty() * TICRATE;
 		else
 			respawn_time = player->death_time + sv_spawndelaytime * TICRATE;
 		bool delay_respawn =	(!clientside && level.time < respawn_time);
