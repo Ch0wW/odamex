@@ -1547,7 +1547,7 @@ bool CL_PrepareConnect(void)
 		newwadfiles[i] = MSG_ReadString();
 
 	gamemode = MSG_ReadByte();	// Gamemode
-	MSG_ReadByte();							// Skill
+	MSG_ReadByte();				// Skill
 
 	for(i = 0; i < playercount; i++)
 	{
@@ -1567,7 +1567,7 @@ bool CL_PrepareConnect(void)
 	MSG_ReadString();
 
 	// Receive conditional teamplay information
-	if (GAME.IsTeamGame())
+	if (gamemode == GM_CTF || gamemode == GM_TEAMDM)
 	{
 		MSG_ReadLong();
 

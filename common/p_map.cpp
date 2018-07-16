@@ -965,7 +965,7 @@ void P_FakeZMovement(AActor *mo)
 	}
 	if (mo->player && mo->flags2&MF2_FLY && (mo->z > mo->floorz))
 	{
-		mo->z += finesine[(FINEANGLES/80*level.time)&FINEMASK]/8;
+		mo->z += finesine[(FINEANGLES / 80 * level.time)&FINEMASK] / 8;
 	}
 
 //

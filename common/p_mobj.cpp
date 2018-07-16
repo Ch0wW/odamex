@@ -2041,6 +2041,7 @@ AActor* P_SpawnMissile (AActor *source, AActor *dest, mobjtype_t type)
     if (dest_flags & MF_SHADOW)
 		an += P_RandomDiff()<<20;
 
+
     th->angle = an;
     an >>= ANGLETOFINESHIFT;
     th->momx = FixedMul (th->info->speed, finecosine[an]);
@@ -2063,10 +2064,10 @@ AActor* P_SpawnMissile (AActor *source, AActor *dest, mobjtype_t type)
 // P_SpawnPlayerMissile
 // Tries to aim at a nearby monster
 //
-void P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
+AActor *P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
 {
-	if(!serverside)
-		return;
+	if(!serverside || source == NULL)
+		return NULL;
 
 	fixed_t slope;
 	fixed_t pitchslope = finetangent[FINEANGLES/4 - (source->pitch>>ANGLETOFINESHIFT)];
@@ -2126,7 +2127,10 @@ void P_SpawnPlayerMissile (AActor *source, mobjtype_t type)
 		th->momz = FixedMul(speed, slope);
 	}
 
-	P_CheckMissileSpawn (th);
+	if (P_CheckMissileSpawn (th))
+		return th;
+
+	return NULL;
 }
 
 
