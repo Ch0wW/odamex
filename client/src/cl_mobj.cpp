@@ -76,7 +76,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 		G_PlayerReborn(player);
 
 	AActor* mobj;
-	mobj = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ, MT_PLAYER);
+	mobj = new AActor(MT_PLAYER, mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ);
 
 	// set color translations for player sprites
 	// [RH] Different now: MF_TRANSLATION is not used.
@@ -164,7 +164,7 @@ void P_ShowSpawns(mapthing2_t* mthing)
 
 		if (sv_gametype == GM_DM && mthing->type == 11)
 		{
-			spawn = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS, MT_FOUNTAIN);
+			spawn = new AActor(MT_FOUNTAIN, mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS);
 			spawn->args[0] = 7; // White
 		}
 
@@ -172,12 +172,12 @@ void P_ShowSpawns(mapthing2_t* mthing)
 		{
 			if (mthing->type == 5080)
 			{
-				spawn = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS, MT_FOUNTAIN);
+				spawn = new AActor(MT_FOUNTAIN, mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS);
 				spawn->args[0] = 3; // Blue
 			}
 			else if (mthing->type == 5081)
 			{
-				spawn = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS, MT_FOUNTAIN);
+				spawn = new AActor(MT_FOUNTAIN, mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS);
 				spawn->args[0] = 1; // Red
 			}
 		}

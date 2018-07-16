@@ -1074,10 +1074,9 @@ void A_BFGSpray(AActor* mo)
 		if (!linetarget)
 			continue;
 
-		new AActor (linetarget->x,
+		new AActor (MT_EXTRABFG, linetarget->x,
 					linetarget->y,
-					linetarget->z + (linetarget->height>>2),
-					MT_EXTRABFG);
+					linetarget->z + (linetarget->height>>2));
 
 		damage = 0;
 		for (j=0;j<15;j++)

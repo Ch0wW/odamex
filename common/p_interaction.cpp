@@ -1331,7 +1331,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	// denis - dropped things will spawn serverside
 	if (serverside)
 	{
-		mo = new AActor(target->x, target->y, ONFLOORZ, item);
+		mo = new AActor(item, target->x, target->y, ONFLOORZ);
 		mo->flags |= MF_DROPPED;	// special versions of items
 		SV_SpawnMobj(mo);
 	}

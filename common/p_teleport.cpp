@@ -202,10 +202,10 @@ BOOL EV_Teleport(int tid, int tag, int side, AActor *thing)
 	// spawn teleport fog at source and destination
 	if(serverside && !(player && player->spectator))
 	{
-		S_Sound (new AActor (oldx, oldy, oldz, MT_TFOG), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
+		S_Sound (new AActor (MT_TFOG, oldx, oldy, oldz), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 		an = m->angle >> ANGLETOFINESHIFT;
 		// emit sound at new spot
-		S_Sound (new AActor (m->x+20*finecosine[an], m->y+20*finesine[an], thing->z, MT_TFOG), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
+		S_Sound (new AActor (MT_TFOG, m->x+20*finecosine[an], m->y+20*finesine[an], thing->z), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 	}
 
 	// don't move for a bit
@@ -290,10 +290,10 @@ BOOL EV_LineTeleport (line_t *line, int side, AActor *thing)
 				// spawn teleport fog at source and destination
 				if(serverside && !(player && player->spectator))
 				{
-					S_Sound (new AActor (oldx, oldy, oldz, MT_TFOG), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
+					S_Sound (new AActor (MT_TFOG, oldx, oldy, oldz), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 					an = m->angle >> ANGLETOFINESHIFT;
 					// emit sound at new spot
-					S_Sound (new AActor (m->x+20*finecosine[an], m->y+20*finesine[an], thing->z, MT_TFOG), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
+					S_Sound (new AActor (MT_TFOG, m->x+20*finecosine[an], m->y+20*finesine[an], thing->z), CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 				}
 
 				// don't move for a bit

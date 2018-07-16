@@ -219,7 +219,7 @@ BOOL P_Thing_Spawn (int tid, int type, angle_t angle, BOOL fog)
 		else
 			z = spot->z;
 
-		mobj = new AActor (spot->x, spot->y, z, (mobjtype_t)kind);
+		mobj = new AActor ((mobjtype_t)kind, spot->x, spot->y, z);
 
 		if (mobj)
 		{
@@ -228,7 +228,7 @@ BOOL P_Thing_Spawn (int tid, int type, angle_t angle, BOOL fog)
 				rtn++;
 				mobj->angle = angle;
 				if (fog)
-					S_Sound (new AActor (spot->x, spot->y, spot->z, MT_TFOG),
+					S_Sound (new AActor (MT_TFOG, spot->x, spot->y, spot->z),
 							 CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 				mobj->flags |= MF_DROPPED;	// Don't respawn
 				if (mobj->flags2 & MF2_FLOATBOB)
@@ -268,7 +268,7 @@ BOOL P_Thing_Projectile (int tid, int type, angle_t angle,
 		if (spot->type != MT_MAPSPOT && spot->type != MT_MAPSPOTGRAVITY)
 			continue;
 
-		mobj = new AActor (spot->x, spot->y, spot->z, (mobjtype_t)kind);
+		mobj = new AActor ((mobjtype_t)kind, spot->x, spot->y, spot->z);
 
 		if (mobj)
 		{

@@ -194,7 +194,7 @@ void Unlag::reconcilePlayerPositions(byte shooter_id, size_t ticsago)
 
 			#ifdef _UNLAG_DEBUG_
 			// spawn a marker sprite at the reconciled position for debugging
-	        AActor *mo = new AActor(dest_x, dest_y, dest_z, MT_KEEN);
+	        AActor *mo = new AActor(MT_KEEN, dest_x, dest_y, dest_z);
 			mo->flags &= ~(MF_SHOOTABLE | MF_SOLID);
 			mo->health = -187;
 			SV_SpawnMobj(mo);

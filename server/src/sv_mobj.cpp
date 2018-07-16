@@ -82,7 +82,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 		G_PlayerReborn(player);
 
 	AActor* mobj;
-	mobj = new AActor(mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ, MT_PLAYER);
+	mobj = new AActor(MT_PLAYER, mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ);
 
 	// set color translations for player sprites
 	// [RH] Different now: MF_TRANSLATION is not used.

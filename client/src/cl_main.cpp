@@ -2179,7 +2179,7 @@ void CL_SpawnMobj()
 
 	P_ClearId(netid);
 
-	mo = new AActor (x, y, z, (mobjtype_t)type);
+	mo = new AActor ((mobjtype_t)type, x, y, z);
 
 	// denis - puff hack
 	if(mo->type == MT_PUFF)
@@ -2315,7 +2315,7 @@ void CL_SpawnPlayer()
 
 	G_PlayerReborn (*p);
 
-	mobj = new AActor (x, y, z, MT_PLAYER);
+	mobj = new AActor (MT_PLAYER, x, y, z);
 
 	mobj->momx = mobj->momy = mobj->momz = 0;
 
@@ -2343,7 +2343,7 @@ void CL_SpawnPlayer()
 	p->viewz = z + VIEWHEIGHT;
 
 	// spawn a teleport fog
-	// tfog = new AActor (x, y, z, MT_TFOG);
+	// tfog = new AActor (MT_TFOG, x, y, z);
 
 	// setup gun psprite
 	P_SetupPsprites (p);

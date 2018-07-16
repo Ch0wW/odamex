@@ -1055,7 +1055,7 @@ void G_Ticker (void)
 			{
 				// [SL] 2011-12-14 - Spawn message from server has not arrived
 				// yet.  Fake it and hope it arrives soon.
-				AActor *mobj = new AActor (0, 0, 0, MT_PLAYER);
+				AActor *mobj = new AActor (MT_PLAYER, 0, 0, 0);
 				mobj->flags &= ~MF_SOLID;
 				mobj->flags2 |= MF2_DONTDRAW;
 				consoleplayer().mo = mobj->ptr();
@@ -1267,7 +1267,7 @@ bool G_CheckSpot (player_t &player, mapthing2_t *mthing)
 			}
 		}
 
-		mo = new AActor (x+20*xa, y+20*ya, z, MT_TFOG);
+		mo = new AActor (MT_TFOG, x+20*xa, y+20*ya, z);
 
 		if (level.time)
 			S_Sound (mo, CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);	// don't start sound on first frame

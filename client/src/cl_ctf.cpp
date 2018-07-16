@@ -224,7 +224,7 @@ void CTF_CarryFlag (player_t &player, flag_t flag)
 	CTFdata[flag].flagger = player.id;
 	CTFdata[flag].state = flag_carried;
 
-	AActor *actor = new AActor(0, 0, 0, flag_table[flag][flag_carried]);
+	AActor *actor = new AActor(flag_table[flag][flag_carried], 0, 0, 0);
 	CTFdata[flag].actor = actor->ptr();
 
 	CTF_MoveFlags();

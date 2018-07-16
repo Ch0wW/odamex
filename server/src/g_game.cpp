@@ -527,7 +527,7 @@ bool G_CheckSpot (player_t &player, mapthing2_t *mthing)
 			}
 		}
 
-		mo = new AActor (x+20*xa, y+20*ya, z, MT_TFOG);
+		mo = new AActor (MT_TFOG, x+20*xa, y+20*ya, z);
 
 		// send new object
 		SV_SpawnMobj(mo);

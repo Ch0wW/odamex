@@ -218,7 +218,7 @@ AActor &AActor::operator= (const AActor &other)
 //
 //
 
-AActor::AActor (fixed_t ix, fixed_t iy, fixed_t iz, mobjtype_t itype) :
+AActor::AActor (mobjtype_t itype, fixed_t ix, fixed_t iy, fixed_t iz) :
     x(0), y(0), z(0), prevx(0), prevy(0), prevz(0),
 	snext(NULL), sprev(NULL), angle(0), prevangle(0), sprite(SPR_UNKN), frame(0),
     pitch(0), prevpitch(0), effects(0), subsector(NULL),
@@ -1665,11 +1665,10 @@ void P_NightmareRespawn (AActor *mobj)
 
     // spawn a teleport fog at old spot
     // because of removal of the body?
-	mo = new AActor(
+	mo = new AActor( MT_TFOG, 
         mobj->x,
         mobj->y,
-        P_FloorHeight(mobj),
-        MT_TFOG
+        P_FloorHeight(mobj)
     );
 	// initiate teleport sound
     if (clientside)
@@ -1679,7 +1678,7 @@ void P_NightmareRespawn (AActor *mobj)
     ss = P_PointInSubsector (x,y);
 
 	// spawn a teleport fog at the new spot
-    mo = new AActor (x, y,  P_FloorHeight(x, y, ss->sector), MT_TFOG);
+    mo = new AActor (MT_TFOG, x, y,  P_FloorHeight(x, y, ss->sector));
     if (clientside)
         S_Sound (mo, CHAN_VOICE, "misc/teleport", 1, ATTN_NORM);
 
@@ -1698,7 +1697,7 @@ void P_NightmareRespawn (AActor *mobj)
 	// inherit attributes from deceased one
 	if(serverside)
 	{
-		mo = new AActor (x, y, z, mobj->type);
+		mo = new AActor (mobj->type, x, y, z);
 		mo->spawnpoint = mobj->spawnpoint;
 		mo->angle = ANG45 * (mthing->angle/45);
 
@@ -1862,7 +1861,7 @@ void P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z)
 
 	z += (P_RandomDiff () << 10);
 
-    puff = new AActor(x, y, z, MT_PUFF);
+    puff = new AActor(MT_PUFF, x, y, z);
     puff->momz = FRACUNIT;
     puff->tics -= P_Random(puff) & 3;
 
@@ -1900,7 +1899,7 @@ void P_SpawnTracerPuff(fixed_t x, fixed_t y, fixed_t z)
 
 	z += (P_RandomDiff() << 10);
 
-	puff = new AActor(x, y, z, MT_PUFF);
+	puff = new AActor(MT_PUFF, x, y, z);
 	puff->momz = FRACUNIT;
 	puff->tics -= P_Random(puff) & 3;
 
@@ -1927,7 +1926,7 @@ void P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage)
 	AActor *th;
 
 	z += P_RandomDiff () << 10;
-	th = new AActor (x, y, z, MT_BLOOD);
+	th = new AActor (MT_BLOOD, x, y, z);
 	th->momz = FRACUNIT*2;
 	th->tics -= P_Random (th) & 3;
 
@@ -2029,7 +2028,7 @@ AActor* P_SpawnMissile (AActor *source, AActor *dest, mobjtype_t type)
         dest_flags = 0;
     }
 
-	th = new AActor (source->x, source->y, source->z + 4*8*FRACUNIT, type);
+	th = new AActor (type, source->x, source->y, source->z + 4*8*FRACUNIT);
 
     if (th->info->seesound)
 		S_Sound (th, CHAN_VOICE, th->info->seesound, 1, ATTN_NORM);
@@ -2104,7 +2103,7 @@ AActor *P_SpawnPlayerMissile (AActor *source, fixed_t x, fixed_t y, fixed_t z, c
 		slope = pitchslope;
 	}
 
-	AActor *MissileActor = new AActor (x, y, z + 4*8*FRACUNIT, type);
+	AActor *MissileActor = new AActor (type, x, y, z + 4*8*FRACUNIT);
 
 	if (MissileActor->info->seesound)
 		S_Sound (MissileActor, CHAN_VOICE, MissileActor->info->seesound, 1, ATTN_NORM);
@@ -2199,13 +2198,13 @@ void P_RespawnSpecials (void)
 		z = ONFLOORZ;
 
 	// spawn a teleport fog at the new spot
-	mo = new AActor (x, y, z, MT_IFOG);
+	mo = new AActor (MT_IFOG, x, y, z);
 	SV_SpawnMobj(mo);
     if (clientside)
         S_Sound (mo, CHAN_VOICE, "misc/spawn", 1, ATTN_IDLE);
 
 	// spawn it
-	mo = new AActor (x, y, z, (mobjtype_t)i);
+	mo = new AActor ((mobjtype_t)i, x, y, z);
 	mo->spawnpoint = *mthing;
 	mo->angle = ANG45 * (mthing->angle/45);
 
@@ -2598,7 +2597,7 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 	else
 		z = ONFLOORZ;
 
-	mobj = new AActor (x, y, z, (mobjtype_t)i);
+	mobj = new AActor ((mobjtype_t)i, x, y, z);
 
 	if (z == ONFLOORZ)
 		mobj->z += mthing->z << FRACBITS;

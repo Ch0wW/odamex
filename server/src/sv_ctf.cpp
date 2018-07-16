@@ -339,7 +339,7 @@ void CTF_SpawnFlag (flag_t f)
 {
 	flagdata *data = &CTFdata[f];
 
-	AActor *flag = new AActor (data->x, data->y, data->z, flag_table[f][flag_home]);
+	AActor *flag = new AActor (flag_table[f][flag_home], data->x, data->y, data->z);
 
 	SV_SpawnMobj(flag);
 
@@ -356,7 +356,7 @@ void CTF_SpawnDroppedFlag (flag_t f, int x, int y, int z)
 {
 	flagdata *data = &CTFdata[f];
 
-	AActor *flag = new AActor (x, y, z, flag_table[f][flag_dropped]);
+	AActor *flag = new AActor (flag_table[f][flag_dropped], x, y, z);
 
 	SV_SpawnMobj(flag);
 

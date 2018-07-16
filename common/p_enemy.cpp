@@ -1223,9 +1223,10 @@ void A_Tracer (AActor *actor)
 	{
 		P_SpawnTracerPuff(actor->x, actor->y, actor->z);
 
-		AActor* th = new AActor (actor->x - actor->momx,
-						 actor->y - actor->momy,
-						 actor->z, MT_SMOKE);
+		AActor* th = new AActor (MT_SMOKE, 
+								actor->x - actor->momx,
+								actor->y - actor->momy,
+								actor->z);
 
 		th->momz = FRACUNIT;
 		th->tics -= P_Random (th)&3;
@@ -1491,9 +1492,9 @@ void A_VileTarget (AActor *actor)
 
 	A_FaceTarget (actor);
 
-	fog = new AActor (actor->target->x,
+	fog = new AActor (MT_FIRE, actor->target->x,
 					  actor->target->x,
-					  actor->target->z, MT_FIRE);
+					  actor->target->z);
 
 	actor->tracer = fog->ptr();
 	fog->target = actor->ptr();
@@ -1740,7 +1741,7 @@ void A_PainShootSkull (AActor *actor, angle_t angle)
 	if (Check_Sides(actor,x,y))
 		return;*/
 
-	other = new AActor (x, y, z, MT_SKULL);
+	other = new AActor (MT_SKULL, x, y, z);
 
 	// Check to see if the new Lost Soul's z value is above the
 	// ceiling of its new sector, or below the floor. If so, kill it.
@@ -2066,7 +2067,7 @@ void A_BrainScream (AActor *mo)
 	{
 		y = mo->y - 320*FRACUNIT;
 		z = 128 + (P_Random (mo) << (FRACBITS + 1));
-		th = new AActor (x,y,z, MT_ROCKET);
+		th = new AActor (MT_ROCKET, x, y, z);
 		th->momz = P_Random (mo) << 9;
 
 		P_SetMobjState (th, S_BRAINEXPLODE1, true);
@@ -2089,7 +2090,7 @@ void A_BrainExplode (AActor *mo)
 	int x = mo->x + P_RandomDiff (mo)*2048;
 	int y = mo->y;
 	int z = 128 + P_Random (mo)*2*FRACUNIT;
-	AActor *th = new AActor (x,y,z, MT_ROCKET);
+	AActor *th = new AActor (MT_ROCKET, x, y, z);
 	th->momz = P_Random (mo) << 9;
 
 	P_SetMobjState (th, S_BRAINEXPLODE1, true);
@@ -2170,7 +2171,7 @@ void A_SpawnFly (AActor *mo)
 	targ = mo->target;
 
 	// First spawn teleport fog.
-	fog = new AActor (targ->x, targ->y, targ->z, MT_SPAWNFIRE);
+	fog = new AActor (MT_SPAWNFIRE, targ->x, targ->y, targ->z);
 	S_Sound (fog, CHAN_BODY, "misc/teleport", 1, ATTN_NORM);
 
 	// Randomly select monster to spawn.
@@ -2201,7 +2202,7 @@ void A_SpawnFly (AActor *mo)
 	else
 		type = MT_BRUISER;
 
-	newmobj = new AActor (targ->x, targ->y, targ->z, type);
+	newmobj = new AActor (type, targ->x, targ->y, targ->z);
 	if (P_LookForPlayers (newmobj, true))
 		P_SetMobjState (newmobj, newmobj->info->seestate, true);
 
