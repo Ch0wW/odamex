@@ -32,6 +32,8 @@
 #include "farchive.h"
 #include "doomdef.h"
 
+#include "m_fixed.h"
+
 typedef enum
 {
 	SPR_TROO,
@@ -1486,7 +1488,7 @@ typedef struct
 	statenum_t deathstate;
 	statenum_t xdeathstate;
 	const char *deathsound;	// [RH] not int
-	int speed;
+	fixed_t speed;
 	int radius;
 	int height;
 	int cdheight;

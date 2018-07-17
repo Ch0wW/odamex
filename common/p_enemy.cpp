@@ -76,9 +76,14 @@ dirtype_t diags[4] =
 	DI_NORTHWEST, DI_NORTHEAST, DI_SOUTHWEST, DI_SOUTHEAST
 };
 
-fixed_t xspeed[8] = {FRACUNIT,47000,0,-47000,-FRACUNIT,-47000,0,47000};
-fixed_t yspeed[8] = {0,47000,FRACUNIT,47000,0,-47000,-FRACUNIT,-47000};
-
+//================
+// DOOM2 & ZDoom 1.23 uses slightly different values of x/yspeed.
+// Store them in order to better emulate the physics
+//================
+fixed_t xspeed[8][2] = { { FRACUNIT, FRACUNIT}, {47000, 46341}, {0, 0}, {-47000, -46341 }, {-FRACUNIT, -FRACUNIT}, {-47000, -46341 }, {0, 0}, {47000, 46341 }};
+fixed_t yspeed[8][2] = { { 0, 0 },{ 47000, 46341 },{ FRACUNIT, FRACUNIT }, { 47000, 46341 },{ 0, 0 },{ -47000, -46341 },{ -FRACUNIT, -FRACUNIT },{ -47000, -46341 } };
+fixed_t GetXSpeed(int value) {	return (co_zdoomphys ? xspeed[value][1] : xspeed[value][0]); }
+fixed_t GetYSpeed(int value) { return (co_zdoomphys ? yspeed[value][1] : yspeed[value][0]); }
 
 void A_Die (AActor *actor);
 void A_Detonate (AActor *mo);
@@ -324,8 +329,8 @@ BOOL P_Move (AActor *actor)
 		speed = 1;	// always give the monster a little bit of speed
 #endif
 
-	tryx = (origx = actor->x) + (deltax = speed * xspeed[actor->movedir]);
-	tryy = (origy = actor->y) + (deltay = speed * yspeed[actor->movedir]);
+	tryx = (origx = actor->x) + (deltax = speed * GetXSpeed(actor->movedir));
+	tryy = (origy = actor->y) + (deltay = speed * GetYSpeed(actor->movedir));
 
 	// killough 3/15/98: don't jump over dropoffs:
 	try_ok = P_TryMove (actor, tryx, tryy, false);
@@ -1376,9 +1381,9 @@ void A_VileChase (AActor *actor)
 	{
 		// check for corpses to raise
 		viletryx =
-			actor->x + actor->info->speed*xspeed[actor->movedir];
+			actor->x + actor->info->speed * GetXSpeed(actor->movedir);
 		viletryy =
-			actor->y + actor->info->speed*yspeed[actor->movedir];
+			actor->y + actor->info->speed * GetYSpeed(actor->movedir);
 
 		xl = (viletryx - bmaporgx - MAXRADIUS*2)>>MAPBLOCKSHIFT;
 		xh = (viletryx - bmaporgx + MAXRADIUS*2)>>MAPBLOCKSHIFT;
