@@ -211,7 +211,7 @@ CVAR(				sv_coopunassignedvoodoodollsfornplayers, "255", "",
 	// ZDoom-compatibility changes
 	//------------------------------
 	CVAR(			co_zdoomphys, "0", "Enable/disable ZDoom-based gravity and physics interactions",
-					CVARTYPE_BOOL, CVAR_ARCHIVE | CVAR_SERVERINFO)
+					CVARTYPE_BOOL, CVAR_ARCHIVE | CVAR_SERVERINFO | CVAR_LATCH)
 
 	CVAR(			co_zdoomsound, "0", "Enable sound attenuation curve + attenuation of switch sounds with distance",
 					CVARTYPE_BOOL, CVAR_ARCHIVE | CVAR_SERVERINFO)
