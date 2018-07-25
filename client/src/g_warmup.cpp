@@ -26,7 +26,7 @@
 
 Warmup warmup;
 
-short Warmup::get_ctf_penalty() { return 0; }	// Serverside function only.
+short Warmup::get_ctf_penalty() { return NULL; }	// Serverside function only.
 
 // Status getter
 Warmup::status_t Warmup::get_status()

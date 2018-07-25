@@ -114,7 +114,6 @@ extern BOOL demorecording;
 extern DThinker ThinkerCap;
 extern dyncolormap_t NormalLight;
 
-BOOL devparm;				// started game with -devparm
 const char *D_DrawIcon;			// [RH] Patch name of icon to draw on next refresh
 int NoWipe;					// [RH] Allow wipe? (Needs to be set each time)
 char startmap[8];
@@ -410,9 +409,7 @@ void D_DoomMain()
 	if (GStrings(STARTUP5)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP5));
 
 	// developer mode
-	devparm = Args.CheckParm("-devparm");
-
-	if (devparm)
+	if (Args.CheckParm("-devparm"))
 		Printf (PRINT_HIGH, "%s", GStrings(D_DEVSTR));        // D_DEVSTR
 
 	// Nomonsters

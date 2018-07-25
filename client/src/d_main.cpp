@@ -116,7 +116,6 @@ extern bool M_DemoNoPlay;	// [RH] if true, then skip any demos in the loop
 extern DThinker ThinkerCap;
 extern dyncolormap_t NormalLight;
 
-BOOL devparm;				// started game with -devparm
 const char *D_DrawIcon;			// [RH] Patch name of icon to draw on next refresh
 static bool wiping_screen = false;
 
@@ -778,16 +777,12 @@ void D_DoomMain()
 	if (GStrings(STARTUP4)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP4));
 	if (GStrings(STARTUP5)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP5));
 
-    // developer mode
-	devparm = Args.CheckParm("-devparm");
-
-	if (devparm)
+    // Developer Infos
+	if (Args.CheckParm("-devparm")) {
 		Printf(PRINT_HIGH, "%s", GStrings(D_DEVSTR));        // D_DEVSTR
- 
-	// set the default value for vid_ticker based on the presence of -devparm
-	if (devparm)
-		vid_ticker.SetDefault("1");
- 
+		vid_ticker.SetDefault("1"); // set the default value for vid_ticker based on the presence of -devparm
+	}
+
 	// Nomonsters
 	sv_nomonsters = Args.CheckParm("-nomonsters");
 

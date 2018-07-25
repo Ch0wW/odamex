@@ -42,8 +42,6 @@
 // ------------------------
 // Command line parameters.
 //
-extern	BOOL			devparm;		// DEBUG: launched with -devparm
-
 
 // -----------------------------------------------------
 // Game Mode - identify IWAD as shareware, retail etc.

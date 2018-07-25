@@ -1827,16 +1827,6 @@ bool M_Responder (event_t* ev)
 		return true;
 	}
 
-	// [RH] F-Keys are now just normal keys that can be bound,
-	//		so they aren't checked here anymore.
-
-	// If devparm is set, pressing F1 always takes a screenshot no matter
-	// what it's bound to. (for those who don't bother to read the docs)
-	if (devparm && ch == KEY_F1) {
-		G_ScreenShot (NULL);
-		return true;
-	}
-
 	// Pop-up menu?
 	if (!menuactive)
 	{
