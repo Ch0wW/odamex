@@ -756,7 +756,7 @@ void D_DoomMain()
 
 	D_LoadResourceFiles(newwadfiles, newpatchfiles);
 
-	Printf(PRINT_HIGH, "I_Init: Init hardware.\n");
+	Printf("I_Init: Init hardware.\n");
 	atterm(I_ShutdownHardware);
 	I_Init();
 	I_InitInput();
@@ -834,7 +834,7 @@ void D_DoomMain()
 
 	I_FinishClockCalibration();
 
-	Printf(PRINT_HIGH, "D_CheckNetGame: Checking network game status.\n");
+	Printf("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame();
 
 	// [RH] Lock any cvars that should be locked now that we're

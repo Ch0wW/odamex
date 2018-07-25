@@ -202,6 +202,8 @@ void DFloor::RunThink ()
 				}
 			}
 
+			m_Sector->floordata = NULL; //jff 2/22/98 - Fixes King1 Apparently
+
 			//jff 2/26/98 implement stair retrigger lockout while still building
 			// note this only applies to the retriggerable generalized stairs
 
@@ -303,12 +305,14 @@ DFloor::DFloor(sector_t *sec, DFloor::EFloor floortype, line_t *line,
 		m_Crush = crush;
 	case DFloor::floorRaiseToLowestCeiling:
 		m_Direction = 1;
-		m_FloorDestHeight =
-			P_FindLowestCeilingSurrounding(sec);
-		if (m_FloorDestHeight > ceilingheight)
-			m_FloorDestHeight = ceilingheight;
+		m_FloorDestHeight = P_FindLowestCeilingSurrounding(sec);
+
 		if (floortype == DFloor::floorRaiseAndCrush)
 			m_FloorDestHeight -= 8 * FRACUNIT;
+
+		if (m_FloorDestHeight > ceilingheight)
+			m_FloorDestHeight = ceilingheight;
+
 		break;
 
 	case DFloor::floorRaiseToHighest:
