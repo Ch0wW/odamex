@@ -181,8 +181,8 @@ public:
 	int			killcount, itemcount, secretcount;		// for intermission
 
 	int			fragspree;								// Ch0wW : Sprees
-	unsigned long lastfrag;								// Ch0wW : Last Frag
-	int				fragcombo;							// Ch0wW : designed for combos (NOT YET DESIGNED)
+	unsigned long lastfrag;								// Ch0wW : Last Frag to track down if the frag is valid for combos.
+	int				fragcombo;							// Ch0wW : Frag combos.
 
     // Is wp_nochange if not changing.
 	weapontype_t	pendingweapon;

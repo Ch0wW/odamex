@@ -55,7 +55,7 @@ struct flagdata
 
 	// Integer representation of WHO has each flag (player id)
 	byte flagger;
-	int	pickup_time;
+	long pickup_time;
 
 	// Flag locations
 	int x, y, z;

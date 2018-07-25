@@ -82,22 +82,23 @@ void CL_SetEventComboFrags(int fragcombo);
 // GET STUFF
 //
 
-void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
+void P_SetSpreeEvent(player_t *player, spree_event_t event, player_t *deathkiller = NULL)
 {
 	if (!warmup.checkscorechange())
 		return;
 
-	const char* combomsg;
+	const char *combomsg;
 
-	if (clientside)
+	if (clientside || 
+	   ( serverside && (event <= SPREE_NONE || event >= SPREE_MAX_EVENTS)) )
 		return;
 
-	if (bPositive)
+	if (event == SPREE_FRAGVALID)
 	{
 		player->fragspree += 1;
-		int palier = (player->fragspree / 5);
+		int palier = player->fragspree / SPREE_COUNTLEVEL;
 
-		if (palier >= 1 && player->fragspree % 5 == 0)
+		if (palier >= 1 && player->fragspree % SPREE_COUNTLEVEL == 0)
 		{
 			if (palier == 1)
 				combomsg = "is on a killing spree !";
@@ -113,17 +114,29 @@ void P_GiveFragCombo(player_t* player, bool bPositive, bool bSuicide = false)
 				combomsg = "is among the gods !";
 			
 			if (palier <= 6)
-				SV_BroadcastPrintf(PRINT_HIGH, "%s %s\n", player->userinfo.netname.c_str(), combomsg);
+				SV_BroadcastPrintf("%s %s\n", player->userinfo.netname.c_str(), combomsg);
 		}
 	}
-	else
+	else if (event >= SPREE_DEATH)
 	{
-		if (player->fragspree / 5 >= 1)
+		if ( (player->fragspree / SPREE_COUNTLEVEL) >= 1)
 		{
-			if (bSuicide)
-				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
-			else
-				SV_BroadcastPrintf(PRINT_HIGH, "%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+			if (event == SPREE_SUICIDE)
+				SV_BroadcastPrintf("%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
+			else if (event == SPREE_TEAMKILL)
+				SV_BroadcastPrintf("%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+			else if (event == SPREE_DEATH)
+			{
+				// If someone forgot to complete the SPREE_DEATH event, at least it won't crash.
+				if (deathkiller == NULL)
+				{
+					Printf("[P_INTERACTION] Error : parameter 'deathkiller' was set to NULL with a 'SPREE_DEATH' event. Make sure the function is complete!\n");
+					SV_BroadcastPrintf("%s's killing spree has been ended by someone.\n", player->userinfo.netname.c_str());
+				}
+				else
+					SV_BroadcastPrintf("%s's killing spree has been ended by %s\n.", player->userinfo.netname.c_str(), deathkiller->userinfo.netname.c_str());
+
+			}
 		}
 
 		player->fragspree = 0;
@@ -1145,7 +1158,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 				if (target->player == source->player) // [RH] Cumulative frag count
 				{
 					P_GiveFrags(sPlayer, -1);
-					P_GiveFragCombo(sPlayer, false, true);
+					P_SetSpreeEvent(sPlayer, SPREE_SUICIDE);
 					// [Toke] Minus a team frag for suicide
 					if (sv_gametype == GM_TEAMDM)
 					{
@@ -1157,34 +1170,32 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 				{
 					// [Toke - Teamplay || deathz0r - updated]
 					P_GiveFrags(sPlayer, -1);
-					P_GiveFragCombo(sPlayer, false);
-					if (sv_gametype == GM_TEAMDM)
-					{
+					P_SetSpreeEvent(sPlayer, SPREE_TEAMKILL);
+
+					if (sv_gametype == GM_TEAMDM) {
 						P_GiveTeamPoints(sPlayer, -1);
 					}
-					else if (GAME.IsCTF())
-					{
+
+					else if (GAME.IsCTF()) {
 						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
 					}
 				}
 				else
 				{
 					P_GiveFrags(sPlayer, 1);
-					P_GiveFragCombo(sPlayer, true);
-
-					if (target->player->fragspree / 5 >= 1)
-						SV_BroadcastPrintf(PRINT_HIGH, "%s's killing spree has been ended by %s", target->player->userinfo.netname.c_str(), source->player->userinfo.netname.c_str());
-
-					target->player->fragspree = 0;	// Reset combosprees for the fragged player.
+					P_SetSpreeEvent(sPlayer, SPREE_FRAGVALID);
+					P_SetSpreeEvent(tplayer, SPREE_DEATH, sPlayer);
+					
+					// Ch0wW : ToDo: I'm quite sure it's not in the right place to really do that.
 					target->player->fragcombo = 0;
 					target->player->lastfrag = level.time;
 
 
-					if (clientside)	// Frag combos should be only displayed clientside.
+					if (clientside)	// Frag combos are only displayed clientside.
 					{
 						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
 						{
-							if (level.time < sPlayer->lastfrag + (TICRATE * 4)) {	// Ch0wW : 4 seconds max for combos ! [ZD uses 5, ZAND uses 3.]
+							if (level.time < sPlayer->lastfrag + COMBO_ALLOWED_SECONDS) {	
 								sPlayer->fragcombo += 1;
 								sPlayer->lastfrag = level.time;
 								CL_SetEventComboFrags(sPlayer->fragcombo);
@@ -1229,13 +1240,16 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		if (!joinkill && !shotclock)
 			P_GiveDeaths(tplayer, 1);
 
-		// Death script execution, care of Skull Tag
+		// Death script execution, care of ZDoom
 		if (level.behavior != NULL)
 			level.behavior->StartTypedScripts (SCRIPT_Death, target);
 
 		// count environment kills against you
 		if (!source && !joinkill && !shotclock)
+		{
 			P_GiveFrags(tplayer, -1);			// [RH] Cumulative frag count
+			P_SetSpreeEvent(tplayer, SPREE_SUICIDE);
+		}
 
 		SV_UpdateFrags(*tplayer);
 

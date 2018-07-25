@@ -36,6 +36,34 @@ void P_GiveCard(player_s*, card_t);
 BOOL P_GivePower(player_s*, int);
 void P_KillMobj (AActor *source, AActor *target, AActor *inflictor, bool joinkill);
 
+//===============
+// Sprees Info
+//===============
+
+// Frags needed in one life to be seen as on a spree.
+#define SPREE_COUNTLEVEL 5	
+
+typedef enum
+{
+	SPREE_NONE,
+
+	SPREE_FRAGVALID,
+	SPREE_DEATH,
+	SPREE_TEAMKILL,
+	SPREE_SUICIDE,
+
+	SPREE_MAX_EVENTS
+} spree_event_t;
+
+
+//===============
+// FragCombo Info
+//===============
+
+// Maximum Time allowed between 2 frags to start/continue combos.
+// We choose 4 seconds, as Zdaemon uses 5 seconds, while Zandronum uses 3 seconds.
+#define COMBO_ALLOWED_SECONDS (TICRATE * 4)
+
 #endif
 
 

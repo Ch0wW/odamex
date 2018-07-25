@@ -75,8 +75,10 @@ static int ctf_points[NUM_CTF_SCORE] =
 //
 void SV_CTFEvent (flag_t f, flag_score_t event, player_t &who)
 {
-	if(event == SCORE_NONE)
+	if (event == SCORE_NONE || event >= NUM_CTF_SCORE) {
+		Printf("[CTF] Invalid Event detected! (%d)\n", event);
 		return;
+	}
 
 	if(validplayer(who) && warmup.checkscorechange())
 		who.points += ctf_points[event];
