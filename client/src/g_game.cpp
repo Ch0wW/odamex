@@ -126,8 +126,6 @@ BOOL	 		viewactive;
 
 // Describes if a network game is being played
 BOOL			network_game;
-// Use only for demos, it is a old variable for the old network code
-BOOL			netgame;
 // Describes if this is a multiplayer game or not
 BOOL			multiplayer;
 // The player vector, contains all player information
@@ -1333,11 +1331,15 @@ static mapthing2_t *SelectRandomDeathmatchSpot (player_t &player, int selections
 {
 	int i = 0, j;
 
+	Printf("CALLING DEATHMATCH FOR PLAYER %d\n", player.id);
+
 	for (j = 0; j < 20; j++)
 	{
 		i = P_Random () % selections;
+		Printf("Looking for Spot %d", i);
 		if (G_CheckSpot (player, &deathmatchstarts[i]) )
 		{
+			Printf("SPOT %d OK, USING IT", i);
 			return &deathmatchstarts[i];
 		}
 	}
@@ -1351,7 +1353,7 @@ void G_DeathMatchSpawnPlayer (player_t &player)
 	int selections;
 	mapthing2_t *spot;
 
-	if(!serverside || sv_gametype == GM_COOP)
+	if(!serverside || GAME.IsCooperation())
 		return;
 
 	//if (!ctfmode)
@@ -1552,7 +1554,6 @@ void G_DoLoadGame (void)
 	P_SerializeRNGState (arc);
 	P_SerializeACSDefereds (arc);
 
-	netgame = false;
 	multiplayer = false;
 
 	// load a base level
@@ -1948,6 +1949,28 @@ BEGIN_COMMAND(streamdemo)
 }
 END_COMMAND(streamdemo)
 
+char *DEMO_GetVersionFormat(byte b)
+{
+	
+	if (b == DOOM_1_4_DEMO)
+		return "1.4";
+	else if (b == DOOM_1_5_DEMO)
+		return "1.5";
+	else if (b == DOOM_1_6_DEMO)
+		return "1.666";
+	else if (b == DOOM_1_7_DEMO)
+		return "1.7";
+	else if (b == DOOM_1_8_DEMO)
+		return "1.8";
+	else if (b == DOOM_1_9_DEMO)
+		return "1.9";
+	else if (b == DOOM_1_9p_DEMO)
+		return "1.9 Plus";
+	else if (b == DOOM_1_9_1_DEMO)
+		return "1.9.1 Longtics";
+
+	return "Unknown";
+}
 
 //
 // G_DoPlayDemo
@@ -2003,7 +2026,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		demo_p[0] == DOOM_1_9p_DEMO ||
 		demo_p[0] == DOOM_1_9_1_DEMO)
 	{
-		Printf(PRINT_HIGH, "Playing DOOM demo %s\n", defdemoname.c_str());
+		Printf(PRINT_HIGH, "Playing DOOM v%s demo %s\n", DEMO_GetVersionFormat(demo_p[0]), defdemoname.c_str());
 
 		democlassic = true;
 		demostartgametic = gametic;
@@ -2055,12 +2078,10 @@ void G_DoPlayDemo(bool justStreamInput)
 
 			if (players.size() > 1)
 			{
-				netgame = true;
 				multiplayer = true;
 			}
 			else
 			{
-				netgame = false;
 				multiplayer = false;
 			}
 
@@ -2102,6 +2123,10 @@ void G_DoPlayDemo(bool justStreamInput)
 			G_InitNew(mapname);
 
 			usergame = false;
+
+			Printf("Deathmatch : %d\n", deathmatch);
+			Printf("Skill : %d\n", skill);
+			Printf("Playersize : %d\n", players.size());
 		}
 
 		demoplayback = true;
@@ -2170,7 +2195,6 @@ void G_CleanupDemo()
 		Z_Free(demobuffer);
 
 		demoplayback = false;
-		netgame = false;
 		multiplayer = false;
 		serverside = false;
 

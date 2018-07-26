@@ -931,23 +931,20 @@ void D_DoomMain()
 	{
 		G_DoPlayDemo();
 	}
-	else if (autostart || netgame)
+	else if (autostart)
 	{
-		if (autostart)
-		{
-			// single player warp (like in g_level)
-			serverside = true;
-			sv_allowexit = "1";
-			sv_freelook = "1";
-			sv_allowjump = "1";
-			sv_allowredscreen = "1";
-			GAME.Set_Gamemode(GM_COOP);
+		// single player warp (like in g_level)
+		serverside = true;
+		sv_allowexit = "1";
+		sv_freelook = "1";
+		sv_allowjump = "1";
+		sv_allowredscreen = "1";
+		GAME.Set_Gamemode(GM_COOP);
 
-			players.clear();
-			players.push_back(player_t());
-			players.back().playerstate = PST_REBORN;
-			consoleplayer_id = displayplayer_id = players.back().id = 1;
-		}
+		players.clear();
+		players.push_back(player_t());
+		players.back().playerstate = PST_REBORN;
+		consoleplayer_id = displayplayer_id = players.back().id = 1;
 
 		G_InitNew(startmap);
 		if (autorecord)
