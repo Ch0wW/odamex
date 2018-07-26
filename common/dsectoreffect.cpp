@@ -157,7 +157,7 @@ DMover::EResult DMover::MovePlane (fixed_t speed, fixed_t dest, bool crush,
 			{
 				P_ChangeFloorHeight(m_Sector, dest - lastpos);
 				flag = P_ChangeSector (m_Sector, crush);
-				if (flag == true)
+				if (flag)
 				{
 					P_ChangeFloorHeight(m_Sector, lastpos - dest);
 					P_ChangeSector (m_Sector, crush);

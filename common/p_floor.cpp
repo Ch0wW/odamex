@@ -202,7 +202,7 @@ void DFloor::RunThink ()
 				}
 			}
 
-			m_Sector->floordata = NULL; //jff 2/22/98 - Fixes King1 Apparently
+			P_SetFloorDestroy(this); //Fixes Instantlifts, but doesn't produce any sound for non-predicted sectors...
 
 			//jff 2/26/98 implement stair retrigger lockout while still building
 			// note this only applies to the retriggerable generalized stairs
