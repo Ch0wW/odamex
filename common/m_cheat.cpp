@@ -40,6 +40,8 @@
 static int				firsttime = 1;
 static unsigned char	cheat_xlate_table[256];
 
+void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
+void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...);
 
 //
 // Called in st_stuff module, which handles the input.
@@ -111,13 +113,14 @@ void cht_DoCheat (player_t *player, int cheat)
 	char msgbuild[32];
 
 	switch (cheat) {
+		// IDDQD also uses CHT_GOD, so don't break.
 		case CHT_IDDQD:
 			if (!(player->cheats & CF_GODMODE)) {
 				if (player->mo)
 					player->mo->health = deh.GodHealth;
 
 				player->health = deh.GodHealth;
-			}
+			}	
 		case CHT_GOD:
 			player->cheats ^= CF_GODMODE;
 			if (player->cheats & CF_GODMODE)
@@ -241,10 +244,11 @@ void cht_DoCheat (player_t *player, int cheat)
 			}
 			break;
 	}
-	if (player == &consoleplayer())
-		Printf (PRINT_HIGH, "%s\n", msg);
-	else
-		Printf (PRINT_HIGH, "%s is a cheater: %s\n", player->userinfo.netname.c_str(), msg);
+	if (server)
+		SV_BroadcastPrintf ("%s activated a cheat: %s\n", player->userinfo.netname.c_str(), msg);
+	
+	/*if (player == &consoleplayer())
+		Printf(PRINT_HIGH, "%s\n", msg);*/
 }
 
 void cht_Give (player_t *player, const char *name)
@@ -360,14 +364,6 @@ void cht_Give (player_t *player, const char *name)
 	} else if (it->flags & IT_ARMOR) {
 		P_GiveArmor (player, it->offset);
 	}
-}
-
-void cht_Suicide (player_t *plyr)
-{
-	plyr->mo->flags |= MF_SHOOTABLE;
-	while (plyr->health > 0)
-		P_DamageMobj (plyr->mo, plyr->mo, plyr->mo, 10000, MOD_SUICIDE);
-	plyr->mo->flags &= ~MF_SHOOTABLE;
 }
 
 VERSION_CONTROL (m_cheat_cpp, "$Id$")

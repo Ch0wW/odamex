@@ -61,33 +61,12 @@
 //
 typedef enum
 {
-	// Connecting or hacking
-	PST_CONTACT,
-
-	// Stealing or pirating
-	PST_DOWNLOAD,
-
-	// Staling or loitering
-	PST_SPECTATE,
-
-	// Spying or remote server administration
-	PST_STEALTH_SPECTATE,
-
-	// Playing or camping.
-	PST_LIVE,
-
-	// Dead on the ground, view follows killer.
-	PST_DEAD,
-
-	// Ready to restart/respawn???
-	PST_REBORN,
-
-	// These are cleaned up at the end of a frame
-	PST_DISCONNECT,
-
-    // [BC] Entered the game
-	PST_ENTER
-
+	PST_DOWNLOAD,			// Stealing or pirating
+	PST_LIVE,				// Playing or camping.
+	PST_DEAD,				// Dead on the ground, view follows killer.
+	PST_REBORN,				// Ready to restart/respawn???
+	PST_DISCONNECT,			// These are cleaned up at the end of a frame
+	PST_ENTER,				// [BC] Entered the game
 } playerstate_t;
 
 
@@ -96,25 +75,15 @@ typedef enum
 //
 typedef enum
 {
-	// No clipping, walk through barriers.
-	CF_NOCLIP			= 1,
-	// No damage, no health loss.
-	CF_GODMODE			= 2,
-	// Not really a cheat, just a debug aid.
-	CF_NOMOMENTUM		= 4,
-	// [RH] Monsters don't target
-	CF_NOTARGET			= 8,
-	// [RH] Flying player
-	CF_FLY				= 16,
-	// [RH] Put camera behind player
-	CF_CHASECAM			= 32,
-	// [RH] Don't let the player move
-	CF_FROZEN			= 64,
-	// [RH] Stick camera in player's head if he moves
-	CF_REVERTPLEASE		= 128
+	CF_NOCLIP			= 1 << 0,		// No clipping, walk through barriers.
+	CF_GODMODE			= 1 << 1,		// No damage, no health loss.
+	CF_NOMOMENTUM		= 1 << 2,		// Not really a cheat, just a debug aid.
+	CF_NOTARGET			= 1 << 3,		// [RH] Monsters don't target
+	CF_FLY				= 1 << 4,		// [RH] Flying player
+	CF_CHASECAM			= 1 << 5,		// [RH] Put camera behind player
+	CF_FROZEN			= 1 << 6,		// [RH] Don't let the player move
+	CF_REVERTPLEASE		= 1 << 7		// [RH] Stick camera in player's head if he moves
 } cheat_t;
-
-#define MAX_PLAYER_SEE_MOBJ	0x7F
 
 //
 // Extended player object info: player_t

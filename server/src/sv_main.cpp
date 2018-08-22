@@ -3960,15 +3960,14 @@ void SV_Suicide(player_t &player)
 	if (!player.mo)
 		return;
 
-	// merry suicide!
 	P_DamageMobj (player.mo, NULL, NULL, 10000, MOD_SUICIDE);
-	//player.mo->player = NULL;
-	//player.mo = NULL;
 }
 
 //
 // SV_Cheat
 //
+
+void cht_DoCheat(player_s *player, int cheat);
 void SV_Cheat(player_t &player)
 {
 	byte cheats = MSG_ReadByte();
@@ -3976,7 +3975,7 @@ void SV_Cheat(player_t &player)
 	if(!sv_allowcheats)
 		return;
 
-	player.cheats = cheats;
+	cht_DoCheat(&player, cheats);
 }
 
 BOOL P_GiveWeapon(player_s*, weapontype_t, BOOL);

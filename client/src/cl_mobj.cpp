@@ -162,7 +162,7 @@ void P_ShowSpawns(mapthing2_t* mthing)
 	{
 		AActor* spawn = 0;
 
-		if (sv_gametype == GM_DM && mthing->type == 11)
+		if (GAME.IsDeathmatch() && mthing->type == 11)
 		{
 			spawn = new AActor(MT_FOUNTAIN, mthing->x << FRACBITS, mthing->y << FRACBITS, mthing->z << FRACBITS);
 			spawn->args[0] = 7; // White

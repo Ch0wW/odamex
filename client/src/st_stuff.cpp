@@ -503,10 +503,8 @@ BOOL CheckCheatmode (void)
 		Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 // Respond to keyboard input events, intercept cheats.
@@ -731,35 +729,29 @@ bool ST_Responder (event_t *ev)
 // Console cheats
 BEGIN_COMMAND (god)
 {
-	if (CheckCheatmode ())
+	if (CheckCheatmode () )
 		return;
 
 	consoleplayer().cheats ^= CF_GODMODE;
-
-    if (consoleplayer().cheats & CF_GODMODE)
-        Printf(PRINT_HIGH, "Degreelessness mode on\n");
-    else
-        Printf(PRINT_HIGH, "Degreelessness mode off\n");
+	if (!multiplayer)
+		Printf(PRINT_HIGH, "%s\n", consoleplayer().cheats & CF_GODMODE ? GStrings(STSTR_DQDON) : GStrings(STSTR_DQDOFF));
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
-	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
+	MSG_WriteByte(&net_buffer, CHT_GOD);
 }
 END_COMMAND (god)
 
 BEGIN_COMMAND (notarget)
 {
-	if (CheckCheatmode () || connected)
+	if (CheckCheatmode ())
 		return;
 
 	consoleplayer().cheats ^= CF_NOTARGET;
-
-    if (consoleplayer().cheats & CF_NOTARGET)
-        Printf(PRINT_HIGH, "Notarget on\n");
-    else
-        Printf(PRINT_HIGH, "Notarget off\n");
+	//if (!multiplayer)	// Since this cheat doesn't properly work online, leave it as SP-only.
+	Printf(PRINT_HIGH, "Notarget %s\n", consoleplayer().cheats & CF_NOTARGET ? "on" : "off");
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
-	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
+	MSG_WriteByte(&net_buffer, CHT_NOTARGET);
 }
 END_COMMAND (notarget)
 
@@ -769,16 +761,12 @@ BEGIN_COMMAND (fly)
 		return;
 
 	consoleplayer().cheats ^= CF_FLY;
-
-    if (consoleplayer().cheats & CF_FLY)
-        Printf(PRINT_HIGH, "Fly mode on\n");
-    else
-        Printf(PRINT_HIGH, "Fly mode off\n");
+	if (!multiplayer)	Printf(PRINT_HIGH, "Fly mode %s\n", consoleplayer().cheats & CF_FLY ? "on" : "off");
 
 	if (!consoleplayer().spectator)
 	{
 		MSG_WriteMarker(&net_buffer, clc_cheat);
-		MSG_WriteByte(&net_buffer, consoleplayer().cheats);
+		MSG_WriteByte(&net_buffer, CHT_FLY);
 	}
 }
 END_COMMAND (fly)
@@ -789,14 +777,10 @@ BEGIN_COMMAND (noclip)
 		return;
 
 	consoleplayer().cheats ^= CF_NOCLIP;
-
-    if (consoleplayer().cheats & CF_NOCLIP)
-        Printf(PRINT_HIGH, "No clipping mode on\n");
-    else
-        Printf(PRINT_HIGH, "No clipping mode off\n");
+	if (!multiplayer)    Printf(PRINT_HIGH, "%s\n", consoleplayer().cheats & CF_NOCLIP ? GStrings(STSTR_NCON) : GStrings(STSTR_NCOFF));
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
-	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
+	MSG_WriteByte(&net_buffer, CHT_NOCLIP);
 }
 END_COMMAND (noclip)
 
@@ -871,18 +855,13 @@ END_COMMAND (idmus)
 
 BEGIN_COMMAND (give)
 {
-	if (CheckCheatmode ())
-		return;
-
-	if (argc < 2)
+	if (CheckCheatmode () || argc < 2)
 		return;
 
 	std::string name = C_ArgCombine(argc - 1, (const char **)(argv + 1));
 	if (name.length())
 	{
-		//Net_WriteByte (DEM_GIVECHEAT);
-		//Net_WriteString (name.c_str());
-		// todo
+		cht_Give(&consoleplayer(), name.c_str());
 	}
 }
 END_COMMAND (give)
@@ -1151,13 +1130,13 @@ void ST_updateWidgets(void)
 	ST_updateFaceWidget();
 
 	// used by w_arms[] widgets
-	st_armson = st_statusbaron && sv_gametype == GM_COOP;
+	st_armson = st_statusbaron && GAME.IsCooperation();
 
 	// used by w_frags widget
 	st_fragson = sv_gametype != GM_COOP && st_statusbaron;
 
 	//	[Toke - CTF]
-	if (sv_gametype == GM_CTF)
+	if (GAME.IsCTF())
 		st_fragscount = TEAMpoints[plyr->userinfo.team]; // denis - todo - scoring for ctf
 	else
 		st_fragscount = plyr->fragcount;	// [RH] Just use cumulative total
@@ -1179,7 +1158,7 @@ void ST_Ticker()
 void ST_drawWidgets(bool force_refresh)
 {
 	// used by w_arms[] widgets
-	st_armson = st_statusbaron && sv_gametype == GM_COOP;
+	st_armson = st_statusbaron && GAME.IsCooperation();
 
 	// used by w_frags widget
 	st_fragson = sv_gametype != GM_COOP && st_statusbaron;
@@ -1229,11 +1208,11 @@ static void ST_refreshBackground()
 	DCanvas* stbar_canvas = stbar_surface->getDefaultCanvas();
 	stbar_canvas->DrawPatch(sbar, 0, 0);
 
-	if (sv_gametype == GM_CTF)
+	if (GAME.IsCTF())
 	{
 		stbar_canvas->DrawPatch(flagsbg, ST_FLAGSBGX, ST_FLAGSBGY);
 	}
-	else if (sv_gametype == GM_COOP)
+	else if (GAME.IsCooperation())
 	{
 		stbar_canvas->DrawPatch(armsbg, ST_ARMSBGX, ST_ARMSBGY);
 	}

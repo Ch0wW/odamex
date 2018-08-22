@@ -2507,10 +2507,7 @@ static void P_SpawnFriction(void)
 			friction = (0x1EB8*length)/0x80 + 0xD000;
 
 			// killough 8/28/98: prevent odd situations
-			if (friction > FRACUNIT)
-				friction = FRACUNIT;
-			if (friction < 0)
-				friction = 0;
+			friction = clamp(friction, 0, FRACUNIT);
 
 			// The following check might seem odd. At the time of movement,
 			// the move distance is multiplied by 'friction/0x10000', so a
@@ -2556,9 +2553,9 @@ static void P_SpawnFriction(void)
 //
 // PUSH/PULL EFFECT
 //
+// This is where push/pull effects are applied to objects in the sectors.
 // phares 3/20/98: Start of push/pull effects
 //
-// This is where push/pull effects are applied to objects in the sectors.
 //
 // There are four kinds of push effects
 //

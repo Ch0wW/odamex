@@ -1784,14 +1784,14 @@ void CL_TryToConnect(DWORD server_token)
 
 	if (!connecttimeout)
 	{
-		connecttimeout = 140; // 140 tics = 4 seconds
+		connecttimeout = TICRATE * 4; // 4 seconds
 
 		Printf(PRINT_HIGH, "challenging %s\n", serveraddr.ToString());
 
 		SZ_Clear(&net_buffer);
-		MSG_WriteLong(&net_buffer, CHALLENGE); // send challenge
-		MSG_WriteLong(&net_buffer, server_token); // confirm server token
-		MSG_WriteShort(&net_buffer, version); // send client version
+		MSG_WriteLong(&net_buffer, CHALLENGE);		// send challenge
+		MSG_WriteLong(&net_buffer, server_token);	// confirm server token
+		MSG_WriteShort(&net_buffer, version);		// send client version
 
 		if(gamestate == GS_DOWNLOAD)
 			MSG_WriteByte(&net_buffer, 1); // send type of connection (play/spectate/rcon/download)
@@ -2219,9 +2219,7 @@ void CL_SpawnMobj()
 	}
 
 	if (type == MT_FOUNTAIN)
-	{
 		mo->effects = int(MSG_ReadByte()) << FX_FOUNTAINSHIFT;
-	}
 
 	if (type == MT_ZDOOMBRIDGE)
 	{
@@ -3101,16 +3099,16 @@ void CL_ForceSetTeam (void)
 	// Setting the cl_team will send a playerinfo packet back to the server.
 	// Unfortunately, this is unavoidable until we rework the team system.
 	switch (consoleplayer().userinfo.team) {
-	case TEAM_BLUE:
-		cl_team.Set("BLUE");
-		break;
-	case TEAM_RED:
-		cl_team.Set("RED");
-		break;
-	default:
-		cl_team.Set("NONE");
-		break;
-	}
+		case TEAM_BLUE:
+			cl_team.Set("BLUE");
+			break;
+		case TEAM_RED:
+			cl_team.Set("RED");
+			break;
+		default:
+			cl_team.Set("NONE");
+			break;
+		}
 }
 
 //
