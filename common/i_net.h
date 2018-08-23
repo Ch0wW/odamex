@@ -78,6 +78,7 @@ enum svc_t
 	svc_movemobj,			// [short] [byte] [int] [int] [int]
 	svc_spawnplayer,
 	svc_damageplayer,
+	svc_setplayercheat,		// Ch0wW : Make everyone aware of a cheat being set.
 	svc_killmobj,
 	svc_firepistol,			// [byte] - playernum
 	svc_fireshotgun,		// [byte] - playernum
@@ -168,12 +169,13 @@ enum clc_t
 	clc_ack,
 	clc_rcon,
 	clc_rcon_password,
-	clc_changeteam,		// [NightFang] - Change your team [Toke - Teams] Made this actualy work
-	clc_ctfcommand,
+	clc_changeteam,			// [NightFang] - Change your team [Toke - Teams] Made this actualy work
+	clc_ctfcommand,			// Ch0wW - THIS MUST BE REMOVED AS INCOMPLETE
 	clc_spectate,			// denis - [byte:state]
 	clc_wantwad,			// denis - string:name, string:hash
 	clc_kill,				// denis - suicide
 	clc_cheat,				// denis - god, pumpkins, etc
+	clc_cheatgive,			// Ch0wW - "give X" command
     clc_cheatpulse,         // Russell - one off cheats (idkfa, idfa etc)
 	clc_callvote,			// [AM] - Calling a vote
 	clc_vote,				// [AM] - Casting a vote

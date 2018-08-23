@@ -211,10 +211,6 @@ FArchive &operator<< (FArchive &arc, UserInfo &info)
 	arc << info.aimdist;
 	arc << info.color[0] << info.color[1] << info.color[2] << info.color[3];
 
-	// [SL] place holder for deprecated skins
-	unsigned int skin = 0;
-	arc << skin;
-
 	arc << info.unlag << info.update_rate;
 
 	arc.Write(&info.switchweapon, sizeof(info.switchweapon));
@@ -237,10 +233,6 @@ FArchive &operator>> (FArchive &arc, UserInfo &info)
 
 	arc >> info.aimdist;
 	arc >> info.color[0] >> info.color[1] >> info.color[2] >> info.color[3];
-
-	// [SL] place holder for deprecated skins
-	unsigned int skin;
-	arc >> skin;
 
 	arc >> info.unlag >> info.update_rate;
 

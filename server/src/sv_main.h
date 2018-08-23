@@ -76,7 +76,6 @@ short SV_FindClientByAddr(void);
 void SV_UpdateFrags (player_t &player);
 void SV_RemoveCorpses (void);
 void SV_DropClient(player_t &who);
-void SV_PlayerTriedToCheat(player_t &player);
 void SV_ActorTarget(AActor *actor);
 void SV_ActorTracer(AActor *actor);
 void SV_ForceSetTeam(player_t &who, team_t team);

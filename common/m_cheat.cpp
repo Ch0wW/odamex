@@ -113,8 +113,13 @@ void cht_DoCheat (player_t *player, int cheat)
 	char msgbuild[32];
 
 	switch (cheat) {
+
 		// IDDQD also uses CHT_GOD, so don't break.
 		case CHT_IDDQD:
+
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			if (!(player->cheats & CF_GODMODE)) {
 				if (player->mo)
 					player->mo->health = deh.GodHealth;
@@ -122,6 +127,10 @@ void cht_DoCheat (player_t *player, int cheat)
 				player->health = deh.GodHealth;
 			}	
 		case CHT_GOD:
+
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			player->cheats ^= CF_GODMODE;
 			if (player->cheats & CF_GODMODE)
 				msg = GStrings(STSTR_DQDON);
@@ -130,6 +139,10 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_NOCLIP:
+
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			player->cheats ^= CF_NOCLIP;
 			if (player->cheats & CF_NOCLIP)
 				msg = GStrings(STSTR_NCON);
@@ -138,6 +151,10 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_FLY:
+
+			if (player->health <= 0 || !player)
+				return;
+
 			player->cheats ^= CF_FLY;
 			if (player->cheats & CF_FLY)
 				msg = "You feel lighter";
@@ -146,14 +163,16 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_NOTARGET:
-			if (!multiplayer)
-			{
+			
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 				player->cheats ^= CF_NOTARGET;
 				if (player->cheats & CF_NOTARGET)
 					msg = "notarget ON";
 				else
 					msg = "notarget OFF";
-			}
+			
 			break;
 
 		case CHT_CHASECAM:
@@ -165,12 +184,19 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_CHAINSAW:
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			player->weaponowned[wp_chainsaw] = true;
 			player->powers[pw_invulnerability] = true;
 			msg = GStrings(STSTR_CHOPPERS);
 			break;
 
 		case CHT_IDKFA:
+			
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			cht_Give (player, "backpack");
 			cht_Give (player, "weapons");
 			cht_Give (player, "ammo");
@@ -181,6 +207,10 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_IDFA:
+
+			if (player->health <= 0 || !player || player->spectator)
+				return;
+
 			cht_Give (player, "backpack");
 			cht_Give (player, "weapons");
 			cht_Give (player, "ammo");
@@ -196,6 +226,9 @@ void cht_DoCheat (player_t *player, int cheat)
 		case CHT_BEHOLDA:
 		case CHT_BEHOLDL:
 			{
+				if (player->health <= 0 || !player || player->spectator)
+					return;
+
 				int i = cheat - CHT_BEHOLDV;
 
 				if (!player->powers[i])
@@ -215,6 +248,9 @@ void cht_DoCheat (player_t *player, int cheat)
 				//
 				// killough 2/7/98: cleaned up code and changed to use dprintf;
 				// fixed lost soul bug (LSs left behind when PEs are killed)
+
+				if (player->health <= 0 || !player || player->spectator)
+					return;
 
 				int killcount = 0;
 				AActor *actor;
@@ -244,11 +280,10 @@ void cht_DoCheat (player_t *player, int cheat)
 			}
 			break;
 	}
-	if (server)
+	if (serverside)
 		SV_BroadcastPrintf ("%s activated a cheat: %s\n", player->userinfo.netname.c_str(), msg);
-	
-	/*if (player == &consoleplayer())
-		Printf(PRINT_HIGH, "%s\n", msg);*/
+	else if (clientside && player == &consoleplayer())
+		Printf(PRINT_HIGH, "%s\n", msg);
 }
 
 void cht_Give (player_t *player, const char *name)
@@ -257,8 +292,13 @@ void cht_Give (player_t *player, const char *name)
 	int i;
 	gitem_t *it;
 
-	if (player != &consoleplayer())
-		Printf (PRINT_HIGH, "%s is a cheater: give %s\n", player->userinfo.netname.c_str(), name);
+	if (player->health <= 0 || !player || player->spectator)
+		return;
+
+	if (serverside)
+		SV_BroadcastPrintf("%s activated a cheat: give %s\n", player->userinfo.netname.c_str(), name);
+	else if (clientside && player == &consoleplayer())
+		Printf(PRINT_HIGH, "Give %s\n", name);
 
 	if (stricmp (name, "all") == 0)
 		giveall = true;

@@ -849,6 +849,7 @@ BEGIN_COMMAND (playerinfo)
 	Printf(PRINT_HIGH, " time             - %d \n",		player->GameTime);
 	Printf(PRINT_HIGH, " spectator        - %d \n",		player->spectator);
 	Printf(PRINT_HIGH, " downloader       - %d \n",		player->playerstate == PST_DOWNLOAD);
+
 	Printf (PRINT_HIGH, "--------------------------------------- \n");
 }
 END_COMMAND (playerinfo)
@@ -1330,9 +1331,6 @@ void CL_SendUserInfo(void)
 	for (int i = 3; i >= 0; i--)
 		MSG_WriteByte(&net_buffer, coninfo->color[i]);
 
-	// [SL] place holder for deprecated skins
-	MSG_WriteString	(&net_buffer, "");
-
 	MSG_WriteLong	(&net_buffer, coninfo->aimdist);
 	MSG_WriteBool	(&net_buffer, coninfo->unlag);  // [SL] 2011-05-11
 	MSG_WriteBool	(&net_buffer, coninfo->predict_weapons);
@@ -1380,9 +1378,6 @@ void CL_SetupUserInfo(void)
 
 	for (int i = 3; i >= 0; i--)
 		p->userinfo.color[i] = MSG_ReadByte();
-
-	// [SL] place holder for deprecated skins
-	MSG_ReadString();
 
 	p->GameTime			= MSG_ReadShort();
 
@@ -2331,6 +2326,7 @@ void CL_SpawnPlayer()
 	p->bonuscount = 0;
 	p->extralight = 0;
 	p->fixedcolormap = 0;
+	p->cheats = 0;
 
 	p->xviewshift = 0;
 	p->viewheight = VIEWHEIGHT;
@@ -2555,6 +2551,19 @@ void CL_DamagePlayer(void)
 		if(p->mo->info->painstate)
 			P_SetMobjState(p->mo, p->mo->info->painstate);
 	}
+}
+
+
+//
+// CL_SetPlayerCheats
+// Set the cheats the server allows us to have.
+//
+void CL_SetPlayerCheats(void)
+{
+	player_t *p;
+
+	p = &idplayer(MSG_ReadByte());
+	p->cheats = MSG_ReadByte();
 }
 
 extern int MeansOfDeath;
@@ -3514,6 +3523,7 @@ void CL_InitCommands(void)
 	cmds[svc_spawnplayer]		= &CL_SpawnPlayer;
 //	cmds[svc_spawnhiddenplayer]	= &CL_SpawnHiddenPlayer;
 	cmds[svc_damageplayer]		= &CL_DamagePlayer;
+	cmds[svc_setplayercheat]	= &CL_SetPlayerCheats;
 	cmds[svc_firepistol]		= &CL_FirePistol;
 	cmds[svc_fireweapon]		= &CL_FireWeapon;
 

@@ -732,9 +732,7 @@ BEGIN_COMMAND (god)
 	if (CheckCheatmode () )
 		return;
 
-	consoleplayer().cheats ^= CF_GODMODE;
-	if (!multiplayer)
-		Printf(PRINT_HIGH, "%s\n", consoleplayer().cheats & CF_GODMODE ? GStrings(STSTR_DQDON) : GStrings(STSTR_DQDOFF));
+	cht_DoCheat(&consoleplayer(), CHT_GOD);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_GOD);
@@ -746,9 +744,7 @@ BEGIN_COMMAND (notarget)
 	if (CheckCheatmode ())
 		return;
 
-	consoleplayer().cheats ^= CF_NOTARGET;
-	//if (!multiplayer)	// Since this cheat doesn't properly work online, leave it as SP-only.
-	Printf(PRINT_HIGH, "Notarget %s\n", consoleplayer().cheats & CF_NOTARGET ? "on" : "off");
+	cht_DoCheat(&consoleplayer(), CHT_NOTARGET);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_NOTARGET);
@@ -760,8 +756,7 @@ BEGIN_COMMAND (fly)
 	if (!consoleplayer().spectator && CheckCheatmode ())
 		return;
 
-	consoleplayer().cheats ^= CF_FLY;
-	if (!multiplayer)	Printf(PRINT_HIGH, "Fly mode %s\n", consoleplayer().cheats & CF_FLY ? "on" : "off");
+	cht_DoCheat(&consoleplayer(), CHT_FLY);
 
 	if (!consoleplayer().spectator)
 	{
@@ -776,8 +771,7 @@ BEGIN_COMMAND (noclip)
 	if (CheckCheatmode ())
 		return;
 
-	consoleplayer().cheats ^= CF_NOCLIP;
-	if (!multiplayer)    Printf(PRINT_HIGH, "%s\n", consoleplayer().cheats & CF_NOCLIP ? GStrings(STSTR_NCON) : GStrings(STSTR_NCOFF));
+	cht_DoCheat(&consoleplayer(), CHT_NOCLIP);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_NOCLIP);
@@ -808,10 +802,10 @@ BEGIN_COMMAND (chase)
 		if (CheckCheatmode ())
 			return;
 
-		consoleplayer().cheats ^= CF_CHASECAM;
+		cht_DoCheat(&consoleplayer(), CHT_CHASECAM);
 
 		MSG_WriteMarker(&net_buffer, clc_cheat);
-		MSG_WriteByte(&net_buffer, consoleplayer().cheats);
+		MSG_WriteByte(&net_buffer, CHT_CHASECAM);
 	}
 }
 END_COMMAND (chase)
@@ -862,6 +856,9 @@ BEGIN_COMMAND (give)
 	if (name.length())
 	{
 		cht_Give(&consoleplayer(), name.c_str());
+
+		MSG_WriteMarker(&net_buffer, clc_cheatgive);
+		MSG_WriteString(&net_buffer, name.c_str());
 	}
 }
 END_COMMAND (give)

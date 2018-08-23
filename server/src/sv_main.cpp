@@ -52,6 +52,7 @@
 #include "c_console.h"
 #include "c_dispatch.h"
 #include "m_argv.h"
+#include "m_cheat.h"
 #include "m_random.h"
 #include "m_vectors.h"
 #include "p_ctf.h"
@@ -822,10 +823,7 @@ void SV_UpdateFrags(player_t &player)
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
 		MSG_WriteByte(&cl->reliablebuf, player.id);
-		if (sv_gametype != GM_COOP)
-			MSG_WriteShort(&cl->reliablebuf, player.fragcount);
-		else
-			MSG_WriteShort(&cl->reliablebuf, player.killcount);
+		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
 		MSG_WriteShort (&cl->reliablebuf, player.deathcount);
 		MSG_WriteShort(&cl->reliablebuf, player.points);
 		MSG_WriteShort(&cl->reliablebuf, player.fragspree);
@@ -847,9 +845,6 @@ void SV_SendUserInfo (player_t &player, client_t* cl)
 
 	for (int i = 3; i >= 0; i--)
 		MSG_WriteByte(&cl->reliablebuf, p->userinfo.color[i]);
-
-	// [SL] place holder for deprecated skins
-	MSG_WriteString	(&cl->reliablebuf, "");
 
 	MSG_WriteShort	(&cl->reliablebuf, time(NULL) - p->JoinTime);
 }
@@ -897,9 +892,6 @@ bool SV_SetupUserInfo(player_t &player)
 	byte color[4];
 	for (int i = 3; i >= 0; i--)
 		color[i] = MSG_ReadByte();
-
-	// [SL] place holder for deprecated skins
-	MSG_ReadString();
 
 	fixed_t aimdist = MSG_ReadLong();
 	bool unlag = MSG_ReadBool();
@@ -1575,6 +1567,9 @@ void SV_SendGametic(client_t* cl)
 //
 // SV_ClientFullUpdate
 //
+// Sends all the infos from the server to the client.
+// Used when connecting to a server.
+//
 void SV_ClientFullUpdate(player_t &pl)
 {
 	client_t *cl = &pl.client;
@@ -1599,11 +1594,8 @@ void SV_ClientFullUpdate(player_t &pl)
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
 		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
-		MSG_WriteByte(&cl->reliablebuf, it->id);
-		if(sv_gametype != GM_COOP)
-			MSG_WriteShort(&cl->reliablebuf, it->fragcount);
-		else
-			MSG_WriteShort(&cl->reliablebuf, it->killcount);
+		MSG_WriteByte(&cl->reliablebuf,	 it->id);
+		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
 		MSG_WriteShort(&cl->reliablebuf, it->deathcount);
 		MSG_WriteShort(&cl->reliablebuf, it->points);
 		MSG_WriteShort(&cl->reliablebuf, it->fragspree);
@@ -1615,6 +1607,14 @@ void SV_ClientFullUpdate(player_t &pl)
 		MSG_WriteMarker (&cl->reliablebuf, svc_readystate);
 		MSG_WriteByte (&cl->reliablebuf, it->id);
 		MSG_WriteByte (&cl->reliablebuf, it->ready);
+
+		
+		if (it->cheats)	// Don't waste netbytes if the player hasn't any cheat enabled.
+		{
+			MSG_WriteMarker(&cl->reliablebuf, svc_setplayercheat);
+			MSG_WriteByte(&cl->reliablebuf, it->id);
+			MSG_WriteByte(&cl->reliablebuf, it->cheats);
+		}
 	}
 
 	// [deathz0r] send team frags/captures if teamplay is enabled
@@ -1971,7 +1971,7 @@ void SV_ConnectClient()
 	std::string passhash = MSG_ReadString();
 	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
 	{
-		Printf(PRINT_HIGH, "%s disconnected (password failed).\n", net_from.ToString());
+		Printf(PRINT_HIGH, "%s disconnected (wrong password).\n", net_from.ToString());
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
 		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
@@ -2039,6 +2039,7 @@ void SV_ConnectClient()
 	player->fragcount = 0;
 	player->killcount = 0;
 	player->points = 0;
+	player->cheats = 0;
 
 	if (!step_mode)
 	{
@@ -3386,12 +3387,6 @@ void SV_WriteCommands(void)
 	SV_UpdateDeadPlayers(); // Update dying players.
 }
 
-void SV_PlayerTriedToCheat(player_t &player)
-{
-	SV_BroadcastPrintf(PRINT_HIGH, "%s tried to cheat!\n", player.userinfo.netname.c_str());
-	SV_DropClient(player);
-}
-
 //
 // SV_FlushPlayerCmds
 //
@@ -3480,7 +3475,8 @@ void SV_ProcessPlayerCmd(player_t &player)
 		if ((netcmd->hasForwardMove() && abs(netcmd->getForwardMove()) > maxcmdmove) ||
 			(netcmd->hasSideMove() && abs(netcmd->getSideMove()) > maxcmdmove))
 		{
-			SV_PlayerTriedToCheat(player);
+			SV_BroadcastPrintf(PRINT_HIGH, "%s tried to cheat!\n", player.userinfo.netname.c_str());
+			SV_DropClient(player);
 			return;
 		}
 
@@ -3581,7 +3577,7 @@ void SV_ChangeTeam (player_t &player)  // [Toke - Teams]
 	if ((team >= NUMTEAMS && team != TEAM_NONE) || team < 0)
 		return;
 
-	if(sv_gametype == GM_CTF && team >= 2)
+	if(GAME.IsCTF() && team >= 2)
 		return;
 
 	if(sv_gametype != GM_CTF && team >= sv_teamsinplay)
@@ -3966,8 +3962,6 @@ void SV_Suicide(player_t &player)
 //
 // SV_Cheat
 //
-
-void cht_DoCheat(player_s *player, int cheat);
 void SV_Cheat(player_t &player)
 {
 	byte cheats = MSG_ReadByte();
@@ -3975,7 +3969,30 @@ void SV_Cheat(player_t &player)
 	if(!sv_allowcheats)
 		return;
 
+	int oCheats = player.cheats;
 	cht_DoCheat(&player, cheats);
+
+	if (player.cheats != oCheats)
+	{
+		for (Players::iterator it = players.begin(); it != players.end(); ++it)
+		{
+			client_t *cl = &(it->client);
+
+			MSG_WriteMarker(&cl->reliablebuf, svc_setplayercheat);
+			MSG_WriteByte(&cl->reliablebuf, player.id);
+			MSG_WriteByte(&cl->reliablebuf, player.cheats);
+		}
+	}
+}
+
+void SV_GiveCheat(player_t &player)
+{
+	const char *wantcmd = MSG_ReadString();
+
+	if (!sv_allowcheats)
+		return;
+
+	cht_Give(&player, wantcmd);
 }
 
 BOOL P_GiveWeapon(player_s*, weapontype_t, BOOL);
@@ -4252,6 +4269,10 @@ void SV_ParseCommands(player_t &player)
 
 		case clc_cheat:
 			SV_Cheat(player);
+			break;
+
+		case clc_cheatgive:
+			SV_GiveCheat(player);
 			break;
 
         case clc_cheatpulse:
