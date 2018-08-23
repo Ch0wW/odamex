@@ -2124,9 +2124,20 @@ void G_DoPlayDemo(bool justStreamInput)
 
 			usergame = false;
 
-			Printf("Deathmatch : %d\n", deathmatch);
+			if (multiplayer)
+			{
+				if (deathmatch)
+					Printf("Gamemode : %s\n", deathmatch == 2 ? "Alt. Deathmatch" : "Deathmatch");
+				else
+					Printf("Gamemode : Cooperation\n");
+
+				Printf("Players : %d\n", players.size());
+			} else {
+				Printf("Single-player Demo.\n");
+			}
+			
 			Printf("Skill : %d\n", skill);
-			Printf("Playersize : %d\n", players.size());
+			
 		}
 
 		demoplayback = true;

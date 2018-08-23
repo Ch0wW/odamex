@@ -187,51 +187,33 @@ BOOL P_GiveAmmo(player_t *player, ammotype_t ammotype, int num)
 	int oldammotype;
 
 	if (ammotype == am_noammo)
-    {
 		return false;
-    }
 
 	if (ammotype < 0 || ammotype > NUMAMMO)
-    {
 		I_Error("P_GiveAmmo: bad type %i", ammotype);
-    }
 
 	if (player->ammo[ammotype] == player->maxammo[ammotype])
-    {
 		return false;
-    }
 
 	if (num)
-    {
 		num *= clipammo[ammotype];
-    }
 	else
-    {
 		num = clipammo[ammotype]/2;
-    }
 
 	if (sv_skill == sk_baby || sv_skill == sk_nightmare || sv_doubleammo)
-	{
-		// give double ammo in trainer mode,
-		// you'll need in nightmare
-		num <<= 1;
-	}
+		num <<= 1;	// Gives double ammo
 
 	oldammotype = player->ammo[ammotype];
 	player->ammo[ammotype] += num;
 
 	if (player->ammo[ammotype] > player->maxammo[ammotype])
-    {
 		player->ammo[ammotype] = player->maxammo[ammotype];
-    }
 
 	// If non zero ammo,
 	// don't change up weapons,
 	// player was lower on purpose.
 	if (oldammotype)
-    {
 		return true;
-    }
 
 	// We were down to zero,
 	// so select a new weapon.
@@ -242,13 +224,9 @@ BOOL P_GiveAmmo(player_t *player, ammotype_t ammotype, int num)
             if (player->readyweapon == wp_fist)
             {
                 if (player->weaponowned[wp_chaingun])
-                {
                     player->pendingweapon = wp_chaingun;
-                }
                 else
-                {
                     player->pendingweapon = wp_pistol;
-                }
             }
             break;
 
@@ -257,9 +235,7 @@ BOOL P_GiveAmmo(player_t *player, ammotype_t ammotype, int num)
                 player->readyweapon == wp_pistol)
             {
                 if (player->weaponowned[wp_shotgun])
-                {
                     player->pendingweapon = wp_shotgun;
-                }
             }
             break;
 
@@ -268,9 +244,7 @@ BOOL P_GiveAmmo(player_t *player, ammotype_t ammotype, int num)
                 || player->readyweapon == wp_pistol)
             {
                 if (player->weaponowned[wp_plasma])
-                {
                     player->pendingweapon = wp_plasma;
-                }
             }
             break;
 
@@ -278,9 +252,7 @@ BOOL P_GiveAmmo(player_t *player, ammotype_t ammotype, int num)
             if (player->readyweapon == wp_fist)
             {
                 if (player->weaponowned[wp_missile])
-                {
                     player->pendingweapon = wp_missile;
-                }
             }
 	    default:
             break;
@@ -312,21 +284,15 @@ BOOL P_GiveWeapon(player_t *player, weapontype_t weapon, BOOL dropped)
 	{
 		// leave placed weapons forever on net games
 		if (player->weaponowned[weapon])
-        {
 			return false;
-        }
 
 		player->bonuscount = BONUSADD;
 		player->weaponowned[weapon] = true;
 
-		if (sv_gametype != GM_COOP)
-        {
+		if (!GAME.IsCooperation())
 			P_GiveAmmo(player, weaponinfo[weapon].ammotype, 5);
-        }
 		else
-        {
 			P_GiveAmmo(player, weaponinfo[weapon].ammotype, 2);
-        }
 
 		if (P_CheckSwitchWeapon(player, weapon))
 			player->pendingweapon = weapon;
@@ -343,21 +309,15 @@ BOOL P_GiveWeapon(player_t *player, weapontype_t weapon, BOOL dropped)
 		// give one clip with a dropped weapon,
 		// two clips with a found weapon
 		if (dropped)
-        {
 			gaveammo = ((P_GiveAmmo(player, weaponinfo[weapon].ammotype, 1)) != 0);
-        }
 		else
-        {
 			gaveammo = ((P_GiveAmmo(player, weaponinfo[weapon].ammotype, 2)) != 0);
-        }
 	}
-	else
-    {
+	else {
 		gaveammo = false;
     }
 
-	if (player->weaponowned[weapon])
-    {
+	if (player->weaponowned[weapon]) {
 		gaveweapon = false;
     }
 	else
@@ -378,15 +338,11 @@ BOOL P_GiveWeapon(player_t *player, weapontype_t weapon, BOOL dropped)
 BOOL P_GiveBody(player_t *player, int num)
 {
 	if (player->health >= MAXHEALTH)
-    {
 		return false;
-    }
 
 	player->health += num;
 	if (player->health > MAXHEALTH)
-    {
 		player->health = MAXHEALTH;
-    }
 	player->mo->health = player->health;
 
 	return true;
@@ -403,9 +359,7 @@ BOOL P_GiveArmor(player_t *player, int armortype)
 
 	hits = armortype * 100;
 	if (player->armorpoints >= hits)
-    {
 		return false;	// don't pick up
-    }
 
 	player->armortype = armortype;
 	player->armorpoints = hits;
@@ -419,9 +373,7 @@ BOOL P_GiveArmor(player_t *player, int armortype)
 void P_GiveCard(player_t *player, card_t card)
 {
 	if (player->cards[card])
-    {
 		return;
-    }
 
 	player->bonuscount = BONUSADD;
 	player->cards[card] = 1;
@@ -430,10 +382,9 @@ void P_GiveCard(player_t *player, card_t card)
 //
 // P_GivePower
 //
-BOOL P_GivePower(player_t *player, int /*powertype_t*/ power)
+BOOL P_GivePower(player_t *player, int power)
 {
-	if (power == pw_invulnerability)
-	{
+	if (power == pw_invulnerability) {
 		player->powers[power] = INVULNTICS;
 		return true;
 	}
@@ -445,29 +396,24 @@ BOOL P_GivePower(player_t *player, int /*powertype_t*/ power)
 		return true;
 	}
 
-	if (power == pw_infrared)
-	{
+	if (power == pw_infrared) {
 		player->powers[power] = INFRATICS;
 		return true;
 	}
 
-	if (power == pw_ironfeet)
-	{
+	if (power == pw_ironfeet) {
 		player->powers[power] = IRONTICS;
 		return true;
 	}
 
-	if (power == pw_strength)
-	{
+	if (power == pw_strength) {
 		P_GiveBody(player, 100);
 		player->powers[power] = 1;
 		return true;
 	}
 
 	if (player->powers[power])
-    {
 		return false;	// already got it
-    }
 
 	player->powers[power] = 1;
 	return true;
@@ -502,18 +448,16 @@ void P_GiveSpecial(player_t *player, AActor *special)
 		// armor
 	    case SPR_ARM1:
             if (!P_GiveArmor(player, deh.GreenAC))
-            {
                 return;
-            }
+
             SV_TouchSpecial(special, player);
             PickupMessage(toucher, GStrings(GOTARMOR));
             break;
 
 	    case SPR_ARM2:
             if (!P_GiveArmor(player, deh.BlueAC))
-            {
                 return;
-            }
+
             SV_TouchSpecial(special, player);
             PickupMessage(toucher, GStrings(GOTMEGA));
             break;
@@ -522,9 +466,8 @@ void P_GiveSpecial(player_t *player, AActor *special)
 	    case SPR_BON1:
             player->health++;				// can go over 100%
             if (player->health > deh.MaxSoulsphere)
-            {
                 player->health = deh.MaxSoulsphere;
-            }
+
             player->mo->health = player->health;
             SV_TouchSpecial(special, player);
             PickupMessage(toucher, GStrings(GOTHTHBONUS));
@@ -533,13 +476,11 @@ void P_GiveSpecial(player_t *player, AActor *special)
 	    case SPR_BON2:
             player->armorpoints++;			// can go over 100%
             if (player->armorpoints > deh.MaxArmor)
-            {
                 player->armorpoints = deh.MaxArmor;
-            }
+
             if (!player->armortype)
-            {
                 player->armortype = deh.GreenAC;
-            }
+
             SV_TouchSpecial(special, player);
             PickupMessage(toucher, GStrings(GOTARMBONUS));
             break;
@@ -547,9 +488,8 @@ void P_GiveSpecial(player_t *player, AActor *special)
 	    case SPR_SOUL:
             player->health += deh.SoulsphereHealth;
             if (player->health > deh.MaxSoulsphere)
-            {
                 player->health = deh.MaxSoulsphere;
-            }
+
             player->mo->health = player->health;
             PickupMessage(toucher, GStrings(GOTSUPER));
             sound = 1;
@@ -575,23 +515,20 @@ void P_GiveSpecial(player_t *player, AActor *special)
             P_GiveCard(player, it_bluecard);
             sound = 3;
             if (!multiplayer)
-            {
                 break;
-            }
+
             SV_TouchSpecial(special, player);
             return;
 
 	    case SPR_YKEY:
             if (!player->cards[it_yellowcard])
-            {
                 PickupMessage(toucher, GStrings(GOTYELWCARD));
-            }
+
             P_GiveCard(player, it_yellowcard);
             sound = 3;
             if (!multiplayer)
-            {
                 break;
-            }
+
             SV_TouchSpecial(special, player);
             return;
 
@@ -680,9 +617,8 @@ void P_GiveSpecial(player_t *player, AActor *special)
 		// power ups
 	    case SPR_PINV:
             if (!P_GivePower(player, pw_invulnerability))
-            {
                 return;
-            }
+            
             PickupMessage(toucher, GStrings(GOTINVUL));
             sound = 1;
             SV_TouchSpecial(special, player);
@@ -690,9 +626,8 @@ void P_GiveSpecial(player_t *player, AActor *special)
 
 	    case SPR_PSTR:
             if (!P_GivePower(player, pw_strength))
-            {
                 return;
-            }
+            
             PickupMessage(toucher, GStrings(GOTBERSERK));
             if (player->readyweapon != wp_fist)
             {
