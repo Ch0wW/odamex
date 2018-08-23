@@ -336,11 +336,16 @@ void SetLanguageIDs ()
 	if (langid == 0 || langid > 3)
 	{
     #ifdef _WIN32
-		memset (LanguageIDs, 0, sizeof(LanguageIDs));
-		SubsetLanguageIDs (LOCALE_USER_DEFAULT, LOCALE_ILANGUAGE, 0);
-		SubsetLanguageIDs (LOCALE_USER_DEFAULT, LOCALE_IDEFAULTLANGUAGE, 1);
-		SubsetLanguageIDs (LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, 2);
-		SubsetLanguageIDs (LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTLANGUAGE, 3);
+		if (baseapp == server)
+			langid = 1;		// Force language to US English if we're a Windows server.
+		else
+		{
+			memset(LanguageIDs, 0, sizeof(LanguageIDs));
+			SubsetLanguageIDs(LOCALE_USER_DEFAULT, LOCALE_ILANGUAGE, 0);
+			SubsetLanguageIDs(LOCALE_USER_DEFAULT, LOCALE_IDEFAULTLANGUAGE, 1);
+			SubsetLanguageIDs(LOCALE_SYSTEM_DEFAULT, LOCALE_ILANGUAGE, 2);
+			SubsetLanguageIDs(LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTLANGUAGE, 3);
+		}
     #else
         langid = 1;     // Default to US English on non-windows systems
     #endif

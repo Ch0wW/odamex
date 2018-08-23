@@ -3688,11 +3688,10 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 
 			if (!silent)
 			{
-				if (sv_gametype != GM_TEAMDM && sv_gametype != GM_CTF)
-					SV_BroadcastPrintf("%s joined the game.\n", player.userinfo.netname.c_str());
+				if (GAME.IsTeamGame())
+					SV_BroadcastPrintf("%s joined the game on the %s team.\n", player.userinfo.netname.c_str(), team_names[player.userinfo.team]);
 				else
-					SV_BroadcastPrintf("%s joined the game on the %s team.\n",
-									   player.userinfo.netname.c_str(), team_names[player.userinfo.team]);
+					SV_BroadcastPrintf("%s joined the game.\n", player.userinfo.netname.c_str());
 			}
 
 			// GhostlyDeath -- Reset Frags, Deaths and Kills
