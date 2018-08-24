@@ -202,7 +202,7 @@ FArchive &operator<< (FArchive &arc, UserInfo &info)
 {
 	char netname[MAXPLAYERNAME + 1];
 	memset(netname, 0, MAXPLAYERNAME + 1);
-	strncpy(netname, info.netname.c_str(), MAXPLAYERNAME);
+	strncpy(netname, info.GetName(), MAXPLAYERNAME);
 	arc.Write(netname, MAXPLAYERNAME + 1);
 
 	arc.Write(&info.team, sizeof(info.team));  // [Toke - Teams]

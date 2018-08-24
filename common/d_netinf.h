@@ -62,6 +62,7 @@ enum weaponswitch_t
 
 struct UserInfo
 {
+
 	std::string		netname;
 	team_t			team; // [Toke - Teams]
 	fixed_t			aimdist;
@@ -74,6 +75,9 @@ struct UserInfo
 	byte			weapon_prefs[NUMWEAPONS];
 
 	static const byte weapon_prefs_default[NUMWEAPONS];
+
+
+	const char *GetName() const { return netname.c_str(); }
 
 	UserInfo() : team(TEAM_NONE), aimdist(0),
 	             unlag(true), predict_weapons(true), update_rate(2),

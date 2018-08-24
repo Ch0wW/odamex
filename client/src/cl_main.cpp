@@ -839,7 +839,7 @@ BEGIN_COMMAND (playerinfo)
 		sprintf(team, "RED");
 
 	Printf (PRINT_HIGH, "---------------[player info]----------- \n");
-	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.netname.c_str());
+	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.GetName());
 	if (GAME.IsTeamGame()) 
 		Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
 	Printf(PRINT_HIGH, " userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
@@ -1324,7 +1324,7 @@ void CL_SendUserInfo(void)
 	D_SetupUserInfo();
 
 	MSG_WriteMarker	(&net_buffer, clc_userinfo);
-	MSG_WriteString	(&net_buffer, coninfo->netname.c_str());
+	MSG_WriteString	(&net_buffer, coninfo->GetName());
 	MSG_WriteByte	(&net_buffer, coninfo->team); // [Toke]
 	MSG_WriteLong	(&net_buffer, coninfo->gender);
 
@@ -1877,7 +1877,7 @@ void CL_Say()
 			return;
 	}
 
-	const char* name = player.userinfo.netname.c_str();
+	const char* name = player.userinfo.GetName();
 
 	int levelchat;
 	char* soundinfo;

@@ -2428,7 +2428,7 @@ void DLevelScript::RunScript ()
 				if (player)
 				{
 					workwhere += sprintf (workwhere, "%s",
-						activator->player->userinfo.netname.c_str());
+						activator->player->userinfo.GetName());
 				}
 				else if (activator)
 				{

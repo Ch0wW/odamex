@@ -235,7 +235,7 @@ next:
 	// Player info
 	for(Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
-		MSG_WriteString(&ml_message, it->userinfo.netname.c_str());
+		MSG_WriteString(&ml_message, it->userinfo.GetName());
 
 		for (int i = 3; i >= 0; i--)
 			MSG_WriteByte(&ml_message, it->userinfo.color[i]);

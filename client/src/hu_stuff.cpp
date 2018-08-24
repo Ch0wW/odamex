@@ -1648,7 +1648,7 @@ void HU_ConsoleScores(player_t *player)
 				if (itplayer->userinfo.team == team_num)
 				{
 					sprintf(str, "%-15s %-6d N/A  %-5d %4d\n",
-							itplayer->userinfo.netname.c_str(),
+							itplayer->userinfo.GetName(),
 							itplayer->points,
 							//itplayer->captures,
 							itplayer->fragcount,
@@ -1703,7 +1703,7 @@ void HU_ConsoleScores(player_t *player)
 				if (itplayer->userinfo.team == team_num)
 				{
 					sprintf(str, "%-15s %-5d %-6d %2.1f %4d\n",
-							itplayer->userinfo.netname.c_str(),
+							itplayer->userinfo.GetName(),
 							itplayer->fragcount,
 							itplayer->deathcount,
 							HU_CalculateFragDeathRatio(itplayer),
@@ -1747,7 +1747,7 @@ void HU_ConsoleScores(player_t *player)
 		{
 			const player_t* itplayer = *it;
 			sprintf(str, "%-15s %-5d %-6d %2.1f %4d\n",
-					itplayer->userinfo.netname.c_str(),
+					itplayer->userinfo.GetName(),
 					itplayer->fragcount,
 					itplayer->deathcount,
 					HU_CalculateFragDeathRatio(itplayer),
@@ -1775,7 +1775,7 @@ void HU_ConsoleScores(player_t *player)
 		{
 			const player_t* itplayer = *it;
 			sprintf(str,"%-15s %-5d %-6d %2.1f %4d\n",
-					itplayer->userinfo.netname.c_str(),
+					itplayer->userinfo.GetName(),
 					itplayer->killcount,
 					itplayer->deathcount,
 					HU_CalculateKillDeathRatio(itplayer),
@@ -1798,7 +1798,7 @@ void HU_ConsoleScores(player_t *player)
 		for (PlayerPtrList::const_iterator it = sortedspectators.begin(); it != sortedspectators.end(); ++it)
 		{
 			const player_t* itplayer = *it;
-			sprintf(str, "%-15s\n", itplayer->userinfo.netname.c_str());
+			sprintf(str, "%-15s\n", itplayer->userinfo.GetName());
 			if (itplayer == player)
 				Printf_Bold(str);
 			else

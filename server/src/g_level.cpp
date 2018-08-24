@@ -297,8 +297,8 @@ void G_DoNewGame (void)
 
 	// run script at the start of each map
 	// [ML] 8/22/2010: There are examples in the wiki that outright don't work
-	// when onlcvars (addcommandstring's second param) is true.  Is there a
-	// reason why the mapscripts ahve to be safe mode?
+	// when onlycvars (addcommandstring's second param) is true.  Is there a
+	// reason why the mapscripts have to be safe mode?
 	if (strlen(sv_startmapscript.cstring()))
 		AddCommandString(sv_startmapscript.cstring()/*,true*/);
 

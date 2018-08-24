@@ -413,7 +413,7 @@ void G_PlayerReborn (player_t &p) // [Toke - todo] clean this function
 	p.weaponowned[wp_pistol] = true;
 	p.ammo[am_clip] = deh.StartBullets; // [RH] Used to be 50
 
-	p.death_time = 0;
+	p.RespawnTime = 0;
 	p.tic = 0;
 }
 

@@ -131,42 +131,33 @@ public:
     // mo->health is used during levels.
 	int			health;
 	int			armorpoints;
-    // Armor type is 0-2.
-	int			armortype;
+    
+	int			armortype;								// Armor type is 0-2.
 
     // Power ups. invinc and invis are tic counters.
 	int			powers[NUMPOWERS];
 	bool		cards[NUMCARDS];
 	bool		backpack;
 
-	// [Toke - CTF] Points in a special game mode
-	int			points;
-	// [Toke - CTF - Carry] Remembers the flag when grabbed
-	bool		flags[NUMFLAGS];
+	int			points;									// [Toke - CTF] Points in a special game mode
+	bool		flags[NUMFLAGS];						// [Toke - CTF - Carry] Remembers the flag when grabbed
 
     // Frags, deaths, monster kills
 	int			fragcount;
 	int			deathcount;
 	int			killcount, itemcount, secretcount;		// for intermission
 
-	int				fragspree;							// Ch0wW : Sprees
+	int				fragspree, fragcombo;				// Ch0wW : Sprees & combos
 	unsigned long	lastfrag;							// Ch0wW : Last Frag to track down if the frag is valid for combos.
-	int				fragcombo;							// Ch0wW : Frag combos.
 
-    // Is wp_nochange if not changing.
-	weapontype_t	pendingweapon;
 	weapontype_t	readyweapon;
+	weapontype_t	pendingweapon;						// Is wp_nochange if not changing.
 
 	bool		weaponowned[NUMWEAPONS];
-	int			ammo[NUMAMMO];
-	int			maxammo[NUMAMMO];
+	int			ammo[NUMAMMO], maxammo[NUMAMMO];		// Ammunitions & Maximum amount you can carry.
 
-    // True if button down last tic.
-	int			attackdown, usedown;
-
-	// Bit flags, for cheats and debug.
-    // See cheat_t, above.
-	int			cheats;
+	int			attackdown, usedown;	// True if button down last tic.
+	int			cheats;					// Bit flags, for cheats and debug. See cheat_t (d_player.h) for more info.
 
 	// Refired shots are less accurate.
 	short		refire;
@@ -189,15 +180,16 @@ public:
 
 	int			jumpTics;				// delay the next jump for a moment
 
-	int			death_time;				// [SL] Record time of death to enforce respawn delay if needed 
 	fixed_t		oldvelocity[3];			// [RH] Used for falling damage
 
 	AActor::AActorPtr camera;			// [RH] Whose eyes this player sees through
 
 	int			air_finished;			// [RH] Time when you start drowning
 
-	int			GameTime;				// [Dash|RD] Length of time that this client has been in the game.
+	int			GameTime;				// [Dash|RD] Length of time (in minutes) that this client has been in the game.
 	time_t		JoinTime;				// [Dash|RD] Time this client joined.
+	int			RespawnTime;			// Used to both disallow abuse of "kill" cmd and to allow when to respawn.
+
     int         ping;                   // [Fly] guess what :)
 	int         last_received;
 

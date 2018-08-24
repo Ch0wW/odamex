@@ -114,7 +114,7 @@ void P_SetSpreeEvent(player_t *player, spree_event_t event, player_t *deathkille
 				combomsg = "is among the gods !";
 			
 			if (palier <= 6)
-				SV_BroadcastPrintf("%s %s\n", player->userinfo.netname.c_str(), combomsg);
+				SV_BroadcastPrintf("%s %s\n", player->userinfo.GetName(), combomsg);
 		}
 	}
 	else if (event >= SPREE_DEATH)
@@ -122,19 +122,19 @@ void P_SetSpreeEvent(player_t *player, spree_event_t event, player_t *deathkille
 		if ( (player->fragspree / SPREE_COUNTLEVEL) >= 1)
 		{
 			if (event == SPREE_SUICIDE)
-				SV_BroadcastPrintf("%s was too good until he killed himself !\n", player->userinfo.netname.c_str());
+				SV_BroadcastPrintf("%s was too good until he killed himself !\n", player->userinfo.GetName());
 			else if (event == SPREE_TEAMKILL)
-				SV_BroadcastPrintf("%s was too good until he killed his own teammate !\n", player->userinfo.netname.c_str());
+				SV_BroadcastPrintf("%s was too good until he killed his own teammate !\n", player->userinfo.GetName());
 			else if (event == SPREE_DEATH)
 			{
 				// If someone forgot to complete the SPREE_DEATH event, at least it won't crash.
 				if (deathkiller == NULL)
 				{
 					Printf("[P_INTERACTION] Error : parameter 'deathkiller' was set to NULL with a 'SPREE_DEATH' event. Make sure the function is complete!\n");
-					SV_BroadcastPrintf("%s's killing spree has been ended by someone.\n", player->userinfo.netname.c_str());
+					SV_BroadcastPrintf("%s's killing spree has been ended by someone.\n", player->userinfo.GetName());
 				}
 				else
-					SV_BroadcastPrintf("%s's killing spree has been ended by %s\n.", player->userinfo.netname.c_str(), deathkiller->userinfo.netname.c_str());
+					SV_BroadcastPrintf("%s's killing spree has been ended by %s\n.", player->userinfo.GetName(), deathkiller->userinfo.GetName());
 
 			}
 		}
@@ -1192,7 +1192,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon(target->player);
 
-		tplayer->death_time = level.time;
+		tplayer->RespawnTime = level.time;
 
 		if (target == consoleplayer().camera)
 			AM_Stop(); // don't die in auto map, switch view prior to dying
@@ -1226,7 +1226,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		if (GAME.IsDeathmatch() && sv_fraglimit &&
 			sPlayer->fragcount >= sv_fraglimit && !shotclock)
 		{
-            SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. Game won by %s!\n", sPlayer->userinfo.netname.c_str());
+            SV_BroadcastPrintf( PRINT_HIGH, "Frag limit hit. Game won by %s!\n", sPlayer->userinfo.GetName());
             shotclock = TICRATE*2;
 		}
 

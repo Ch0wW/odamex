@@ -141,14 +141,14 @@ void SV_FlagGrab (player_t &player, flag_t f, bool firstgrab)
 
 	if (player.userinfo.team != (team_t)f) {
 		if (firstgrab) {
-			SV_BroadcastPrintf ("%s has taken the %s flag\n", player.userinfo.netname.c_str(), team_names[f]);
+			SV_BroadcastPrintf ("%s has taken the %s flag\n", player.userinfo.GetName(), team_names[f]);
 			SV_CTFEvent (f, SCORE_FIRSTGRAB, player);
 		} else {
-			SV_BroadcastPrintf ("%s picked up the %s flag\n", player.userinfo.netname.c_str(), team_names[f]);
+			SV_BroadcastPrintf ("%s picked up the %s flag\n", player.userinfo.GetName(), team_names[f]);
 			SV_CTFEvent (f, SCORE_GRAB, player);
 		}
 	} else {
-		SV_BroadcastPrintf ("%s is recovering the %s flag\n", player.userinfo.netname.c_str(), team_names[f]);
+		SV_BroadcastPrintf ("%s is recovering the %s flag\n", player.userinfo.GetName(), team_names[f]);
 		SV_CTFEvent (f, SCORE_MANUALRETURN, player);
 	}
 }
@@ -163,7 +163,7 @@ void SV_FlagReturn (player_t &player, flag_t f)
 
 	CTF_SpawnFlag (f);
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has returned the %s flag\n", player.userinfo.netname.c_str(), team_names[f]);
+	SV_BroadcastPrintf (PRINT_HIGH, "%s has returned the %s flag\n", player.userinfo.GetName(), team_names[f]);
 }
 
 //
@@ -202,7 +202,7 @@ void SV_FlagScore (player_t &player, flag_t f)
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has captured the %s flag (held for %s)\n", player.userinfo.netname.c_str(), team_names[f], CTF_TimeMSG(time_held));
+	SV_BroadcastPrintf (PRINT_HIGH, "%s has captured the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
 
 	player.flags[f] = false; // take scoring player's flag
 	CTFdata[f].flagger = 0;
@@ -290,7 +290,7 @@ void SV_FlagDrop (player_t &player, flag_t f)
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has dropped the %s flag (held for %s)\n", player.userinfo.netname.c_str(), team_names[f], CTF_TimeMSG(time_held));
+	SV_BroadcastPrintf (PRINT_HIGH, "%s has dropped the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
 
 	player.flags[f] = false; // take ex-carrier's flag
 	CTFdata[f].flagger = 0;

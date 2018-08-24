@@ -330,8 +330,8 @@ class AActor : public DThinker
 	};
 
 public:
-	AActor ();
-	AActor (const AActor &other);
+	AActor () throw();
+	AActor (const AActor &other) throw();
 	AActor &operator= (const AActor &other);
 	AActor (mobjtype_t type, fixed_t x, fixed_t y, fixed_t z);
 	void Destroy ();
@@ -340,23 +340,17 @@ public:
 	virtual void RunThink ();
 
     // Info for drawing: position.
-    fixed_t		x;
-    fixed_t		y;
-    fixed_t		z;
-
-	fixed_t		prevx;
-	fixed_t		prevy;
-	fixed_t		prevz;
-
-	AActor			*snext, **sprev;	// links in sector (if needed)
+    fixed_t		x, y, z;
+	fixed_t		prevx, prevy, prevz;
+	AActor		*snext, **sprev;	// links in sector (if needed)
 
     //More drawing info: to determine current sprite.
-    angle_t		angle;	// orientation
-	angle_t		prevangle;
+    angle_t			angle;	// orientation
+	angle_t			prevangle;
     spritenum_t		sprite;	// used to find patch_t and flip value
-    int			frame;	// might be ORed with FF_FULLBRIGHT
-	fixed_t		pitch;
-	angle_t		prevpitch;
+    int				frame;	// might be ORed with FF_FULLBRIGHT
+	fixed_t			pitch;
+	angle_t			prevpitch;
 
 	DWORD			effects;			// [RH] see p_effect.h
 
@@ -365,19 +359,12 @@ public:
 	struct subsector_s		*subsector;
 
     // The closest interval over all contacted Sectors.
-    fixed_t		floorz;
-    fixed_t		ceilingz;
-	fixed_t		dropoffz;
+    fixed_t				floorz, ceilingz;
+	fixed_t				dropoffz;
 	struct sector_s		*floorsector;
 
-    // For movement checking.
-    fixed_t		radius;
-    fixed_t		height;
-
-    // Momentums, used to update position.
-    fixed_t		momx;
-    fixed_t		momy;
-    fixed_t		momz;
+    fixed_t				radius, height;		// For movement checking.
+    fixed_t				momx, momy, momz;	// Momentums, used to update position.
 
     // If == validcount, already checked.
     int			validcount;
@@ -388,7 +375,7 @@ public:
 	state_t			*state;
 	int				damage;			// For missiles	
 	int				flags;
-	int				flags2;	// Heretic flags
+	int				flags2;			// Heretic flags
 	int				oflags;			// Odamex flags
 	int				special1;		// Special info
 	int				special2;		// Special info
@@ -404,20 +391,16 @@ public:
 	AActorPtr		target;
 	AActorPtr		lastenemy;		// Last known enemy -- killogh 2/15/98
 
-    // Reaction time: if non 0, don't attack yet.
-    // Used by player to freeze a bit after teleporting.
-    int				reactiontime;
+    int				reactiontime;    // Reaction time: if non 0, don't attack yet.
+									 // Used by player to freeze a bit after teleporting.
 
     // If >0, the target will be chased
     // no matter what (even if shot)
     int			threshold;
 
-    // Additional info record for player avatars only.
-    // Only valid if type == MT_PLAYER
-	player_s*	player;
-
-    // Player number last looked for.
-    unsigned int	lastlook;
+	player_s		*player;		// Additional info record for player avatars only.
+									// Only valid if type == MT_PLAYER
+    unsigned int	lastlook;		// Player number last looked for.
 
     // For nightmare respawn.
     mapthing2_t		spawnpoint;

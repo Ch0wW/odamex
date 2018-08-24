@@ -576,14 +576,14 @@ void P_DeathThink (player_t *player)
 		bool overtime_respawn = GAME.IsCTF() && warmup.get_overtime();
 
 		bool force_respawn =	(!clientside && sv_forcerespawn &&
-								level.time >= player->death_time + sv_forcerespawntime * TICRATE);
+								level.time >= player->RespawnTime + sv_forcerespawntime * TICRATE);
 
 		int respawn_time;
 		// [SL] Can we respawn yet?
 		if (overtime_respawn)
-			respawn_time = player->death_time + warmup.get_ctf_penalty() * TICRATE;
+			respawn_time = player->RespawnTime + warmup.get_ctf_penalty() * TICRATE;
 		else
-			respawn_time = player->death_time + sv_spawndelaytime * TICRATE;
+			respawn_time = player->RespawnTime + sv_spawndelaytime * TICRATE;
 		bool delay_respawn =	(!clientside && level.time < respawn_time);
 
 		// [Toke - dmflags] Old location of DF_FORCE_RESPAWN
@@ -639,7 +639,7 @@ void P_PlayerThink (player_t *player)
 	if (!player->mo && clientside && multiplayer)
 	{
 		DPrintf("Warning: P_PlayerThink called for player %s without a valid Actor.\n",
-				player->userinfo.netname.c_str());
+				player->userinfo.GetName());
 		return;
 	}
 	else if (!player->mo)
@@ -851,7 +851,7 @@ void player_s::Serialize (FArchive &arc)
 			<< fixedcolormap
 			<< xviewshift
 			<< jumpTics
-			<< death_time
+			<< RespawnTime
 			<< air_finished;
 		for (i = 0; i < NUMPOWERS; i++)
 			arc << powers[i];
@@ -901,7 +901,7 @@ void player_s::Serialize (FArchive &arc)
 			>> fixedcolormap
 			>> xviewshift
 			>> jumpTics
-			>> death_time
+			>> RespawnTime
 			>> air_finished;
 		for (i = 0; i < NUMPOWERS; i++)
 			arc >> powers[i];
@@ -975,7 +975,7 @@ player_s::player_s()
 	xviewshift = 0;
 	memset(psprites, 0, sizeof(pspdef_t) * NUMPSPRITES);
 	jumpTics = 0;
-	death_time = 0;
+	RespawnTime = 0;
 	memset(oldvelocity, 0, sizeof(oldvelocity));
 	camera = AActor::AActorPtr();
 	air_finished = 0;
@@ -1073,7 +1073,7 @@ player_s &player_s::operator =(const player_s &other)
 
     jumpTics = other.jumpTics;
 
-	death_time = other.death_time;
+	RespawnTime = other.RespawnTime;
 
 	memcpy(oldvelocity, other.oldvelocity, sizeof(oldvelocity));
 

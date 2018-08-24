@@ -186,7 +186,7 @@ void SV_SendServerInfo()
 	{
 		if (it->ingame())
 		{
-			MSG_WriteString(&ml_message, it->userinfo.netname.c_str());
+			MSG_WriteString(&ml_message, it->userinfo.GetName());
 			MSG_WriteShort(&ml_message, it->fragcount);
 			MSG_WriteLong(&ml_message, it->ping);
 
