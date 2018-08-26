@@ -66,6 +66,11 @@ bool GIClass::IsDuel()
 	return (sv_gametype == GM_DM && sv_maxplayers == 2);
 }
 
+bool GIClass::isFFA()
+{
+	return (sv_gametype == GM_DM && sv_maxplayers != 2);
+}
+
 bool GIClass::IsTeamDM()
 {
 	return (sv_gametype == GM_TEAMDM);

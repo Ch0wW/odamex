@@ -336,7 +336,10 @@ public:
 	
 	~player_s();
 
-
+	bool onSameTeam(player_t *other) const
+	{
+		return (userinfo.team == other->userinfo.team) ? true : false;
+	}
 };
 
 typedef player_s player_t;

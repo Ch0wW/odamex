@@ -1095,7 +1095,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 
 				}
 				// [Toke] Minus a team frag for killing teammate
-				else if ( GAME.IsTeamGame() && (sPlayer->userinfo.team == tplayer->userinfo.team))
+				else if ( GAME.IsTeamGame() && sPlayer->onSameTeam(tplayer))
 				{
 					// [Toke - Teamplay || deathz0r - updated]
 					P_GiveFrags(sPlayer, -1);
@@ -1124,7 +1124,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 
 					if (clientside)	// Frag combos are only displayed clientside.
 					{
-						if (consoleplayer_id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
+						if (consoleplayer().id == sPlayer->id)	// Make sure we ARE the player responsible for the combos.
 						{
 							if (level.time < sPlayer->lastfrag + COMBO_ALLOWED_SECONDS) {	
 								sPlayer->fragcombo += 1;

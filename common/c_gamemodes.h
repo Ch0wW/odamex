@@ -14,6 +14,7 @@ public:
 	bool IsSinglePlayer();
 	bool IsCooperation();
 	bool IsDeathmatch();
+	bool isFFA();
 	bool IsDuel();
 	bool IsTeamDM();
 	bool IsCTF();
