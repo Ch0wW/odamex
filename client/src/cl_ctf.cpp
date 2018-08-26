@@ -36,6 +36,8 @@
 #include "s_sound.h"
 #include "v_text.h"
 
+CaptureTheFlag CTF;
+
 flagdata CTFdata[NUMFLAGS];
 int TEAMpoints[NUMFLAGS];
 
@@ -61,7 +63,7 @@ EXTERN_CVAR (hud_heldflag)
 // CTF_Connect
 // Receive states of all flags
 //
-void CTF_Connect()
+void CaptureTheFlag::ParseFullUpdate (void)
 {
 	size_t i;
 
@@ -81,22 +83,22 @@ void CTF_Connect()
 			player_t &player = idplayer(flagger);
 
 			if(validplayer(player))
-				CTF_CarryFlag(player, (flag_t)i);
+				this->CarryFlag(player, (flag_t)i);
 		}
 	}
 }
 
 //
-//	[Toke - CTF] CL_CTFEvent
+//	[Toke - CTF] CTF_ParseEvent
 //	Deals with CTF specific network data
 //
-void CL_CTFEvent (void)
+void CTF_ParseEvent ()
 {
 	flag_score_t event = (flag_score_t)MSG_ReadByte();
 
-	if(event == SCORE_NONE) // CTF state refresh
-	{
-		CTF_Connect();
+	if( !CTF.
+		isEventValid(event) ) {
+		CTF.ParseFullUpdate();	// Make a full refresh if we don't have any valid value
 		return;
 	}
 
@@ -125,7 +127,7 @@ void CL_CTFEvent (void)
 		case SCORE_MANUALRETURN:
 			if(validplayer(player))
 			{
-				CTF_CarryFlag(player, flag);
+				CTF.CarryFlag(player, flag);
 				if (player.id == displayplayer().id)
 					player.bonuscount = BONUSADD;
 			}
@@ -133,9 +135,7 @@ void CL_CTFEvent (void)
 
 		case SCORE_CAPTURE:
 			if (validplayer(player))
-			{
 				player.flags[flag] = 0;
-			}
 
 			CTFdata[flag].flagger = 0;
 			CTFdata[flag].state = flag_home;
@@ -145,9 +145,7 @@ void CL_CTFEvent (void)
 
 		case SCORE_RETURN:
 			if (validplayer(player))
-			{
 				player.flags[flag] = 0;
-			}
 
 			CTFdata[flag].flagger = 0;
 			CTFdata[flag].state = flag_home;
@@ -157,9 +155,7 @@ void CL_CTFEvent (void)
 
 		case SCORE_DROP:
 			if (validplayer(player))
-			{
 				player.flags[flag] = 0;
-			}
 
 			CTFdata[flag].flagger = 0;
 			CTFdata[flag].state = flag_dropped;
@@ -168,18 +164,15 @@ void CL_CTFEvent (void)
 			break;
 	}
 
-	// [AM] Play CTF sound, moved from server.
-	CTF_Sound(flag, event);
-
-	// [AM] Show CTF message.
-	CTF_Message(flag, event);
+	
+	CTF.PlaySound(flag, event);		// [AM] Play CTF sound, moved from server.
+	CTF.SetMessage(flag, event);	// [AM] Show CTF message.
 }
 
-//	CTF_CheckFlags
-//																					[Toke - CTF - carry]
-//	Checks player for flags
+//	DropFlags [Toke - CTF - carry]
+//	Removes flag infos if any
 //
-void CTF_CheckFlags (player_t &player)
+void CaptureTheFlag::DropFlags (player_t &player)
 {
 	for(size_t i = 0; i < NUMFLAGS; i++)
 	{
@@ -192,30 +185,10 @@ void CTF_CheckFlags (player_t &player)
 }
 
 //
-//	CTF_TossFlag
-//																					[Toke - CTF - Toss]
-//	Player tosses the flag
-/* [ML] 04/4/06: Remove flagtossing, too buggy
-void CTF_TossFlag (void)
-{
-	MSG_WriteMarker (&net_buffer, clc_ctfcommand);
-
-	if (CTFdata.BlueScreen)	CTFdata.BlueScreen	= false;
-	if (CTFdata.RedScreen)	CTFdata.RedScreen	= false;
-}
-
-BEGIN_COMMAND	(flagtoss)
-{
-	CTF_TossFlag ();
-}
-END_COMMAND		(flagtoss)
-*/
-
-//
-//	[Toke - CTF] CTF_CarryFlag
+//	[Toke - CTF] CarryFlag
 //	Spawns a flag on a players location and links the flag to the player
 //
-void CTF_CarryFlag (player_t &player, flag_t flag)
+void CaptureTheFlag::CarryFlag (player_t &player, flag_t flag)
 {
 	if (!validplayer(player))
 		return;
@@ -227,14 +200,14 @@ void CTF_CarryFlag (player_t &player, flag_t flag)
 	AActor *actor = new AActor(flag_table[flag][flag_carried], 0, 0, 0);
 	CTFdata[flag].actor = actor->ptr();
 
-	CTF_MoveFlags();
+	this->MoveFlags();
 }
 
 //
 //	[Toke - CTF] CTF_MoveFlag
 //	Moves the flag that is linked to a player
 //
-void CTF_MoveFlags ()
+void CaptureTheFlag::MoveFlags ()
 {
 	// denis - flag is now a boolean
 	for(size_t i = 0; i < NUMFLAGS; i++)
@@ -320,7 +293,7 @@ static void TintScreen(argb_t color)
 //	[Toke - CTF] CTF_RunTics
 //	Runs once per gametic when ctf is enabled
 //
-void CTF_RunTics (void)
+void CaptureTheFlag::Ticker (void)
 {
 
     // NES - Glowing effect on screen tint.
@@ -330,7 +303,7 @@ void CTF_RunTics (void)
         tintglow = 0;
 
 	// Move the physical clientside flag sprites
-	CTF_MoveFlags();
+	this->MoveFlags();
 
 	// Don't draw the flag the display player is carrying as it blocks the view.
 	for (size_t flag = 0; flag < NUMFLAGS; flag++)
@@ -338,15 +311,10 @@ void CTF_RunTics (void)
 		if (!CTFdata[flag].actor)
 			continue;
 
-		if (CTFdata[flag].flagger == displayplayer().id && 
-			CTFdata[flag].state == flag_carried)
-		{
+		if (CTFdata[flag].flagger == displayplayer().id && CTFdata[flag].state == flag_carried)
 			CTFdata[flag].actor->flags2 |= MF2_DONTDRAW;
-		}
 		else
-		{
 			CTFdata[flag].actor->flags2 &= ~MF2_DONTDRAW;
-		}
 	}
 }
 
@@ -354,12 +322,12 @@ void CTF_RunTics (void)
 //	[Toke - CTF - Hud] CTF_DrawHud
 //	Draws the CTF Hud, duH
 //
-void CTF_DrawHud (void)
+void CaptureTheFlag::DrawHud (void)
 {
     int tintglowtype;
     bool hasflag = false, hasflags[NUMFLAGS];
 
-	if(GAME.IsCTF() == false)
+	if( !GAME.IsCTF() )
 		return;
 
 	player_t &player = displayplayer();
@@ -407,47 +375,6 @@ void CTF_DrawHud (void)
 	}
 }
 
-FArchive &operator<< (FArchive &arc, flagdata &flag)
-{
-	int netid = flag.actor ? flag.actor->netid : 0;
-	
-	arc << flag.flaglocated
-		<< netid
-		<< flag.flagger
-		<< flag.pickup_time
-		<< flag.x << flag.y << flag.z
-		<< flag.timeout
-		<< static_cast<byte>(flag.state)
-		<< flag.sb_tick;
-		
-	arc << 0;
-
-	return arc;
-}
-
-FArchive &operator>> (FArchive &arc, flagdata &flag)
-{
-	int netid;
-	byte state;
-	int dummy;
-	
-	arc >> flag.flaglocated
-		>> netid
-		>> flag.flagger
-		>> flag.pickup_time
-		>> flag.x >> flag.y >> flag.z
-		>> flag.timeout
-		>> state
-		>> flag.sb_tick;
-		
-	arc >> dummy;
-	
-	flag.state = static_cast<flag_state_t>(state);
-	flag.actor = AActor::AActorPtr();
-
-	return arc;
-}
-
 // [AM] Clientside CTF sounds.
 // 0: Team-agnostic SFX
 // 1: Own team announcer
@@ -469,28 +396,22 @@ static const char *flag_sound[NUM_CTF_SCORE][6] = {
 };
 
 EXTERN_CVAR(snd_voxtype)
-EXTERN_CVAR(snd_gamesfx)
+EXTERN_CVAR(snd_ctfalerts)
 
 // [AM] Play appropriate sounds for CTF events.
-void CTF_Sound(flag_t flag, flag_score_t event) {
-	if (flag >= NUMFLAGS) {
-		// Invalid team
-		return;
-	}
+void CaptureTheFlag::PlaySound(flag_t flag, flag_score_t event) {
+	if (flag >= NUMFLAGS)
+		return;		// Invalid team
 
-	if (event >= NUM_CTF_SCORE) {
-		// Invalid CTF event
-		return;
-	}
+	if ( !this->isEventValid(event) )
+		return;		// Invalid CTF event
 
-	if (strcmp(flag_sound[event][0], "") == 0) {
-		// No logical sound for this event
-		return;
-	}
+	if ( !strcmp(flag_sound[event][0], "") )
+		return;		// No logical sound for this event
 
 	// Play sound effect
-	if (snd_gamesfx) {
-		if (consoleplayer().spectator || consoleplayer().userinfo.team != (team_t)flag) {
+	if (snd_ctfalerts) {
+		if (consoleplayer().spectator || !this->isOwnFlag(consoleplayer(), flag)) {
 			// Enemy flag is being evented
 			if (S_FindSound(flag_sound[event][1]) != -1) {
 				S_Sound(CHAN_GAMEINFO, flag_sound[event][1], 1, ATTN_NONE);
@@ -508,7 +429,7 @@ void CTF_Sound(flag_t flag, flag_score_t event) {
 	case 2:
 		// Possessive (yours/theirs)
 		if (!consoleplayer().spectator) {
-			if (consoleplayer().userinfo.team != (team_t)flag) {
+			if (!this->isOwnFlag(consoleplayer(), flag)) {
 				// Enemy flag is being evented
 				if (S_FindSound(flag_sound[event][3]) != -1) {
 					S_Sound(CHAN_ANNOUNCER, flag_sound[event][3], 1, ATTN_NONE);
@@ -526,7 +447,7 @@ void CTF_Sound(flag_t flag, flag_score_t event) {
 	case 1:
 		// Team colors (red/blue)
 		if (S_FindSound(flag_sound[event][4 + flag]) != -1) {
-			if (consoleplayer().userinfo.team != (team_t)flag && !consoleplayer().spectator) {
+			if (this->isOwnFlag(consoleplayer(), flag) && !consoleplayer().spectator) {
 				S_Sound(CHAN_ANNOUNCER, flag_sound[event][4 + flag], 1, ATTN_NONE);
 			} else {
 				S_Sound(CHAN_ANNOUNCER, flag_sound[event][4 + flag], 1, ATTN_NONE);
@@ -550,20 +471,20 @@ static const char* flag_message[NUM_CTF_SCORE][4] = {
 	{"Your Flag Returned", "Enemy Flag Returned", "Blue Flag Returned", "Red Flag Returned"}, // RETURN
 	{"Enemy Team Scores", "Your Team Scores", "Red Team Scores", "Blue Team Scores"}, // CAPTURE
 	{"Your Flag Dropped", "Enemy Flag Dropped", "Blue Flag Dropped", "Red Flag Dropped"}, // DROP
-	{"Your Flag Returning", "Enemy Flag Returning", "Blue Flag Returning", "Red Flag Returning"} // MANUALRETURN*/
+	{"Your Flag Returning", "Enemy Flag Returning", "Blue Flag Returning", "Red Flag Returning"} // MANUALRETURN
 };
 
-void CTF_Message(flag_t flag, flag_score_t event) {
+void CaptureTheFlag::SetMessage(flag_t flag, flag_score_t event) {
 	// Invalid team
 	if (flag >= NUMFLAGS)
 		return;
 
 	// Invalid CTF event
-	if (event >= NUM_CTF_SCORE)
+	if ( !this->isEventValid(event) )
 		return;
 
 	// No message for this event
-	if (strcmp(flag_sound[event][0], "") == 0)
+	if ( !strcmp(flag_sound[event][0], "") )
 		return;
 
 	int color = CR_GREY;
@@ -572,20 +493,17 @@ void CTF_Message(flag_t flag, flag_score_t event) {
 	switch (hud_gamemsgtype.asInt()) {
 	case 2:
 		// Possessive (yours/theirs)
-		if (!consoleplayer().spectator) {
-			if (consoleplayer().userinfo.team != (team_t)flag) {
+		if (!consoleplayer().spectator) 
+		{
+			if ( !this->isOwnFlag(consoleplayer(), flag) )
+			{
+				//if (consoleplayer() && CTFdata[i].flagger == player.id)
 				// Enemy flag is being evented
-				if (event == SCORE_GRAB || event == SCORE_FIRSTGRAB || event == SCORE_CAPTURE)
-					color = CR_GREEN;
-				else
-					color = CR_BRICK;
+				color = (event == SCORE_GRAB || event == SCORE_FIRSTGRAB || event == SCORE_CAPTURE) ? CR_GREEN : CR_BRICK;
 				C_GMidPrint(flag_message[event][1], color, 0);
 			} else {
 				// Friendly flag is being evented
-				if (event == SCORE_GRAB || event == SCORE_FIRSTGRAB || event == SCORE_CAPTURE)
-					color = CR_BRICK;
-				else
-					color = CR_GREEN;
+				color = (event == SCORE_GRAB || event == SCORE_FIRSTGRAB || event == SCORE_CAPTURE) ? CR_BRICK : CR_GREEN;
 				C_GMidPrint(flag_message[event][0], color, 0);
 			}
 			break;
@@ -593,17 +511,10 @@ void CTF_Message(flag_t flag, flag_score_t event) {
 		// fallthrough
 	case 1:
 		// Team colors (red/blue)
-		if (event == SCORE_CAPTURE) {
-			if (flag == it_blueflag)
-				color = CR_RED;
-			else
-				color = CR_BLUE;
-		} else {
-			if (flag == it_blueflag)
-				color = CR_BLUE;
-			else
-				color = CR_RED;
-		}
+		if (event == SCORE_CAPTURE) 
+			color = (flag == it_blueflag) ? CR_RED : CR_BLUE;
+		else 
+			color = (flag == it_blueflag) ? CR_BLUE : CR_RED;
 		
 		C_GMidPrint(flag_message[event][2 + flag], color, 0);
 		break;
@@ -611,5 +522,74 @@ void CTF_Message(flag_t flag, flag_score_t event) {
 		break;
 	}
 }
+
+
+FArchive &operator<< (FArchive &arc, flagdata &flag)
+{
+	int netid = flag.actor ? flag.actor->netid : 0;
+
+	arc << flag.flaglocated
+		<< netid
+		<< flag.flagger
+		<< flag.pickup_time
+		<< flag.x << flag.y << flag.z
+		<< flag.timeout
+		<< static_cast<byte>(flag.state)
+		<< flag.sb_tick;
+
+	arc << 0;
+
+	return arc;
+}
+
+FArchive &operator>> (FArchive &arc, flagdata &flag)
+{
+	int netid;
+	byte state;
+	int dummy;
+
+	arc >> flag.flaglocated
+		>> netid
+		>> flag.flagger
+		>> flag.pickup_time
+		>> flag.x >> flag.y >> flag.z
+		>> flag.timeout
+		>> state
+		>> flag.sb_tick;
+
+	arc >> dummy;
+
+	flag.state = static_cast<flag_state_t>(state);
+	flag.actor = AActor::AActorPtr();
+
+	return arc;
+}
+
+//
+//	CTF_TossFlag
+//																					[Toke - CTF - Toss]
+//	Player tosses the flag
+/* [ML] 04/4/06: Remove flagtossing, too buggy
+void CTF_TossFlag (void)
+{
+MSG_WriteMarker (&net_buffer, clc_ctfcommand);
+
+if (CTFdata.BlueScreen)	CTFdata.BlueScreen	= false;
+if (CTFdata.RedScreen)	CTFdata.RedScreen	= false;
+}
+
+BEGIN_COMMAND	(flagtoss)
+{
+CTF_TossFlag ();
+}
+END_COMMAND		(flagtoss)
+*/
+
+
+// STUBS - Let the serverside function do its magic
+bool CaptureTheFlag::onFlagTouch(player_t &player, flag_t f, bool firstgrab) { return false; }
+void CaptureTheFlag::onSocketTouch(player_t &player, flag_t f) {}
+void CaptureTheFlag::SpawnFlag(flag_t f) {};
+void CaptureTheFlag::RememberFlagPos(mapthing2_t *mthing) {}
 
 VERSION_CONTROL (cl_ctf_cpp, "$Id$")

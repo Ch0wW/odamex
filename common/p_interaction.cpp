@@ -66,10 +66,7 @@ void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
 void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...);
 void ClientObituary(AActor *self, AActor *inflictor, AActor *attacker);
 void SV_UpdateFrags(player_t &player);
-void SV_CTFEvent(flag_t f, flag_score_t event, player_t &who);
 void SV_TouchSpecial(AActor *special, player_t *player);
-bool SV_FlagTouch(player_t &player, flag_t f, bool firstgrab);
-void SV_SocketTouch(player_t &player, flag_t f);
 void SV_SendKillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill);
 void SV_SendDamagePlayer(player_t *player, int pain);
 void SV_SendDamageMobj(AActor *target, int pain);
@@ -853,30 +850,28 @@ void P_GiveSpecial(player_t *player, AActor *special)
             firstgrab = true;
 
         case SPR_BDWN: // Player touches the blue flag after it's been dropped
-            if (!SV_FlagTouch(*player, it_blueflag, firstgrab))
-            {
+            if (!CTF.onFlagTouch(*player, it_blueflag, firstgrab))
                 return;
-            }
+            
             sound = 3;
             break;
 
         case SPR_BSOK:
-            SV_SocketTouch(*player, it_blueflag);
+            CTF.onSocketTouch(*player, it_blueflag);
             return;
 
         case SPR_RFLG: // Player touches the red flag at its base
             firstgrab = true;
 
         case SPR_RDWN: // Player touches the red flag after its been dropped
-            if (!SV_FlagTouch(*player, it_redflag, firstgrab))
-            {
+            if (!CTF.onFlagTouch(*player, it_redflag, firstgrab))
                 return;
-            }
+            
             sound = 3;
             break;
 
         case SPR_RSOK:
-            SV_SocketTouch(*player, it_redflag);
+            CTF.onSocketTouch(*player, it_redflag);
             return;
 
         default:
@@ -1094,11 +1089,10 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 				{
 					P_GiveFrags(sPlayer, -1);
 					P_SetSpreeEvent(sPlayer, SPREE_SUICIDE);
-					// [Toke] Minus a team frag for suicide
-					if (sv_gametype == GM_TEAMDM)
-					{
-						P_GiveTeamPoints(sPlayer, -1);
-					}
+					
+					if (GAME.IsTeamDM())
+						P_GiveTeamPoints(sPlayer, -1);	// [Toke] Minus a team frag for suicide
+
 				}
 				// [Toke] Minus a team frag for killing teammate
 				else if ( GAME.IsTeamGame() && (sPlayer->userinfo.team == tplayer->userinfo.team))
@@ -1111,9 +1105,11 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 						P_GiveTeamPoints(sPlayer, -1);
 					}
 
+					#ifdef SERVER_APP
 					else if (GAME.IsCTF()) {
-						SV_CTFEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
+						CTF.SendEvent((flag_t)0, SCORE_BETRAYAL, *sPlayer);
 					}
+					#endif
 				}
 				else
 				{
@@ -1146,13 +1142,15 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					if (GAME.IsTeamDM()) {
 						P_GiveTeamPoints(sPlayer, 1);
 					}
+				#ifdef SERVER_APP
 					else if (GAME.IsCTF())
 					{
 						if (tplayer->flags[(flag_t)sPlayer->userinfo.team])
-							SV_CTFEvent((flag_t)0, SCORE_CARRIERKILL, *sPlayer);
+							CTF.SendEvent((flag_t)0, SCORE_CARRIERKILL, *sPlayer);
 						else
-							SV_CTFEvent((flag_t)0, SCORE_KILL, *sPlayer);
+							CTF.SendEvent((flag_t)0, SCORE_KILL, *sPlayer);
 					}
+				#endif			
 				}
 			}
 			SV_UpdateFrags(*sPlayer);
@@ -1170,7 +1168,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 	{
 		// [Toke - CTF]
 		if (GAME.IsCTF())
-			CTF_CheckFlags(*target->player);
+			CTF.DropFlags(*target->player);
 
 		if (!joinkill && !shotclock)
 			P_GiveDeaths(tplayer, 1);

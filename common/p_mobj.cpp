@@ -2669,8 +2669,8 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 			if (data->flaglocated)
 				return;
 
-			CTF_RememberFlagPos (mthing);
-			CTF_SpawnFlag(it_blueflag);
+			CTF.RememberFlagPos (mthing);
+			CTF.SpawnFlag(it_blueflag);
 		}
 
 		if (mthing->type == ID_RED_FLAG)
@@ -2679,8 +2679,8 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 			if (data->flaglocated)
 				return;
 
-			CTF_RememberFlagPos (mthing);
-			CTF_SpawnFlag(it_redflag);
+			CTF.RememberFlagPos (mthing);
+			CTF.SpawnFlag(it_redflag);
 		}
 	}
 

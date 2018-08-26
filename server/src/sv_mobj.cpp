@@ -44,7 +44,6 @@ EXTERN_CVAR(sv_nomonsters)
 EXTERN_CVAR(sv_maxplayers)
 
 void G_PlayerReborn(player_t &player);
-void CTF_RememberFlagPos(mapthing2_t *mthing);
 
 void P_SetSpectatorFlags(player_t &player)
 {

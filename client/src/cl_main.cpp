@@ -631,7 +631,7 @@ void CL_StepTics(unsigned int count)
 			CL_PlayerTimes();
 
 		if (GAME.IsCTF())
-			CTF_RunTics ();
+			CTF.Ticker ();
 
 		Maplist_Runtic();
 
@@ -3326,7 +3326,7 @@ void CL_LoadMap(void)
 	CL_ResyncWorldIndex();
 	last_svgametic = 0;
 
-	CTF_CheckFlags(consoleplayer());
+	CTF.DropFlags(consoleplayer());
 
 	gameaction = ga_nothing;
 
@@ -3556,7 +3556,7 @@ void CL_InitCommands(void)
 	cmds[svc_missedpacket]		= &CL_CheckMissedPacket;
 	cmds[svc_forceteam]			= &CL_ForceSetTeam;
 
-	cmds[svc_ctfevent]			= &CL_CTFEvent;
+	cmds[svc_ctfevent]			= &CTF_ParseEvent;
 	cmds[svc_serversettings]	= &CL_GetServerSettings;
 	cmds[svc_disconnect]		= &CL_EndGame;
 	cmds[svc_full]				= &CL_FullGame;

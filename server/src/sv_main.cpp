@@ -561,8 +561,8 @@ Players::iterator SV_RemoveDisconnectedPlayer(Players::iterator it)
 	// remove this player's actor object
 	if (it->mo)
 	{
-		if (sv_gametype == GM_CTF) //  [Toke - CTF]
-			CTF_CheckFlags(*it);
+		if (GAME.IsCTF()) //  [Toke - CTF]
+			CTF.DropFlags(*it);
 
 		// [AM] AActor->Destroy() does not destroy the AActor for good, and also
 		//      does not null the player reference.  We have to do it here to
@@ -1629,7 +1629,7 @@ void SV_ClientFullUpdate(player_t &pl)
 
 	// update flags
 	if (sv_gametype == GM_CTF)
-		CTF_Connect(pl);
+		CTF.SendFullUpdate(pl);
 
 	// update sectors
 	SV_UpdateSectors(cl);
@@ -3722,8 +3722,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		// call CTF_CheckFlags _before_ the player becomes a spectator.
 		// Otherwise a flag carrier will drop his flag at (0,0), which
 		// is often right next to one of the bases...
-		if (sv_gametype == GM_CTF)
-			CTF_CheckFlags(player);
+		if (GAME.IsCTF())
+			CTF.DropFlags(player);
 
 		// [tm512 2014/04/18] Avoid setting spectator flags on a dead player
 		// Instead we respawn the player, move him back, and immediately spectate him afterwards
@@ -4542,7 +4542,7 @@ void SV_IntermissionTimeCheck()
 void SV_GameTics (void)
 {
 	if (GAME.IsCTF())
-		CTF_RunTics();
+		CTF.Ticker();
 
 	switch (gamestate)
 	{

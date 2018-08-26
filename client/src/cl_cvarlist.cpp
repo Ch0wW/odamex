@@ -539,7 +539,7 @@ CVAR_RANGE(		snd_announcervolume, "1.0", "Announcer volume",
 CVAR_RANGE(		snd_voxtype, "2", "Voice announcer type",
 				CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 1.0f, 2.0f)
 
-CVAR(			snd_gamesfx, "1", "Game SFX", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+CVAR(			snd_ctfalerts, "1", "CTF Alert Sounds", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
 CVAR(			snd_crossover, "0", "Stereo switch",	CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 

@@ -29,6 +29,8 @@
 #include "g_warmup.h"
 #include "p_unlag.h"
 
+CaptureTheFlag CTF;
+
 bool G_CheckSpot (player_t &player, mapthing2_t *mthing);
 
 extern int shotclock;
@@ -70,69 +72,10 @@ static int ctf_points[NUM_CTF_SCORE] =
 };
 
 //
-//	[Toke - CTF] SV_CTFEvent
-//	Sends CTF events to player
-//
-void SV_CTFEvent (flag_t f, flag_score_t event, player_t &who)
-{
-	if (event == SCORE_NONE || event >= NUM_CTF_SCORE) {
-		Printf("[CTF] Invalid Event detected! (%d)\n", event);
-		return;
-	}
-
-	if(validplayer(who) && warmup.checkscorechange())
-		who.points += ctf_points[event];
-
-	for (Players::iterator it = players.begin();it != players.end();++it)
-	{
-		client_t *cl = &(it->client);
-
-		MSG_WriteMarker (&cl->reliablebuf, svc_ctfevent);
-		MSG_WriteByte (&cl->reliablebuf, event);
-		MSG_WriteByte (&cl->reliablebuf, f);
-
-		if(validplayer(who))
-		{
-			MSG_WriteByte (&cl->reliablebuf, who.id);
-			MSG_WriteLong (&cl->reliablebuf, who.points);
-		}
-		else
-		{
-			MSG_WriteByte (&cl->reliablebuf, 0);
-			MSG_WriteLong (&cl->reliablebuf, 0);
-		}
-
-		for(size_t j = 0; j < NUMFLAGS; j++)
-			MSG_WriteLong (&cl->reliablebuf, TEAMpoints[j]);
-	}
-}
-
-//
-// CTF_Connect
-// Send states of all flags to new player
-//
-void CTF_Connect(player_t &player)
-{
-	client_t *cl = &player.client;
-
-	MSG_WriteMarker (&cl->reliablebuf, svc_ctfevent);
-	MSG_WriteByte (&cl->reliablebuf, SCORE_NONE);
-
-	for(size_t i = 0; i < NUMFLAGS; i++)
-	{
-		MSG_WriteByte (&cl->reliablebuf, CTFdata[i].state);
-		MSG_WriteByte (&cl->reliablebuf, CTFdata[i].flagger);
-	}
-
-	// send team scores to the client
-	SV_CTFEvent ((flag_t)0, SCORE_REFRESH, player);
-}
-
-//
 //	[Toke - CTF] SV_FlagGrab
 //	Event of a player picking up a flag
 //
-void SV_FlagGrab (player_t &player, flag_t f, bool firstgrab)
+void CaptureTheFlag::onFlagPickup (player_t &player, flag_t f, bool firstgrab)
 {
 	player.flags[f] = true;
 	CTFdata[f].flagger = player.id;
@@ -142,14 +85,14 @@ void SV_FlagGrab (player_t &player, flag_t f, bool firstgrab)
 	if (player.userinfo.team != (team_t)f) {
 		if (firstgrab) {
 			SV_BroadcastPrintf ("%s has taken the %s flag\n", player.userinfo.GetName(), team_names[f]);
-			SV_CTFEvent (f, SCORE_FIRSTGRAB, player);
+			this->SendEvent(f, SCORE_FIRSTGRAB, player);
 		} else {
 			SV_BroadcastPrintf ("%s picked up the %s flag\n", player.userinfo.GetName(), team_names[f]);
-			SV_CTFEvent (f, SCORE_GRAB, player);
+			this->SendEvent(f, SCORE_GRAB, player);
 		}
 	} else {
 		SV_BroadcastPrintf ("%s is recovering the %s flag\n", player.userinfo.GetName(), team_names[f]);
-		SV_CTFEvent (f, SCORE_MANUALRETURN, player);
+		this->SendEvent(f, SCORE_MANUALRETURN, player);
 	}
 }
 
@@ -157,11 +100,11 @@ void SV_FlagGrab (player_t &player, flag_t f, bool firstgrab)
 //	[Toke - CTF] SV_FlagReturn
 //	Returns the flag to its socket
 //
-void SV_FlagReturn (player_t &player, flag_t f)
+void CaptureTheFlag::onFlagReturn(player_t &player, flag_t f)
 {
-	SV_CTFEvent (f, SCORE_RETURN, player);
+	this->SendEvent(f, SCORE_RETURN, player);
 
-	CTF_SpawnFlag (f);
+	CTF.SpawnFlag (f);
 
 	SV_BroadcastPrintf (PRINT_HIGH, "%s has returned the %s flag\n", player.userinfo.GetName(), team_names[f]);
 }
@@ -194,11 +137,11 @@ extern void P_GiveTeamPoints(player_t* player, int num);
 //	[Toke - CTF] SV_FlagScore
 //	Event of a player capturing the flag
 //
-void SV_FlagScore (player_t &player, flag_t f)
+void CaptureTheFlag::onFlagCapture (player_t &player, flag_t f)
 {
 	P_GiveTeamPoints(&player, 1);
 
-	SV_CTFEvent (f, SCORE_CAPTURE, player);
+	this->SendEvent (f, SCORE_CAPTURE, player);
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
@@ -207,10 +150,10 @@ void SV_FlagScore (player_t &player, flag_t f)
 	player.flags[f] = false; // take scoring player's flag
 	CTFdata[f].flagger = 0;
 
-	CTF_SpawnFlag(f);
+	CTF.SpawnFlag(f);
 
 	// checks to see if a team won a game
-	if(TEAMpoints[player.userinfo.team] >= sv_scorelimit && sv_scorelimit != 0)
+	if( (sv_scorelimit > 0) && TEAMpoints[player.userinfo.team] >= sv_scorelimit)
 	{
 		SV_BroadcastPrintf (PRINT_HIGH, "Score limit reached. %s team wins!\n", team_names[player.userinfo.team]);
 		shotclock = TICRATE*2;
@@ -221,33 +164,27 @@ void SV_FlagScore (player_t &player, flag_t f)
 // SV_FlagTouch
 // Event of a player touching a flag, called from P_TouchSpecial
 //
-bool SV_FlagTouch (player_t &player, flag_t f, bool firstgrab)
+bool CaptureTheFlag::onFlagTouch (player_t &player, flag_t f, bool firstgrab)
 {
 	if (shotclock)
 		return false;
 
-	if(player.userinfo.team == (team_t)f)
+	if (CTF.isOwnFlag(player, f))
 	{
-		if(CTFdata[f].state == flag_home) // Do nothing.
-		{
-			// score?
-			//for(size_t i = 0; i < NUMFLAGS; i++)
-			//	if(player.userinfo.team != (team_t)i && player.flags[i] && ctf_flagathometoscore)
-			//		SV_FlagScore(player, (flag_t)i);
-
-			return false;
+		if(CTFdata[f].state == flag_home) {
+			return false;	// Do nothing.
 		}
 		else // Returning team flag.
 		{
 			if (ctf_manualreturn)
-				SV_FlagGrab(player, f, firstgrab);
+				CTF.onFlagPickup(player, f, firstgrab);
 			else
-				SV_FlagReturn(player, f);
+				CTF.onFlagReturn(player, f);
 		}
 	}
-	else // Grabbing enemy flag.
+	else 
 	{
-		SV_FlagGrab(player, f, firstgrab);
+		CTF.onFlagPickup(player, f, firstgrab);	// Run the enemy flag pickup event.
 	}
 
 	// returning true should make P_TouchSpecial destroy the touched flag
@@ -258,7 +195,7 @@ bool SV_FlagTouch (player_t &player, flag_t f, bool firstgrab)
 // SV_SocketTouch
 // Event of a player touching a socket, called from P_TouchSpecial
 //
-void SV_SocketTouch (player_t &player, flag_t f)
+void CaptureTheFlag::onSocketTouch(player_t &player, flag_t f)
 {
 	if (shotclock)
 		return;
@@ -267,26 +204,26 @@ void SV_SocketTouch (player_t &player, flag_t f)
 	if (player.userinfo.team == (team_t)f && player.flags[f]) {
 		player.flags[f] = false;
 		CTFdata[f].flagger = 0;
-		SV_FlagReturn(player, f);
+		CTF.onFlagReturn(player, f);
 	}
 
 	// Scoring with enemy flag.
 	for(size_t i = 0; i < NUMFLAGS; i++)
 		if(player.userinfo.team == (team_t)f && player.userinfo.team != (team_t)i &&
 			player.flags[i] && (!ctf_flagathometoscore || CTFdata[f].state == flag_home))
-			SV_FlagScore(player, (flag_t)i);
+			CTF.onFlagCapture(player, (flag_t)i);
 }
 
 //
 //	[Toke - CTF] SV_FlagDrop
 //	Event of a player dropping a flag
 //
-void SV_FlagDrop (player_t &player, flag_t f)
+void CaptureTheFlag::onFlagDrop (player_t &player, flag_t f)
 {
 	if (shotclock)
 		return;
 
-	SV_CTFEvent (f, SCORE_DROP, player);
+	this->SendEvent (f, SCORE_DROP, player);
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
@@ -297,14 +234,14 @@ void SV_FlagDrop (player_t &player, flag_t f)
 
 	fixed_t x, y, z;
 	Unlag::getInstance().getCurrentPlayerPosition(player.id, x, y, z);
-	CTF_SpawnDroppedFlag(f, x, y, z);
+	this->SpawnDroppedFlag(f, x, y, z);
 }
 
 //
-//	[Toke - CTF] CTF_RunTics
+//	[Toke - CTF] Ticker
 //	Runs once per gametic when ctf is enabled
 //
-void CTF_RunTics (void)
+void CaptureTheFlag::Ticker (void)
 {
 	if (shotclock || gamestate != GS_LEVEL)
 		return;
@@ -325,19 +262,19 @@ void CTF_RunTics (void)
 		if(data->actor)
 			data->actor->Destroy();
 
-		SV_CTFEvent ((flag_t)i, SCORE_RETURN, idplayer(0));
+		this->SendEvent ((flag_t)i, SCORE_RETURN, idplayer(0));
 
 		SV_BroadcastPrintf (PRINT_HIGH, "%s flag returned.\n", team_names[i]);
 
-		CTF_SpawnFlag((flag_t)i);
+		this->SpawnFlag((flag_t)i);
 	}
 }
 
 //
-//	[Toke - CTF] CTF_SpawnFlag
+//	[Toke - CTF] SpawnFlag
 //	Spawns a flag of the designated type in the designated location
 //
-void CTF_SpawnFlag (flag_t f)
+void CaptureTheFlag::SpawnFlag (flag_t f)
 {
 	flagdata *data = &CTFdata[f];
 
@@ -354,7 +291,7 @@ void CTF_SpawnFlag (flag_t f)
 // CTF_SpawnDroppedFlag
 // Spawns a dropped flag
 //
-void CTF_SpawnDroppedFlag (flag_t f, int x, int y, int z)
+void CaptureTheFlag::SpawnDroppedFlag (flag_t f, int x, int y, int z)
 {
 	flagdata *data = &CTFdata[f];
 
@@ -372,18 +309,18 @@ void CTF_SpawnDroppedFlag (flag_t f, int x, int y, int z)
 //	[Toke - CTF] CTF_CheckFlags
 //	Checks to see if player has any flags in his inventory, if so it spawns that flag on players location
 //
-void CTF_CheckFlags (player_t &player)
+void CaptureTheFlag::DropFlags(player_t &player)
 {
 	for(size_t i = 0; i < NUMFLAGS; i++)
 		if(player.flags[i])
-			SV_FlagDrop (player, (flag_t)i);
+			CTF.onFlagDrop (player, (flag_t)i);
 }
 
 //
 //	[Toke - CTF] CTF_RememberFlagPos
 //	Remembers the position of flag sockets
 //
-void CTF_RememberFlagPos (mapthing2_t *mthing)
+void CaptureTheFlag::RememberFlagPos (mapthing2_t *mthing)
 {
 	flag_t f;
 
@@ -412,6 +349,65 @@ FArchive &operator<< (FArchive &arc, flagdata &flag)
 FArchive &operator>> (FArchive &arc, flagdata &flag)
 {
 	return arc;
+}
+
+//
+//	[Toke - CTF] SV_CTFEvent
+//	Sends CTF events to player
+//
+void CaptureTheFlag::SendEvent(flag_t f, flag_score_t event, player_t &who)
+{
+	if (!this->isEventValid(event)) {
+		Printf("[CTF] Invalid Event detected! (%d)\n", event);
+		return;
+	}
+
+	if (validplayer(who) && warmup.checkscorechange())
+		who.points += ctf_points[event];
+
+	for (Players::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		client_t *cl = &(it->client);
+
+		MSG_WriteMarker(&cl->reliablebuf, svc_ctfevent);
+		MSG_WriteByte(&cl->reliablebuf, event);
+		MSG_WriteByte(&cl->reliablebuf, f);
+
+		if (validplayer(who))
+		{
+			MSG_WriteByte(&cl->reliablebuf, who.id);
+			MSG_WriteLong(&cl->reliablebuf, who.points);
+		}
+		else
+		{
+			MSG_WriteByte(&cl->reliablebuf, 0);
+			MSG_WriteLong(&cl->reliablebuf, 0);
+		}
+
+		for (size_t j = 0; j < NUMFLAGS; j++)
+			MSG_WriteLong(&cl->reliablebuf, TEAMpoints[j]);
+	}
+}
+
+//
+// SendFullUpdate
+// Send states of all flags to new player
+//
+void CaptureTheFlag::SendFullUpdate(player_t &player)
+{
+	client_t *cl = &player.client;
+
+	MSG_WriteMarker(&cl->reliablebuf, svc_ctfevent);
+	MSG_WriteByte(&cl->reliablebuf, SCORE_NONE);
+
+	for (size_t i = 0; i < NUMFLAGS; i++)
+	{
+		MSG_WriteByte(&cl->reliablebuf, CTFdata[i].state);
+		MSG_WriteByte(&cl->reliablebuf, CTFdata[i].flagger);
+	}
+
+	// Send then the team scores to the client to end our full refresh
+	this->SendEvent((flag_t)0, SCORE_REFRESH, player);
 }
 
 VERSION_CONTROL (sv_ctf_cpp, "$Id$")

@@ -271,14 +271,14 @@ void D_Display()
 			if (AM_ClassicAutomapVisible() || AM_OverlayAutomapVisible())
 				AM_Drawer();
 
-			CTF_DrawHud();
+			CTF.DrawHud();
 			HU_Drawer();
 			C_DrawMid();
 			C_DrawGMid();
 			break;
 
 		case GS_INTERMISSION:
-			CTF_DrawHud();
+			CTF.DrawHud();
 			WI_Drawer();
 			HU_Drawer();
 			C_DrawMid();

@@ -809,7 +809,8 @@ void G_DoLoadLevel (int position)
 	flagdata *tempflag;
 
 	// Nes - CTF Pre flag setup
-	if (sv_gametype == GM_CTF) {
+	if (GAME.IsCTF()) 
+	{
 		tempflag = &CTFdata[it_blueflag];
 		tempflag->flaglocated = false;
 
@@ -820,7 +821,8 @@ void G_DoLoadLevel (int position)
 	P_SetupLevel (level.mapname, position);
 
 	// Nes - CTF Post flag setup
-	if (sv_gametype == GM_CTF) {
+	if (GAME.IsCTF())
+	{
 		tempflag = &CTFdata[it_blueflag];
 		if (!tempflag->flaglocated)
 			SV_BroadcastPrintf(PRINT_HIGH, "WARNING: Blue flag pedestal not found! No blue flags in game.\n");

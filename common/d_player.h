@@ -171,7 +171,7 @@ public:
     // So gun flashes light up areas.
 	int			extralight;
 										// Current PLAYPAL, ???
-	int			fixedcolormap;			//  can be set to REDCOLORMAP for pain, etc.
+	int			fixedcolormap;			// can be set to REDCOLORMAP for pain, etc.
 
 	int			xviewshift;				// [RH] view shift (for earthquakes)
 
