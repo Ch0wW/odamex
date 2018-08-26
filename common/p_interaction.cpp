@@ -1101,7 +1101,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					P_GiveFrags(sPlayer, -1);
 					P_SetSpreeEvent(sPlayer, SPREE_TEAMKILL);
 
-					if (sv_gametype == GM_TEAMDM) {
+					if (GAME.IsTeamDM()) {
 						P_GiveTeamPoints(sPlayer, -1);
 					}
 
@@ -1156,7 +1156,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			SV_UpdateFrags(*sPlayer);
 		}
 		// [deathz0r] Stats for co-op scoreboard
-		if (sv_gametype == GM_COOP &&
+		if (GAME.IsCooperation() &&
             ((target->flags & MF_COUNTKILL) || (target->type == MT_SKULL)))
 		{
 			P_GiveKills(sPlayer, 1);

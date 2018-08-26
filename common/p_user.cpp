@@ -571,6 +571,7 @@ void P_DeathThink (player_t *player)
 	if (player->damagecount && reduce_redness && !predicting)
 		player->damagecount--;
 
+#ifdef SERVER_APP
 	if(serverside)
 	{
 		bool overtime_respawn = GAME.IsCTF() && warmup.get_overtime();
@@ -592,6 +593,7 @@ void P_DeathThink (player_t *player)
 			player->playerstate = PST_REBORN;
 		}
 	}
+#endif
 }
 
 bool P_AreTeammates(player_t &a, player_t &b)

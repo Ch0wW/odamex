@@ -1400,10 +1400,10 @@ void CL_UpdateFrags(void)
 {
 	player_t &p = CL_FindPlayer(MSG_ReadByte());
 
-	if(sv_gametype != GM_COOP)
-		p.fragcount = MSG_ReadShort();
-	else
+	if(GAME.IsCooperation())
 		p.killcount = MSG_ReadShort();
+	else
+		p.fragcount = MSG_ReadShort();
 	p.deathcount = MSG_ReadShort();
 	p.points = MSG_ReadShort();
 	p.fragspree = MSG_ReadShort();

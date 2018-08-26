@@ -71,7 +71,7 @@ void Warmup::set_status(Warmup::status_t new_status)
 	this->status = new_status;
 
 	// [AM] If we switch to countdown, set the correct time.
-	if (this->status == Warmup::COUNTDOWN || this->status == Warmup::FORCE_COUNTDOWN)
+	if (this->isInCountdown())
 	{
 		this->time_begin = level.time + (sv_countdown.asInt() * TICRATE);
 		SV_BroadcastWarmupState(new_status, (short)sv_countdown.asInt());
@@ -232,7 +232,7 @@ void Warmup::forcestart()
 }
 
 // Handle tic-by-tic maintenance of the warmup.
-void Warmup::tic()
+void Warmup::Ticker()
 {
 	// If warmup isn't enabled, return
 	if (this->status == Warmup::DISABLED)
@@ -247,7 +247,7 @@ void Warmup::tic()
 		this->set_status (Warmup::WARMUP);
 
 	// If we're not advancing the countdown, we don't care.
-	if (!(this->status == Warmup::COUNTDOWN || this->status == Warmup::FORCE_COUNTDOWN))
+	if (!(this->isInCountdown()))
 		return;
 
 	// If we haven't reached the level tic that we begin the map on,
@@ -274,6 +274,14 @@ void Warmup::tic()
 
 	G_DeferedFullReset();
 	SV_BroadcastPrintf(PRINT_HIGH, "The match has started.\n");
+}
+
+bool Warmup::isGamePlaying() {
+	return this->status == this->INGAME;
+}
+
+bool Warmup::isInCountdown() {
+	return this->status == this->COUNTDOWN || this->status == this->FORCE_COUNTDOWN;
 }
 
 BEGIN_COMMAND (forcestart)

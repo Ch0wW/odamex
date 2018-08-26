@@ -26,8 +26,6 @@
 
 Warmup warmup;
 
-short Warmup::get_ctf_penalty() { return NULL; }	// Serverside function only.
-
 // Status getter
 Warmup::status_t Warmup::get_status()
 {
@@ -48,7 +46,7 @@ bool Warmup::checkfireweapon()
 	if (!multiplayer)
 		return true;
 
-	if (this->status == Warmup::COUNTDOWN || this->status == Warmup::FORCE_COUNTDOWN)
+	if (this->status == this->COUNTDOWN || this->status == this->FORCE_COUNTDOWN)
 		return false;
 	return true;
 }

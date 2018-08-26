@@ -823,8 +823,8 @@ void SV_UpdateFrags(player_t &player)
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
 		MSG_WriteByte(&cl->reliablebuf, player.id);
-		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
-		MSG_WriteShort (&cl->reliablebuf, player.deathcount);
+		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? player.killcount : player.fragcount);
+		MSG_WriteShort(&cl->reliablebuf, player.deathcount);
 		MSG_WriteShort(&cl->reliablebuf, player.points);
 		MSG_WriteShort(&cl->reliablebuf, player.fragspree);
 	}
@@ -4435,8 +4435,8 @@ void SV_TimelimitCheck()
 	if(!sv_timelimit)
 		return;
 
-	if (warmup.get_status() == warmup.INGAME && sv_warmup_overtime_enable)
-		level.timeleft = (int)(sv_timelimit * TICRATE * 60)+(warmup.get_overtime() *sv_warmup_overtime* TICRATE *60);
+	if (sv_warmup_overtime_enable && warmup.isGamePlaying())
+		level.timeleft = (int)(sv_timelimit * TICRATE * 60) + (warmup.get_overtime() * sv_warmup_overtime * TICRATE *60);
 	else
 		level.timeleft = (int)(sv_timelimit * TICRATE * 60);
 
@@ -4459,59 +4459,65 @@ void SV_TimelimitCheck()
 
 	// LEVEL TIMER
 	if (!players.empty()) {
-		if (sv_gametype == GM_DM) {
-			player_t *winplayer = &*(players.begin());
-			bool drawgame = false;
+		if (GAME.IsDeathmatch()) {
+			if (GAME.IsDuel())
+			{
+				player_t *winplayer = &*(players.begin());
+				bool drawgame = false;
 
-			if (players.size() > 1) {
-				for (Players::iterator it = players.begin();it != players.end();++it)
-				{
-					if (it->fragcount > winplayer->fragcount)
+				if (players.size() > 1) {
+					for (Players::iterator it = players.begin(); it != players.end(); ++it)
 					{
-						drawgame = false;
-						winplayer = &*it;
-					}
-					else if (it->id != winplayer->id && it->fragcount == winplayer->fragcount)
-					{
-						drawgame = true;
+						if (it->fragcount > winplayer->fragcount)
+						{
+							drawgame = false;
+							winplayer = &*it;
+						}
+						else if (it->id != winplayer->id && it->fragcount == winplayer->fragcount)
+						{
+							drawgame = true;
+						}
 					}
 				}
-			}
 
-			if (drawgame)
-			{
-				if (sv_warmup_overtime_enable && warmup.get_status() == warmup.INGAME)
+				if (drawgame)
 				{
-					warmup.add_overtime();
-					SV_BroadcastPrintf(PRINT_HIGH, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1 ? "s" : ""));
-					return;
+					if (sv_warmup_overtime_enable && warmup.isGamePlaying())
+					{
+						warmup.add_overtime();
+						SV_BroadcastPrintf("Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt() > 1 ? "s" : ""));
+						return;
+					}
+					else
+						SV_BroadcastPrintf("Time limit hit. Game is a draw!\n");
 				}
 				else
-					SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. Game is a draw!\n");
+					SV_BroadcastPrintf("Time limit hit. Game won by %s!\n", winplayer->userinfo.GetName());
 			}
-			else
-				SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. Game won by %s!\n", winplayer->userinfo.GetName());
+			else {
+				SV_BroadcastPrintf("Time limit hit.\n");	// FFA messages don't need draws.
+			}
 		}
 		else if (GAME.IsTeamGame()) {
 			team_t winteam = SV_WinningTeam ();
 
 			if (winteam == TEAM_NONE)
 			{
-				if (sv_warmup_overtime_enable && warmup.get_status() == warmup.INGAME)
+				if (sv_warmup_overtime_enable && warmup.isGamePlaying())
 				{
 					warmup.add_overtime();
-					SV_BroadcastPrintf(PRINT_HIGH, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
+					SV_BroadcastPrintf("Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
 
-					if (sv_gametype == GM_CTF)
-						SV_BroadcastPrintf(PRINT_HIGH, "Respawning penalty time: %d seconds.\n", warmup.get_ctf_penalty());
+					if (GAME.IsCTF())
+						SV_BroadcastPrintf("Respawn penalty time: %d seconds.\n", warmup.get_ctf_penalty());
 
 					return;
 				}
 				else
-					SV_BroadcastPrintf(PRINT_HIGH, "Time limit hit. Game is a draw!\n");
+					SV_BroadcastPrintf("Time limit hit. Game is a draw!\n");
 			}
 			else
-				SV_BroadcastPrintf (PRINT_HIGH, "Time limit hit. %s team wins!\n", team_names[winteam]);
+				SV_BroadcastPrintf ("Time limit hit. %s team wins!\n", team_names[winteam]);
 		}
 	}
 
@@ -4548,7 +4554,7 @@ void SV_GameTics (void)
 	{
 		case GS_LEVEL:
 			SV_RemoveCorpses();
-			warmup.tic();
+			warmup.Ticker();
 			SV_WinCheck();
 			SV_TimelimitCheck();
 			Vote_Runtic();

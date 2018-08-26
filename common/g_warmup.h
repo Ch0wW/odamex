@@ -41,8 +41,15 @@ public:
 	} status_t;
 	Warmup() : status(Warmup::DISABLED), time_begin(0) { }
 	Warmup::status_t get_status();
-	short get_countdown();
+
+	void Ticker();				// Refreshed every tick
+
+#ifdef CLIENT_APP
+	void set_client_status(status_t new_status); // Clientside only.
+#endif
+
 	void reset();
+	short get_countdown();
 	bool checkscorechange();
 	bool checktimeleftadvance();
 	bool checkfireweapon();
@@ -50,11 +57,16 @@ public:
 	void restart();
 	void forcestart();
 	void readytoggle();
-	void tic();
+
+	// Overtime
 	short get_overtime();
 	void add_overtime();
-	void set_client_status(status_t new_status); // Clientside only.
 	short get_ctf_penalty();
+
+	// Additionnal checks
+	bool isGamePlaying();
+	bool isInCountdown();
+
 private:
 	status_t status;
 	short overtime_count;
