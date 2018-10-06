@@ -832,7 +832,7 @@ void G_DoLoadLevel (int position)
 			SV_BroadcastPrintf(PRINT_HIGH, "WARNING: Red flag pedestal not found! No red flags in game.\n");
 	}
 
-	displayplayer_id = consoleplayer_id;				// view the guy you are playing
+	displayplayer_id = consoleplayer_id;	// view the guy you are playing
 
 	gameaction = ga_nothing;
 	Z_CheckHeap ();

@@ -255,8 +255,7 @@ void Warmup::Ticker()
 	if (this->time_begin > level.time)
 	{
 		// Broadcast a countdown (this should be handled clientside)
-		if ((this->time_begin - level.time) % TICRATE == 0)
-		{
+		if ((this->time_begin - level.time) % TICRATE == 0) {
 			SV_BroadcastWarmupState(this->status, this->get_countdown());
 		}
 		return;
@@ -288,4 +287,5 @@ BEGIN_COMMAND (forcestart)
 {
 	warmup.forcestart();
 }
-END_COMMAND (forcestart)
+END_COMMAND(forcestart)
+ 

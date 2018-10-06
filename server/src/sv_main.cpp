@@ -3604,7 +3604,7 @@ void SV_Spectate(player_t &player)
 	if (!player.ingame())
 		return;
 
-	if (Code == 5)
+	/*if (Code == 5)
 	{
 		// GhostlyDeath -- Prevent Cheaters
 		if (!player.spectator || !player.mo)
@@ -3620,9 +3620,9 @@ void SV_Spectate(player_t &player)
 		player.mo->z = MSG_ReadLong();
 	}
 	else
-	{
+	{*/
 		SV_SetPlayerSpec(player, Code);
-	}
+	//}
 }
 
 // Change a player into a spectator or vice-versa.  Pass 'true' for silent

@@ -330,8 +330,8 @@ class AActor : public DThinker
 	};
 
 public:
-	AActor () throw();
-	AActor (const AActor &other) throw();
+	AActor ();
+	AActor (const AActor &other);
 	AActor &operator= (const AActor &other);
 	AActor (mobjtype_t type, fixed_t x, fixed_t y, fixed_t z);
 	void Destroy ();

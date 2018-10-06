@@ -3612,11 +3612,11 @@ void CL_ParseCommands(void)
 		if(i == cmds.end())
 		{
 			CL_QuitNetGame();
-			Printf(PRINT_HIGH, "CL_ParseCommands: Unknown server message %d following: \n", (int)cmd);
+			Printf("CL_ParseCommands: Unknown server message %d following: \n", (int)cmd);
 
 			for(size_t j = 0; j < history.size(); j++)
-				Printf(PRINT_HIGH, "CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
-			Printf(PRINT_HIGH, "\n");
+				Printf("CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
+			Printf("\n");
 			break;
 		}
 
@@ -3625,19 +3625,19 @@ void CL_ParseCommands(void)
 		if (net_message.overflowed)
 		{
 			CL_QuitNetGame();
-			Printf(PRINT_HIGH, "CL_ParseCommands: Bad server message\n");
-			Printf(PRINT_HIGH, "CL_ParseCommands: %d(%s) overflowed\n",
+			Printf("CL_ParseCommands: Bad server message\n");
+			Printf("CL_ParseCommands: %d(%s) overflowed\n",
 					   (int)cmd,
 					   svc_info[cmd].getName());
-			Printf(PRINT_HIGH, "CL_ParseCommands: It was command number %d in the packet\n",
-                                           (int)history.back());
+			Printf("CL_ParseCommands: It was command number %d in the packet\n", (int)history.back());
+
 			for(size_t j = 0; j < history.size(); j++)
-				Printf(PRINT_HIGH, "CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
+				Printf("CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
 		}
 
 		// Measure length of each message, so we can keep track of bandwidth.
 		if (net_message.BytesRead() < byteStart)
-			Printf(PRINT_HIGH, "CL_ParseCommands: end byte (%d) < start byte (%d)\n", net_message.BytesRead(), byteStart);
+			Printf("CL_ParseCommands: end byte (%d) < start byte (%d)\n", net_message.BytesRead(), byteStart);
 
 		netgraph.addTrafficIn(net_message.BytesRead() - byteStart);
 	}
@@ -3667,22 +3667,12 @@ void CL_SendCmd(void)
 	if (!p->mo || gametic < 1 )
 		return;
 
-	// GhostlyDeath -- If we are spectating, tell the server of our new position
-	if (p->spectator)
-	{
-		MSG_WriteMarker(&net_buffer, clc_spectate);
-		MSG_WriteByte(&net_buffer, 5);
-		MSG_WriteLong(&net_buffer, p->mo->x);
-		MSG_WriteLong(&net_buffer, p->mo->y);
-		MSG_WriteLong(&net_buffer, p->mo->z);
-	}
-
 	MSG_WriteMarker(&net_buffer, clc_move);
 
 	// Write current client-tic.  Server later sends this back to client
 	// when sending svc_updatelocalplayer so the client knows which ticcmds
 	// need to be used for client's positional prediction.
-    MSG_WriteLong(&net_buffer, gametic);
+	MSG_WriteLong(&net_buffer, gametic);
 
 	NetCommand *netcmd;
 	for (int i = 9; i >= 0; i--)
