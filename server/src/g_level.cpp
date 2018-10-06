@@ -151,11 +151,11 @@ BEGIN_COMMAND (wad) // denis - changes wads
 	// [Russell] print out some useful info
 	if (argc == 1)
 	{
-	    Printf(PRINT_HIGH, "Usage: wad pwad [...] [deh/bex [...]]\n");
-	    Printf(PRINT_HIGH, "       wad iwad [pwad [...]] [deh/bex [...]]\n");
-	    Printf(PRINT_HIGH, "\n");
-	    Printf(PRINT_HIGH, "Load a wad file on the fly, pwads/dehs/bexs require extension\n");
-	    Printf(PRINT_HIGH, "eg: wad doom\n");
+	    Printf("Usage: wad pwad [...] [deh/bex [...]]\n");
+	    Printf("       wad iwad [pwad [...]] [deh/bex [...]]\n");
+	    Printf("\n");
+	    Printf("Load a wad file on the fly, pwads/dehs/bexs require extension\n");
+	    Printf("eg: wad doom\n");
 
 	    return;
 	}
@@ -230,7 +230,7 @@ void G_ChangeMap(size_t index) {
 	maplist_entry_t maplist_entry;
 	if (!Maplist::instance().get_map_by_index(index, maplist_entry)) {
 		// That maplist index doesn't actually exist
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_WARNING, "%s\n", Maplist::instance().get_error().c_str());
 		return;
 	}
 
@@ -473,7 +473,7 @@ void G_ExitLevel (int position, int drawscores)
 	if (drawscores)
         SV_DrawScores();
 	
-	int intlimit = (sv_intermissionlimit < 1 || sv_gametype == GM_COOP ? DEFINTSECS : sv_intermissionlimit);
+	int intlimit = (sv_intermissionlimit < 1 || GAME.IsCooperation() ? DEFINTSECS : sv_intermissionlimit);
 
 	gamestate = GS_INTERMISSION;
 	shotclock = 0;
@@ -495,7 +495,7 @@ void G_SecretExitLevel (int position, int drawscores)
     if (drawscores)
         SV_DrawScores();
         
-	int intlimit = (sv_intermissionlimit < 1 || sv_gametype == GM_COOP ? DEFINTSECS : sv_intermissionlimit);
+	int intlimit = (sv_intermissionlimit < 1 || GAME.IsCooperation() ? DEFINTSECS : sv_intermissionlimit);
 
 	gamestate = GS_INTERMISSION;
 	shotclock = 0;
@@ -825,11 +825,11 @@ void G_DoLoadLevel (int position)
 	{
 		tempflag = &CTFdata[it_blueflag];
 		if (!tempflag->flaglocated)
-			SV_BroadcastPrintf(PRINT_ERROR, "WARNING: Blue flag pedestal not found! No blue flags in game.\n");
+			SV_BroadcastPrintf(PRINT_ERROR, "MAPPING ERROR: Blue flag pedestal not found! No blue flags in game.\n");
 
 		tempflag = &CTFdata[it_redflag];
 		if (!tempflag->flaglocated)
-			SV_BroadcastPrintf(PRINT_ERROR, "WARNING: Red flag pedestal not found! No red flags in game.\n");
+			SV_BroadcastPrintf(PRINT_ERROR, "MAPPING ERROR: Red flag pedestal not found! No red flags in game.\n");
 	}
 
 	displayplayer_id = consoleplayer_id;	// view the guy you are playing

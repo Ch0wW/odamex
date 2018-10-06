@@ -884,8 +884,6 @@ static int C_PrintString(int printlevel, const char* color_code, const char* out
 		color_code = printlevel_color_code;
 	}
 
-
-
 	while (*line_start)
 	{
 		// Find the next line-breaking character (\n or \0) and set

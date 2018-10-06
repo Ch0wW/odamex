@@ -72,7 +72,7 @@ const char *FStat::getname()
 void FStat::dumpstat()
 {
 	for(size_t i = 0; i < stats.size(); i++)
-		Printf(PRINT_HIGH, "%s\n", stats[i]->getname());
+		Printf(PRINT_WARNING, "%s\n", stats[i]->getname());
 }
 
 void FStat::dumpstat(std::string which)
@@ -84,7 +84,7 @@ void FStat::dumpstat(std::string which)
 
 void FStat::dump()
 {
-	Printf(PRINT_HIGH, "%s: %dms\n", name.c_str(), last_elapsed);
+	Printf(PRINT_WARNING, "%s: %dms\n", name.c_str(), last_elapsed);
 }
 
 BEGIN_COMMAND (stat)

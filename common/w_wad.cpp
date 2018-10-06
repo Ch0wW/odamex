@@ -223,7 +223,7 @@ std::string W_AddFile(std::string filename)
 
 	if ( (handle = fopen(filename.c_str(), "rb")) == NULL)
 	{
-		Printf(PRINT_HIGH, "couldn't open %s\n", filename.c_str());
+		Printf(PRINT_WARNING, "couldn't open %s\n", filename.c_str());
 		return "";
 	}
 

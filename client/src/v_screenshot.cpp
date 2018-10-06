@@ -178,7 +178,7 @@ static void V_SetPNGComments(png_struct *png_ptr, png_info *info_ptr, time_t* no
 	
 	png_set_text(png_ptr, info_ptr, pngtext, PNG_TEXT_LINES);
 	#else
-	Printf(PRINT_HIGH, "I_SetPNGComments: Skipping PNG tEXt chunk\n");
+	Printf(PRINT_ERROR, "I_SetPNGComments: Skipping PNG tEXt chunk\n");
 	#endif // PNG_TEXT_SUPPORTED
 }
 
@@ -198,7 +198,7 @@ static int V_SavePNG(const std::string& filename, IWindowSurface* surface)
 
 	if (fp == NULL)
 	{
-		Printf(PRINT_HIGH, "I_SavePNG: Could not open %s for writing\n", filename.c_str());
+		Printf(PRINT_ERROR, "I_SavePNG: Could not open %s for writing\n", filename.c_str());
 		return -1;
 	}
 
@@ -207,7 +207,7 @@ static int V_SavePNG(const std::string& filename, IWindowSurface* surface)
 	if (png_ptr == NULL)
 	{
 		fclose(fp);
-		Printf(PRINT_HIGH, "I_SavePNG: png_create_write_struct failed\n");
+		Printf(PRINT_ERROR, "I_SavePNG: png_create_write_struct failed\n");
 		return -1;
 	}
 
@@ -217,7 +217,7 @@ static int V_SavePNG(const std::string& filename, IWindowSurface* surface)
 	{
 		fclose(fp);
 		png_destroy_write_struct(&png_ptr, (png_infop*)NULL);
-		Printf(PRINT_HIGH, "I_SavePNG: png_create_info_struct failed\n");
+		Printf(PRINT_ERROR, "I_SavePNG: png_create_info_struct failed\n");
 		return -1;
 	}
 	
@@ -230,7 +230,7 @@ static int V_SavePNG(const std::string& filename, IWindowSurface* surface)
 	{
 		fclose(fp);
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		Printf(PRINT_HIGH, "I_SavePNG: setjmp failed with error code %d\n", setjmp_result);
+		Printf(PRINT_ERROR, "I_SavePNG: setjmp failed with error code %d\n", setjmp_result);
 		return -1;
 	}
 	#endif // PNG_SETJMP_SUPPORTED
@@ -274,7 +274,7 @@ static int V_SavePNG(const std::string& filename, IWindowSurface* surface)
 			png_destroy_write_struct(&png_ptr, &info_ptr);
 			fclose(fp);
 			
-			Printf(PRINT_HIGH, "I_SavePNG: Not enough RAM to create PNG file\n");
+			Printf(PRINT_ERROR, "I_SavePNG: Not enough RAM to create PNG file\n");
 			return -1;
 		}
 	}

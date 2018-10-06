@@ -435,13 +435,13 @@ void D_DoomMain()
 	if (p && p < Args.NumArgs() - 1)
 	{
 		float time = atof(Args.GetArg(p + 1));
-		Printf(PRINT_HIGH, "Levels will end after %g minute%s.\n", time, time > 1 ? "s" : "");
+		Printf("Levels will end after %g minute%s.\n", time, time > 1 ? "s" : "");
 		sv_timelimit.Set(time);
 	}
 
 	if (Args.CheckValue("-avg"))
 	{
-		Printf(PRINT_HIGH, "Austin Virtual Gaming: Levels will end after 20 minutes\n");
+		Printf("Austin Virtual Gaming: Levels will end after 20 minutes\n");
 		sv_timelimit.Set(20);
 	}
 

@@ -362,7 +362,7 @@ void G_DoCompleted (void)
 	strncpy (wminfo.lname0, level.info->pname, 8);
 	strncpy (wminfo.current, level.mapname, 8);
 
-	if (sv_gametype != GM_COOP &&
+	if (!GAME.IsCooperation() &&
 		!(level.flags & LEVEL_CHANGEMAPCHEAT)) {
 		strncpy (wminfo.next, level.mapname, 8);
 		strncpy (wminfo.lname1, level.info->pname, 8);
@@ -416,7 +416,7 @@ void G_DoCompleted (void)
 		cluster_info_t *nextcluster = FindClusterInfo (FindLevelInfo (level.nextmap)->cluster);
 
 		if (thiscluster != nextcluster ||
-			sv_gametype == GM_DM ||
+			GAME.IsDeathmatch() ||
 			!(thiscluster->flags & CLUSTER_HUB)) {
 			for (Players::iterator it = players.begin();it != players.end();++it)
 				if (it->ingame())
