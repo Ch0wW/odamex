@@ -77,7 +77,7 @@ size_t mem_fread(void *buf, size_t size, size_t nmemb, MEMFILE *stream)
 
 	if (stream->mode != MODE_READ)
 	{
-		Printf(PRINT_HIGH, "mem_fread: not a read stream\n");
+		Printf(PRINT_WARNING, "mem_fread: not a read stream\n");
 		return 0;
 	}
 
@@ -205,7 +205,7 @@ int mem_fseek(MEMFILE *stream, signed long position, mem_rel_t whence)
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "mem_fseek: Error seeking to %i\n", newpos);
+		Printf(PRINT_ERROR, "mem_fseek: Error seeking to %i\n", newpos);
 		return -1;
 	}
 }

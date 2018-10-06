@@ -281,7 +281,7 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 	}
 	if (serverside)
-		SV_BroadcastPrintf ("%s activated a cheat: %s\n", player->userinfo.GetName(), msg);
+		SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s activated a cheat: %s\n", player->userinfo.GetName(), msg);
 	else if (clientside && player == &consoleplayer())
 		Printf(PRINT_HIGH, "%s\n", msg);
 }
@@ -296,7 +296,7 @@ void cht_Give (player_t *player, const char *name)
 		return;
 
 	if (serverside)
-		SV_BroadcastPrintf("%s activated a cheat: give %s\n", player->userinfo.GetName(), name);
+		SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s activated a cheat: give %s\n", player->userinfo.GetName(), name);
 	else if (clientside && player == &consoleplayer())
 		Printf(PRINT_HIGH, "Give %s\n", name);
 

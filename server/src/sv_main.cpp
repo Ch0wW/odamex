@@ -162,7 +162,7 @@ CVAR_FUNC_IMPL (sv_maxplayers)
 					MSG_WriteByte(&pit->client.reliablebuf, it->id);
 					MSG_WriteByte(&pit->client.reliablebuf, true);
 				}
-				SV_BroadcastPrintf (PRINT_HIGH, "%s became a spectator.\n", it->userinfo.GetName());
+				SV_BroadcastPrintf (PRINT_LOCALEVENT, "%s became a spectator.\n", it->userinfo.GetName());
 				MSG_WriteMarker(&it->client.reliablebuf, svc_print);
 				MSG_WriteByte(&it->client.reliablebuf, PRINT_CHAT);
 				MSG_WriteString(&it->client.reliablebuf,
@@ -368,9 +368,9 @@ void SV_KickPlayer(player_t &player, const std::string &reason) {
 	}
 
 	if (reason.empty())
-		SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked from the server!\n", player.userinfo.GetName());
+		SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s was kicked from the server!\n", player.userinfo.GetName());
 	else
-		SV_BroadcastPrintf(PRINT_HIGH, "%s was kicked from the server! (Reason: %s)\n",
+		SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s was kicked from the server! (Reason: %s)\n",
 					player.userinfo.GetName(), reason.c_str());
 
 	player.client.displaydisconnect = false;
@@ -1007,7 +1007,7 @@ bool SV_SetupUserInfo(player_t &player)
 			default:			gendermessage = "its";  break;
 		}
 
-		SV_BroadcastPrintf(PRINT_HIGH, "%s changed %s name to %s.\n",
+		SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s changed %s name to %s.\n",
 			old_netname.c_str(), gendermessage.c_str(), player.userinfo.GetName());
 	}
 
@@ -1020,7 +1020,7 @@ bool SV_SetupUserInfo(player_t &player)
 		{
 			// kill player if team is changed
 			P_DamageMobj (player.mo, 0, 0, 1000, 0);
-			SV_BroadcastPrintf(PRINT_HIGH, "%s switched to the %s team.\n",
+			SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s switched to the %s team.\n",
 				player.userinfo.GetName(), team_names[new_team]);
 		}
 	}
@@ -1040,7 +1040,7 @@ void SV_ForceSetTeam (player_t &who, team_t team)
 	MSG_WriteMarker (&cl->reliablebuf, svc_forceteam);
 
 	who.userinfo.team = team;
-	Printf (PRINT_HIGH, "Forcing %s to %s team\n", who.userinfo.GetName(), team == TEAM_NONE ? "NONE" : team_names[team]);
+	Printf ("Forcing %s to %s team\n", who.userinfo.GetName(), team == TEAM_NONE ? "NONE" : team_names[team]);
 	MSG_WriteShort (&cl->reliablebuf, team);
 }
 
@@ -1884,14 +1884,14 @@ void SV_ConnectClient()
 	if (!SV_IsValidToken(MSG_ReadLong()))
 		return;
 
-	Printf(PRINT_HIGH, "%s is trying to connect...\n", net_from.ToString());
+	Printf(PRINT_LOCALEVENT, "%s is trying to connect...\n", net_from.ToString());
 
 	// find an open slot
 	Players::iterator it = SV_GetFreeClient();
 
 	if (it == players.end()) // a server is full
 	{
-		Printf(PRINT_HIGH, "%s disconnected (server full).\n", net_from.ToString());
+		Printf(PRINT_LOCALEVENT, "%s disconnected (server full).\n", net_from.ToString());
 
 		static buf_t smallbuf(16);
 		MSG_WriteLong(&smallbuf, 0);
@@ -1971,7 +1971,7 @@ void SV_ConnectClient()
 	std::string passhash = MSG_ReadString();
 	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
 	{
-		Printf(PRINT_HIGH, "%s disconnected (wrong password).\n", net_from.ToString());
+		Printf("%s disconnected (wrong password).\n", net_from.ToString());
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
 		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
@@ -2000,7 +2000,7 @@ void SV_ConnectClient()
 		{
 			player->playerstate = PST_DOWNLOAD;
 			SV_BroadcastUserInfo(*player);
-			SV_BroadcastPrintf(PRINT_HIGH, "%s has connected. (downloading)\n", player->userinfo.GetName());
+			SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s has connected. (downloading)\n", player->userinfo.GetName());
 
 			// send the client the scores and list of other clients
 			SV_ClientFullUpdate(*player);
@@ -2019,15 +2019,15 @@ void SV_ConnectClient()
 			// bother telling anyone else
 			cl->displaydisconnect = false;
 
-			Printf(PRINT_HIGH, "%s has connected. (downloading)\n", player->userinfo.GetName());
+			Printf(PRINT_LOCALEVENT, "%s has connected. (downloading)\n", player->userinfo.GetName());
 
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
-			MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
+			MSG_WriteByte(&cl->reliablebuf, PRINT_LOCALEVENT);
 			MSG_WriteString(&cl->reliablebuf, "Server: Downloading is disabled.\n");
 
 			SV_DropClient(*player);
 
-			Printf(PRINT_HIGH, "%s disconnected. Downloading is disabled.\n", player->userinfo.GetName());
+			Printf(PRINT_LOCALEVENT, "%s disconnected. Downloading is disabled.\n", player->userinfo.GetName());
 		}
 
 		return;
@@ -2062,7 +2062,7 @@ void SV_ConnectClient()
 	G_DoReborn(*player);
 	SV_ClientFullUpdate(*player);
 
-	SV_BroadcastPrintf(PRINT_HIGH, "%s has connected.\n", player->userinfo.GetName());
+	SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s has connected.\n", player->userinfo.GetName());
 
 	// tell others clients about it
 	for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
@@ -2135,10 +2135,10 @@ void SV_DisconnectClient(player_t &who)
 
 		// Name and reason for disconnect.
 		if (gametic - who.client.last_received == CLIENT_TIMEOUT*35)
-			SV_BroadcastPrintf(PRINT_HIGH, "%s timed out. (%s)\n",
+			SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s timed out. (%s)\n",
 							who.userinfo.GetName(), status.c_str());
 		else
-			SV_BroadcastPrintf(PRINT_HIGH, "%s disconnected. (%s)\n",
+			SV_BroadcastPrintf(PRINT_LOCALEVENT, "%s disconnected. (%s)\n",
 							who.userinfo.GetName(), status.c_str());
 	}
 
@@ -3473,7 +3473,7 @@ void SV_ProcessPlayerCmd(player_t &player)
 		if ((netcmd->hasForwardMove() && abs(netcmd->getForwardMove()) > maxcmdmove) ||
 			(netcmd->hasSideMove() && abs(netcmd->getSideMove()) > maxcmdmove))
 		{
-			SV_BroadcastPrintf(PRINT_HIGH, "%s tried to cheat!\n", player.userinfo.GetName());
+			SV_BroadcastPrintf(PRINT_ERROR, "%s tried to cheat!\n", player.userinfo.GetName());
 			SV_DropClient(player);
 			return;
 		}
@@ -3584,7 +3584,7 @@ void SV_ChangeTeam (player_t &player)  // [Toke - Teams]
 	team_t old_team = player.userinfo.team;
 	player.userinfo.team = team;
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has joined the %s team.\n", player.userinfo.GetName(), team_names[team]);
+	SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s has joined the %s team.\n", player.userinfo.GetName(), team_names[team]);
 
 	if (GAME.IsTeamGame())
 		if (player.mo && player.userinfo.team != old_team)
@@ -3687,9 +3687,9 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			if (!silent)
 			{
 				if (GAME.IsTeamGame())
-					SV_BroadcastPrintf("%s joined the game on the %s team.\n", player.userinfo.GetName(), team_names[player.userinfo.team]);
+					SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s joined the game on the %s team.\n", player.userinfo.GetName(), team_names[player.userinfo.team]);
 				else
-					SV_BroadcastPrintf("%s joined the game.\n", player.userinfo.GetName());
+					SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s joined the game.\n", player.userinfo.GetName());
 			}
 
 			// GhostlyDeath -- Reset Frags, Deaths and Kills
@@ -3746,7 +3746,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		P_SetSpectatorFlags(player);
 
 		if (!silent)
-			SV_BroadcastPrintf(PRINT_HIGH, "%s became a spectator.\n", player.userinfo.GetName());
+			SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s became a spectator.\n", player.userinfo.GetName());
 	}
 }
 
@@ -3822,17 +3822,17 @@ void SV_SetReady(player_t &player, bool setting, bool silent)
 		player.ready = false;
 		if (!silent) {
 			if (player.spectator)
-				SV_PlayerPrintf(PRINT_HIGH, player.id, "You are no longer willing to play.\n");
+				SV_PlayerPrintf(PRINT_LOCALEVENT, player.id, "You are no longer willing to play.\n");
 			else
-				SV_PlayerPrintf(PRINT_HIGH, player.id, "You are no longer ready to play.\n");
+				SV_PlayerPrintf(PRINT_LOCALEVENT, player.id, "You are no longer ready to play.\n");
 		}
 	} else if (!player.ready && setting) {
 		player.ready = true;
 		if (!silent) {
 			if (player.spectator)
-				SV_PlayerPrintf(PRINT_HIGH, player.id, "You are now willing to play.\n");
+				SV_PlayerPrintf(PRINT_LOCALEVENT, player.id, "You are now willing to play.\n");
 			else
-				SV_PlayerPrintf(PRINT_HIGH, player.id, "You are now ready to play.\n");
+				SV_PlayerPrintf(PRINT_LOCALEVENT, player.id, "You are now ready to play.\n");
 		}
 	} else {
 		changed = false;
@@ -3870,7 +3870,7 @@ void SV_Ready(player_t &player)
 	// Check to see if warmup will allow us to toggle our ready state.
 	if (!warmup.checkreadytoggle())
 	{
-		SV_PlayerPrintf(PRINT_HIGH, player.id, "You can't ready in the middle of a match!\n");
+		SV_PlayerPrintf(PRINT_WARNING, player.id, "You can't ready in the middle of a match!\n");
 		return;
 	}
 
@@ -3883,7 +3883,7 @@ void SV_Ready(player_t &player)
 		int timeout_waitsec = 3 - (timeout / TICRATE);
 
 		if (timeout < timeout_check) {
-			SV_PlayerPrintf(PRINT_HIGH, player.id, "Please wait another %d second%s to change your ready state.\n",
+			SV_PlayerPrintf(PRINT_WARNING, player.id, "Please wait another %d second%s to change your ready state.\n",
 			                timeout_waitsec, timeout_waitsec != 1 ? "s" : "");
 			return;
 		}
@@ -3910,7 +3910,7 @@ void SV_RConLogout (player_t &player)
 
 	if (cl->allow_rcon)
 	{
-		Printf(PRINT_HIGH, "[RCON] Logout from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
+		Printf(PRINT_WARNING, "[RCON] Logout from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
 		cl->allow_rcon = false;
 	}
 }
@@ -3934,13 +3934,13 @@ void SV_RConPassword (player_t &player)
 	if (!password.empty() && MD5SUM(password + cl->digest) == challenge)
 	{
 		cl->allow_rcon = true;
-		Printf(PRINT_HIGH, "[RCON] Login from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
+		Printf(PRINT_WARNING, "[RCON] Login from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "[RCON] Login failure from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
+		Printf(PRINT_WARNING, "[RCON] Login failure from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
+		MSG_WriteByte (&cl->reliablebuf, PRINT_WARNING);
 		MSG_WriteString (&cl->reliablebuf, "Bad password\n");
 	}
 }
@@ -4485,17 +4485,17 @@ void SV_TimelimitCheck()
 					if (sv_warmup_overtime_enable && warmup.isGamePlaying())
 					{
 						warmup.add_overtime();
-						SV_BroadcastPrintf("Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt() > 1 ? "s" : ""));
+						SV_BroadcastPrintf(PRINT_GAMEEVENT, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt() > 1 ? "s" : ""));
 						return;
 					}
 					else
-						SV_BroadcastPrintf("Time limit hit. Game is a draw!\n");
+						SV_BroadcastPrintf(PRINT_GAMEEVENT, "Time limit hit. Game is a draw!\n");
 				}
 				else
-					SV_BroadcastPrintf("Time limit hit. Game won by %s!\n", winplayer->userinfo.GetName());
+					SV_BroadcastPrintf(PRINT_GAMEEVENT, "Time limit hit. Game won by %s!\n", winplayer->userinfo.GetName());
 			}
 			else {
-				SV_BroadcastPrintf("Time limit hit.\n");	// FFA messages don't need draws.
+				SV_BroadcastPrintf(PRINT_GAMEEVENT, "Time limit hit.\n");	// FFA messages don't need draws.
 			}
 		}
 		else if (GAME.IsTeamGame()) {
@@ -4506,18 +4506,18 @@ void SV_TimelimitCheck()
 				if (sv_warmup_overtime_enable && warmup.isGamePlaying())
 				{
 					warmup.add_overtime();
-					SV_BroadcastPrintf("Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
+					SV_BroadcastPrintf(PRINT_GAMEEVENT, "Overtime #%d! Adding %d minute%s.\n", warmup.get_overtime(), sv_warmup_overtime.asInt(), (sv_warmup_overtime.asInt()>1?"s":""));
 
 					if (GAME.IsCTF())
-						SV_BroadcastPrintf("Respawn penalty time: %d seconds.\n", warmup.get_ctf_penalty());
+						SV_BroadcastPrintf(PRINT_GAMEEVENT, "Respawn penalty time: %d seconds.\n", warmup.get_ctf_penalty());
 
 					return;
 				}
 				else
-					SV_BroadcastPrintf("Time limit hit. Game is a draw!\n");
+					SV_BroadcastPrintf(PRINT_GAMEEVENT, "Time limit hit. Game is a draw!\n");
 			}
 			else
-				SV_BroadcastPrintf ("Time limit hit. %s team wins!\n", team_names[winteam]);
+				SV_BroadcastPrintf (PRINT_GAMEEVENT, "Time limit hit. %s team wins!\n", team_names[winteam]);
 		}
 	}
 
@@ -4987,7 +4987,7 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	{
 		SexMessage(message, gendermessage, gender,
 				self->player->userinfo.GetName(), self->player->userinfo.GetName());
-		SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+		SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 		return;
 	}
 
@@ -5025,13 +5025,13 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	{
 		SexMessage(message, gendermessage, gender,
 				self->player->userinfo.GetName(), attacker->player->userinfo.GetName());
-		SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+		SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 		return;
 	}
 
 	SexMessage(GStrings(OB_DEFAULT), gendermessage, gender,
 			self->player->userinfo.GetName(), self->player->userinfo.GetName());
-	SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+	SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 }
 
 void SV_SendDamagePlayer(player_t *player, int damage)

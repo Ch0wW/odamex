@@ -412,19 +412,19 @@ AuMusicSystem::AuMusicSystem() :
 
 	if (AUGraphConnectNodeInput(mGraph, mSynth, 0, mOutput, 0) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphConnectNodeInput failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphConnectNodeInput failed\n");
 		return;
 	}
 
 	if (AUGraphOpen(mGraph) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphOpen failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphOpen failed\n");
 		return;
 	}
 
 	if (AUGraphInitialize(mGraph) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphInitialize failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphInitialize failed\n");
 		return;
 	}
 

@@ -275,14 +275,14 @@ void CL_DownloadStart()
 
 	if(gamestate != GS_DOWNLOAD)
 	{
-		Printf(PRINT_HIGH, "Server initiated download failed\n");
+		Printf(PRINT_ERROR, "Server initiated download failed\n");
 		return;
 	}
 
 	// don't go for more than 100 megs
 	if(file_len > 100*1024*1024)
 	{
-		Printf(PRINT_HIGH, "Download is over 100MiB, aborting!\n");
+		Printf(PRINT_ERROR, "Download is over 100MiB, aborting!\n");
 		CL_QuitNetGame();
 		return;
 	}
@@ -362,7 +362,7 @@ void CL_DownloadTicker()
 
     if (download.retrycount >= 5)
     {
-        Printf(PRINT_HIGH, "Server hasn't responded to download re-requests, aborting\n");
+        Printf(PRINT_ERROR, "Server hasn't responded to download re-requests, aborting\n");
 
         download.retrycount = 0;
         download.timeout = 0;
@@ -390,7 +390,7 @@ void CL_Download()
 	if (download.buf == NULL)
 	{
 		// We must have not received the svc_wadinfo message
-		Printf(PRINT_HIGH, "Unable to start download, aborting\n");
+		Printf(PRINT_ERROR, "Unable to start download, aborting\n");
 		download.clear();
 		CL_QuitNetGame();
 		return;
@@ -399,7 +399,7 @@ void CL_Download()
 	// check ranges
 	if(offset + len > download.buf->maxsize() || len > left || p == NULL)
 	{
-		Printf(PRINT_HIGH, "Bad download packet (%d, %d) encountered (%d), aborting\n", (int)offset, (int)left, (int)download.buf->size());
+		Printf(PRINT_ERROR, "Bad download packet (%d, %d) encountered (%d), aborting\n", (int)offset, (int)left, (int)download.buf->size());
 
 		download.clear();
 		CL_QuitNetGame();

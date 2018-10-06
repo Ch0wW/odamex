@@ -771,11 +771,11 @@ void D_DoomMain()
 	cvar_t::EnableCallbacks();
 
 	// [RH] User-configurable startup strings. Because BOOM does.
-	if (GStrings(STARTUP1)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP1));
-	if (GStrings(STARTUP2)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP2));
-	if (GStrings(STARTUP3)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP3));
-	if (GStrings(STARTUP4)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP4));
-	if (GStrings(STARTUP5)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP5));
+	if (GStrings(STARTUP1)[0])	Printf("%s\n", GStrings(STARTUP1));
+	if (GStrings(STARTUP2)[0])	Printf("%s\n", GStrings(STARTUP2));
+	if (GStrings(STARTUP3)[0])	Printf("%s\n", GStrings(STARTUP3));
+	if (GStrings(STARTUP4)[0])	Printf("%s\n", GStrings(STARTUP4));
+	if (GStrings(STARTUP5)[0])	Printf("%s\n", GStrings(STARTUP5));
 
     // Developer Infos
 	if (Args.CheckParm("-devparm")) {

@@ -970,7 +970,7 @@ END_COMMAND (rcon_logout)
 
 BEGIN_COMMAND (playerteam)
 {
-	Printf (PRINT_MEDIUM, "Your Team is %d \n", consoleplayer().userinfo.team);
+	Printf (PRINT_HIGH, "Your Team is %d \n", consoleplayer().userinfo.team);
 }
 END_COMMAND (playerteam)
 
@@ -1055,7 +1055,7 @@ BEGIN_COMMAND (spy)
 
 	if (id == 0)
 	{
-		Printf(PRINT_HIGH, "Expecting player ID.  Try 'players' to list all of the player IDs.\n");
+		Printf(PRINT_WARNING, "Expecting player ID.  Try 'players' to list all of the player IDs.\n");
 		return;
 	}
 
@@ -1063,7 +1063,7 @@ BEGIN_COMMAND (spy)
 	CL_CheckDisplayPlayer();
 
 	if (displayplayer_id != id)
-		Printf(PRINT_HIGH, "Unable to spy player ID %i!\n", id);
+		Printf(PRINT_ERROR, "Unable to spy player ID %i!\n", id);
 }
 END_COMMAND (spy)
 
@@ -1650,7 +1650,7 @@ bool CL_PrepareConnect(void)
 		if (!cl_serverdownload)
 		{
 			// Playing a netdemo and unable to download from the server
-			Printf(PRINT_HIGH, "Unable to find \"%s\". Downloading is disabled on your client.  Go to Options > Network Options to enable downloading.\n",
+			Printf(PRINT_ERROR, "Unable to find \"%s\". Downloading is disabled on your client.  Go to Options > Network Options to enable downloading.\n",
 								missing_file.c_str());
 			CL_QuitNetGame();
 			return false;
@@ -1659,7 +1659,7 @@ bool CL_PrepareConnect(void)
 		if (netdemo.isPlaying())
 		{
 			// Downloading is disabled client-side
-			Printf(PRINT_HIGH, "Unable to find \"%s\".  Cannot download while playing a netdemo.\n",
+			Printf(PRINT_ERROR, "Unable to find \"%s\".  Cannot download while playing a netdemo.\n",
 								missing_file.c_str());			
 			CL_QuitNetGame();
 			return false;
@@ -1828,6 +1828,10 @@ void CL_Print (void)
 		Printf(level, "%s%s", TEXTCOLOR_TEAMCHAT, str);
 	else if (level == PRINT_SERVERCHAT)
 		Printf(level, "%s%s", TEXTCOLOR_ORANGE, str);
+	else if (level == PRINT_WARNING)						// Ch0wW : improve this ?
+		Printf(level, "%s%s", TEXTCOLOR_YELLOW, str);
+	else if (level == PRINT_ERROR)							// Ch0wW : improve this ?
+		Printf(level, "%s%s", TEXTCOLOR_RED, str);
 	else
 		Printf(level, "%s", str);
 
@@ -2975,7 +2979,7 @@ void CL_CheckMissedPacket(void)
             MSG_ReadChunk(size);
 
 			#ifdef _DEBUG
-                Printf (PRINT_LOW, "warning: duplicate packet\n");
+                Printf (PRINT_WARNING, "warning: duplicate packet\n");
 			#endif
 			return;
 		}
@@ -3712,7 +3716,7 @@ void PickupMessage (AActor *toucher, const char *message)
 	{
 		lastmessagetic = gametic;
 		lastmessage = message;
-		Printf (PRINT_LOW, "%s\n", message);
+		Printf (PRINT_PICKUP, "%s\n", message);
 	}
 }
 

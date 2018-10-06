@@ -208,7 +208,7 @@ void Warmup::readytoggle()
 		if (this->status == Warmup::COUNTDOWN)
 		{
 			this->set_status(Warmup::WARMUP);
-			SV_BroadcastPrintf(PRINT_HIGH, "Countdown aborted: Player unreadied.\n");
+			SV_BroadcastPrintf(PRINT_GAMEEVENT, "Countdown aborted: Player unreadied.\n");
 		}
 	}
 	return;
@@ -272,7 +272,7 @@ void Warmup::Ticker()
 	level.inttimeleft = mapchange / TICRATE;
 
 	G_DeferedFullReset();
-	SV_BroadcastPrintf(PRINT_HIGH, "The match has started.\n");
+	SV_BroadcastPrintf(PRINT_GAMEEVENT, "The match has started.\n");
 }
 
 bool Warmup::isGamePlaying() {

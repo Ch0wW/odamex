@@ -1331,15 +1331,15 @@ static mapthing2_t *SelectRandomDeathmatchSpot (player_t &player, int selections
 {
 	int i = 0, j;
 
-	Printf("CALLING DEATHMATCH FOR PLAYER %d\n", player.id);
+	DPrintf("CALLING DEATHMATCH FOR PLAYER %d\n", player.id);
 
 	for (j = 0; j < 20; j++)
 	{
 		i = P_Random () % selections;
-		Printf("Looking for Spot %d", i);
+		DPrintf("Looking for Spot %d", i);
 		if (G_CheckSpot (player, &deathmatchstarts[i]) )
 		{
-			Printf("SPOT %d OK, USING IT", i);
+			DPrintf("SPOT %d OK, USING IT", i);
 			return &deathmatchstarts[i];
 		}
 	}
@@ -2012,7 +2012,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		if (bytelen)
 			Z_Free(demobuffer);
 
-		Printf(PRINT_HIGH, "DOOM Demo file too short\n");
+		Printf(PRINT_WARNING, "DOOM Demo file too short\n");
 		gameaction = ga_fullconsole;
 		return;
 	}
@@ -2026,7 +2026,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		demo_p[0] == DOOM_1_9p_DEMO ||
 		demo_p[0] == DOOM_1_9_1_DEMO)
 	{
-		Printf(PRINT_HIGH, "Playing DOOM v%s demo %s\n", DEMO_GetVersionFormat(demo_p[0]), defdemoname.c_str());
+		Printf(PRINT_WARNING, "Playing DOOM v%s demo %s\n", DEMO_GetVersionFormat(demo_p[0]), defdemoname.c_str());
 
 		democlassic = true;
 		demostartgametic = gametic;
@@ -2161,7 +2161,7 @@ void G_DoPlayDemo(bool justStreamInput)
 	else
 	{
 		democlassic = false;
-		Printf(PRINT_HIGH, "Unsupported demo format.  If you are trying to play an Odamex " \
+		Printf(PRINT_ERROR, "Unsupported demo format.  If you are trying to play an Odamex " \
 						"netdemo, please use the netplay command\n");
 		gameaction = ga_nothing;
 	}

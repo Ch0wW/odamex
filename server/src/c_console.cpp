@@ -193,10 +193,10 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	{
 		client_t* cl = &(it->client);
 
-		if (cl->allow_rcon && printlevel <= PRINT_HIGH)	// Ch0wW : redo that.
+		if (cl->allow_rcon && (printlevel <= PRINT_HIGH || printlevel == PRINT_WARNING || printlevel == PRINT_ERROR))	// Ch0wW : redo that.
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
-			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);
+			MSG_WriteByte(&cl->reliablebuf, PRINT_WARNING);
 			MSG_WriteString(&cl->reliablebuf, (char*)str.c_str());
 		}
 	}

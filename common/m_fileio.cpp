@@ -126,7 +126,7 @@ QWORD M_ReadFile(std::string filename, BYTE **buffer)
 
     if (count != length)
 	{
-		Printf(PRINT_HIGH, "Failed while reading from file %s\n", filename.c_str());
+		Printf(PRINT_ERROR, "Failed while reading from file %s\n", filename.c_str());
 		return false;
 	}
 

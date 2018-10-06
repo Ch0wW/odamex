@@ -22,6 +22,7 @@ const char *GIClass::GetFullName() const
 	else if (sv_gametype == 3)
 		return "CAPTURE THE FLAG";
 
+
 	return "UNKNOWN";
 }
 

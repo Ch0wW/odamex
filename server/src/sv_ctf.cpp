@@ -84,14 +84,14 @@ void CaptureTheFlag::onFlagPickup (player_t &player, flag_t f, bool firstgrab)
 
 	if (player.userinfo.team != (team_t)f) {
 		if (firstgrab) {
-			SV_BroadcastPrintf ("%s has taken the %s flag\n", player.userinfo.GetName(), team_names[f]);
+			SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s has taken the %s flag\n", player.userinfo.GetName(), team_names[f]);
 			this->SendEvent(f, SCORE_FIRSTGRAB, player);
 		} else {
-			SV_BroadcastPrintf ("%s picked up the %s flag\n", player.userinfo.GetName(), team_names[f]);
+			SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s picked up the %s flag\n", player.userinfo.GetName(), team_names[f]);
 			this->SendEvent(f, SCORE_GRAB, player);
 		}
 	} else {
-		SV_BroadcastPrintf ("%s is recovering the %s flag\n", player.userinfo.GetName(), team_names[f]);
+		SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s is recovering the %s flag\n", player.userinfo.GetName(), team_names[f]);
 		this->SendEvent(f, SCORE_MANUALRETURN, player);
 	}
 }
@@ -106,7 +106,7 @@ void CaptureTheFlag::onFlagReturn(player_t &player, flag_t f)
 
 	CTF.SpawnFlag (f);
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has returned the %s flag\n", player.userinfo.GetName(), team_names[f]);
+	SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s has returned the %s flag\n", player.userinfo.GetName(), team_names[f]);
 }
 
 //
@@ -145,7 +145,7 @@ void CaptureTheFlag::onFlagCapture (player_t &player, flag_t f)
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has captured the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
+	SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s has captured the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
 
 	player.flags[f] = false; // take scoring player's flag
 	CTFdata[f].flagger = 0;
@@ -155,7 +155,7 @@ void CaptureTheFlag::onFlagCapture (player_t &player, flag_t f)
 	// checks to see if a team won a game
 	if( (sv_scorelimit > 0) && TEAMpoints[player.userinfo.team] >= sv_scorelimit)
 	{
-		SV_BroadcastPrintf (PRINT_HIGH, "Score limit reached. %s team wins!\n", team_names[player.userinfo.team]);
+		SV_BroadcastPrintf (PRINT_GAMEEVENT, "Score limit reached. %s team wins!\n", team_names[player.userinfo.team]);
 		shotclock = TICRATE*2;
 	}
 }
@@ -227,7 +227,7 @@ void CaptureTheFlag::onFlagDrop (player_t &player, flag_t f)
 
 	int time_held = I_MSTime() - CTFdata[f].pickup_time;
 
-	SV_BroadcastPrintf (PRINT_HIGH, "%s has dropped the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
+	SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s has dropped the %s flag (held for %s)\n", player.userinfo.GetName(), team_names[f], CTF_TimeMSG(time_held));
 
 	player.flags[f] = false; // take ex-carrier's flag
 	CTFdata[f].flagger = 0;
@@ -264,7 +264,7 @@ void CaptureTheFlag::Ticker (void)
 
 		this->SendEvent ((flag_t)i, SCORE_RETURN, idplayer(0));
 
-		SV_BroadcastPrintf (PRINT_HIGH, "%s flag returned.\n", team_names[i]);
+		SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s flag returned.\n", team_names[i]);
 
 		this->SpawnFlag((flag_t)i);
 	}

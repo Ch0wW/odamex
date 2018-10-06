@@ -185,14 +185,22 @@ extern std::ifstream CON;
 // game print flags
 typedef enum
 {
-	PRINT_LOW = 0,		// pickup messages
-	PRINT_MEDIUM,		// death messages
-	PRINT_HIGH,			// critical messages
+	PRINT_PICKUP = 0,	// Pickup messages
+	PRINT_DEATHEVENT,	// Death messages
+	PRINT_LOCALEVENT,	// Ch0wW: Local Game Event (XXX connected / You joined the X team)
+	PRINT_GAMEEVENT,	// Ch0wW: Game Events (Game Won / XXX joined the game)
+	PRINT_HIGH,			// Critical messages (AKA LOCAL Messages ONLY)
+
+	//---------------------------------------
+	// AT THIS POINT, ANY RCON'd PERSON SHOULDN'T HAVE ACCESS TO IT
 	PRINT_CHAT,			// chat messages
 	PRINT_TEAMCHAT,		// chat messages from a teammate
 	PRINT_SERVERCHAT,	// chat messages from the server
 	PRINT_NO_RCON,		// Ch0wW: message that won't be printed for a RCON player.
-	PRINT_LOG,			// Ch0wW: Logfile
+	PRINT_WARNING,		// Ch0wW: RCON messages, or just a warning msg			- Color must be forced to YELLOW
+	PRINT_ERROR,		// Ch0wW: ERROR messages								- Color must be forced to RED/BRICK
+
+	PRINT_MAXPRINT,
 } printlevel_t;
 
 #ifdef __forceinline

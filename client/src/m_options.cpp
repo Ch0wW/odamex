@@ -880,8 +880,16 @@ EXTERN_CVAR (msg1color)
 EXTERN_CVAR (msg2color)
 EXTERN_CVAR (msg3color)
 EXTERN_CVAR (msg4color)
+EXTERN_CVAR (msg5color)
+EXTERN_CVAR (msg6color)
 EXTERN_CVAR (msgmidcolor)
 EXTERN_CVAR (msglevel)
+
+EXTERN_CVAR(message_showpickups)
+EXTERN_CVAR(message_showdeathevents)
+EXTERN_CVAR(message_showlocalevents)
+EXTERN_CVAR(message_showgameevents)
+
 
 static value_t TextColors[] =
 {
@@ -924,18 +932,28 @@ static value_t Languages[] = {
 
 static menuitem_t MessagesItems[] = {
 	{ discrete, "Language", 			 {&language},		   	{4.0}, {0.0},   {0.0}, {Languages} },
-	{ discrete, "Minimum message level", {&msglevel},		   	{3.0}, {0.0},   {0.0}, {MessageLevels} },
+	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
+
+	{ discrete, "Show Pickup Messages", {&message_showpickups}, {3.0}, {0.0},   {0.0}, {OnOff} },
+	{ discrete, "Show Obitruaries", {&message_showdeathevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
+	{ discrete, "Show Player Status Messages", {&message_showlocalevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
+	{ discrete, "Reveal Secrets", { &hud_revealsecrets }, { 2.0 }, { 0.0 }, { 0.0 },   { OnOff } },
+	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
+	
 	{ slider,	"Scale message text",    {&hud_scaletext},		{1.0}, {4.0}, 	{1.0}, {NULL} },
     { discrete,	"Show player target names",	{&hud_targetnames},	{2.0}, {0.0},   {0.0},	{OnOff} },
 	{ discrete ,"Game Message Type",    {&hud_gamemsgtype},		{3.0}, {0.0},   {0.0}, {VoxType} },
-	{ discrete, "Reveal Secrets",       {&hud_revealsecrets},	{2.0}, {0.0},   {0.0}, {OnOff} },
 	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
+
 	{ bricktext, "Message Colors",		{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
 	{ cdiscrete, "Item Pickup",			{&msg0color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
 	{ cdiscrete, "Obituaries",			{&msg1color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
-	{ cdiscrete, "Critical Messages",	{&msg2color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
-	{ cdiscrete, "Chat Messages",		{&msg3color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
-	{ cdiscrete, "Team Messages",		{&msg4color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ cdiscrete, "Player Status Messages",{&msg2color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ cdiscrete, "Game Event Messages",	{&msg3color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ cdiscrete, "Console Messages",	{&msg4color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ cdiscrete, "Chat Messages",		{&msg5color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ cdiscrete, "Team Messages",		{&msg6color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
+	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
 	{ cdiscrete, "Centered Messages",	{&msgmidcolor},			{21.0}, {0.0},	{0.0}, {TextColors} }
 };
 

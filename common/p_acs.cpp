@@ -217,7 +217,7 @@ static void DoGiveInv(player_t* player, const char* type, int amount)
 	}
 
 	// Unknown item.
-	Printf(PRINT_HIGH, "I don't know what %s is\n", type);
+	Printf(PRINT_WARNING, "[GIVE] Unknown item %s.\n", type);
 }
 
 static void GiveInventory(AActor* activator, const char* type, int amount)

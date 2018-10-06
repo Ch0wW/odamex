@@ -107,8 +107,8 @@ static struct NotifyText
 	byte text[256];
 } NotifyStrings[NUMNOTIFIES];
 
-#define PRINTLEVELS 5
-int PrintColors[PRINTLEVELS+1] = { CR_RED, CR_GOLD, CR_GRAY, CR_GREEN, CR_GREEN, CR_GOLD };
+#define PRINTLEVELS 7
+int PrintColors[PRINTLEVELS+1] = { CR_RED, CR_GOLD, CR_GRAY, CR_GRAY, CR_GRAY, CR_GREEN, CR_GREEN, CR_GOLD };
 
 
 // ============================================================================
@@ -512,6 +512,12 @@ static void setmsgcolor(int index, const char *color);
 
 
 cvar_t msglevel("msg", "0", "", CVARTYPE_STRING, CVAR_ARCHIVE);
+CVAR(message_showpickups, "1", "Shows pickup messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_showdeathevents, "1", "Shows Obitruaries messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_showlocalevents, "1", "Shows own frags / local events messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_showgameevents, "1", "Shows game event messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+
+
 
 CVAR_FUNC_IMPL(msg0color)
 {
@@ -536,6 +542,16 @@ CVAR_FUNC_IMPL(msg3color)
 CVAR_FUNC_IMPL(msg4color)
 {
 	setmsgcolor(4, var.cstring());
+}
+
+CVAR_FUNC_IMPL(msg5color)
+{
+	setmsgcolor(5, var.cstring());
+}
+
+CVAR_FUNC_IMPL(msg6color)
+{
+	setmsgcolor(6, var.cstring());
 }
 
 CVAR_FUNC_IMPL(msgmidcolor)
@@ -775,6 +791,13 @@ void C_AddNotifyString(int printlevel, const char* color_code, const char* sourc
 		(gamestate != GS_LEVEL && gamestate != GS_INTERMISSION) )
 		return;
 
+	if (printlevel == PRINT_DEATHEVENT && !message_showdeathevents)
+		return;
+	if (printlevel == PRINT_LOCALEVENT && !message_showlocalevents)
+		return;
+	if (printlevel == PRINT_GAMEEVENT && !message_showgameevents)
+		return;
+
 	int width = I_GetSurfaceWidth() / V_TextScaleXAmount();
 
 	if (addtype == APPENDLINE && NotifyStrings[NUMNOTIFIES-1].printlevel == printlevel)
@@ -843,7 +866,7 @@ static int C_PrintStringStdOut(const char* str)
 // 
 static int C_PrintString(int printlevel, const char* color_code, const char* outline)
 {
-	if (printlevel < (int)msglevel)
+	if (printlevel == PRINT_PICKUP && !message_showpickups)
 		return 0;
 
 	if (I_VideoInitialized() && !midprinting)
@@ -860,6 +883,8 @@ static int C_PrintString(int printlevel, const char* color_code, const char* out
 		sprintf(printlevel_color_code, "\\c%c", 'a' + PrintColors[printlevel]);
 		color_code = printlevel_color_code;
 	}
+
+
 
 	while (*line_start)
 	{
@@ -1001,7 +1026,7 @@ int STACK_ARGS DPrintf(const char *format, ...)
 		va_list argptr;
 
 		va_start(argptr, format);
-		int count = VPrintf(PRINT_HIGH, TEXTCOLOR_BOLD, format, argptr);
+		int count = VPrintf(PRINT_WARNING, TEXTCOLOR_BOLD, format, argptr);
 		va_end(argptr);
 		return count;
 	}

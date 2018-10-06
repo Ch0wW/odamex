@@ -869,7 +869,7 @@ bool Vote::init(const std::vector<std::string> &args, const player_t &player)
 			this->tally[it->id] = VOTE_UNDEC;
 	}
 
-	SV_BroadcastPrintf(PRINT_HIGH, "%s has called a vote for %s.\n", player.userinfo.GetName(), this->get_votestring().c_str());
+	SV_BroadcastPrintf("%s has called a vote for %s.\n", player.userinfo.GetName(), this->get_votestring().c_str());
 	return true;
 }
 
