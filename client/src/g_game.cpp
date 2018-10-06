@@ -1770,7 +1770,7 @@ bool G_RecordDemo(const std::string& mapname, const std::string& basedemoname)
 
     if (!recorddemo_fp)
     {
-        Printf(PRINT_HIGH, "Could not open file %s for writing\n", demoname.c_str());
+        Printf(PRINT_WARNING, "Could not open file %s for writing\n", demoname.c_str());
         return false;
     }
 
@@ -2002,6 +2002,10 @@ void G_DoPlayDemo(bool justStreamInput)
 		FixPathSeparator(defdemoname);
 		M_AppendExtension(defdemoname, ".lmp");
 		bytelen = M_ReadFile(defdemoname, &demobuffer);
+
+		if (bytelen == 0)
+			return;
+
 		demo_p = demobuffer;
 	}
 

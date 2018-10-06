@@ -1828,10 +1828,6 @@ void CL_Print (void)
 		Printf(level, "%s%s", TEXTCOLOR_TEAMCHAT, str);
 	else if (level == PRINT_SERVERCHAT)
 		Printf(level, "%s%s", TEXTCOLOR_ORANGE, str);
-	else if (level == PRINT_WARNING)						// Ch0wW : improve this ?
-		Printf(level, "%s%s", TEXTCOLOR_YELLOW, str);
-	else if (level == PRINT_ERROR)							// Ch0wW : improve this ?
-		Printf(level, "%s%s", TEXTCOLOR_RED, str);
 	else
 		Printf(level, "%s", str);
 

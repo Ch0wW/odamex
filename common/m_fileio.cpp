@@ -82,7 +82,7 @@ BOOL M_WriteFile(std::string filename, void *source, QWORD length)
 
     if (handle == NULL)
 	{
-		Printf(PRINT_HIGH, "Could not open file %s for writing\n", filename.c_str());
+		Printf(PRINT_WARNING, "Could not open file %s for writing\n", filename.c_str());
 		return false;
 	}
 
@@ -91,7 +91,7 @@ BOOL M_WriteFile(std::string filename, void *source, QWORD length)
 
 	if (count != length)
 	{
-		Printf(PRINT_HIGH, "Failed while writing to file %s\n", filename.c_str());
+		Printf(PRINT_WARNING, "Failed while writing to file %s\n", filename.c_str());
 		return false;
 	}
 
@@ -114,7 +114,7 @@ QWORD M_ReadFile(std::string filename, BYTE **buffer)
 
 	if (handle == NULL)
 	{
-		Printf(PRINT_HIGH, "Could not open file %s for reading\n", filename.c_str());
+		Printf(PRINT_WARNING, "Could not open file %s for reading\n", filename.c_str());
 		return false;
 	}
 

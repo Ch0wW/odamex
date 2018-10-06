@@ -1760,7 +1760,7 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 		}
 
 		if (!PatchFile) {
-			Printf (PRINT_HIGH, "Could not open DeHackEd patch \"%s\"\n", file.c_str());
+			Printf (PRINT_WARNING, "Could not open DeHackEd patch \"%s\"\n", file.c_str());
 			return false;
 		}
 	} else {

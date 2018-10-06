@@ -381,7 +381,7 @@ BEGIN_COMMAND (exec)
 
 	if(ifs.fail())
 	{
-		Printf (PRINT_HIGH, "Could not open \"%s\"\n", argv[1]);
+		Printf (PRINT_WARNING, "Could not open \"%s\"\n", argv[1]);
 		return;
 	}
 

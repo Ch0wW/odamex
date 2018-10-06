@@ -327,7 +327,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 	FILE *fp = fopen(TEMP_MIDI, "wb+");
 	if (!fp)
 	{
-		Printf(PRINT_HIGH, "Could not open temporary music file %s, not playing track\n", TEMP_MIDI);
+		Printf(PRINT_WARNING, "Could not open temporary music file %s, not playing track\n", TEMP_MIDI);
 		return;
 	}
     

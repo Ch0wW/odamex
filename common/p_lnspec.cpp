@@ -1956,7 +1956,7 @@ BOOL CheckIfExitIsGood (AActor *self)
 
 	// [Toke - dmflags] Old location of DF_NO_EXIT
 
-	if (sv_gametype != GM_COOP && self)
+	if (!GAME.IsCooperation() && self)
 	{
         if (!sv_allowexit)
         {
@@ -1968,7 +1968,7 @@ BOOL CheckIfExitIsGood (AActor *self)
 	}
 
 	if (self->player && multiplayer)
-		Printf (PRINT_HIGH, "%s exited the level.\n", self->player->userinfo.GetName());
+		Printf (PRINT_GAMEEVENT, "%s exited the level.\n", self->player->userinfo.GetName());
 
 	return true;
 }
