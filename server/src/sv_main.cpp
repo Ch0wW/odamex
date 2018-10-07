@@ -1108,13 +1108,22 @@ void SV_SendMobjToClient(AActor *mo, client_t *cl)
 		return;
 
 	MSG_WriteMarker(&cl->reliablebuf, svc_spawnmobj);
-	MSG_WriteLong(&cl->reliablebuf, mo->x);
-	MSG_WriteLong(&cl->reliablebuf, mo->y);
-	MSG_WriteLong(&cl->reliablebuf, mo->z);
-	MSG_WriteLong(&cl->reliablebuf, mo->angle);
 
 	MSG_WriteShort(&cl->reliablebuf, mo->type);
 	MSG_WriteShort(&cl->reliablebuf, mo->netid);
+
+	if (mo->type == MT_PUFF || mo->type == MT_BLOOD) {
+		MSG_WriteShort(&cl->reliablebuf, mo->x >> FRACBITS);
+		MSG_WriteShort(&cl->reliablebuf, mo->y >> FRACBITS);
+		MSG_WriteShort(&cl->reliablebuf, mo->z >> FRACBITS);
+	}
+	else {
+		MSG_WriteLong(&cl->reliablebuf, mo->x);
+		MSG_WriteLong(&cl->reliablebuf, mo->y);
+		MSG_WriteLong(&cl->reliablebuf, mo->z);
+		MSG_WriteLong(&cl->reliablebuf, mo->angle);
+	}
+
 	MSG_WriteByte(&cl->reliablebuf, mo->rndindex);
 	MSG_WriteShort(&cl->reliablebuf, (mo->state - states)); // denis - sending state fixes monster ghosts appearing under doors
 

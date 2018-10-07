@@ -2157,13 +2157,23 @@ void CL_SpawnMobj()
 {
 	AActor  *mo;
 
-	fixed_t x = MSG_ReadLong();
-	fixed_t y = MSG_ReadLong();
-	fixed_t z = MSG_ReadLong();
-	angle_t angle = MSG_ReadLong();
+	fixed_t x = 0, y = 0, z = 0;
+	angle_t angle = 0;
 
 	unsigned short type = MSG_ReadShort();
 	unsigned short netid = MSG_ReadShort();
+
+	if (type == MT_PUFF || type == MT_BLOOD) {
+		x = MSG_ReadShort() << FRACBITS;
+		y = MSG_ReadShort() << FRACBITS;
+		z = MSG_ReadShort() << FRACBITS;
+	}
+	else {
+		x = MSG_ReadLong();
+		y = MSG_ReadLong();
+		z = MSG_ReadLong();
+		angle = MSG_ReadLong();
+	}
 	byte rndindex = MSG_ReadByte();
 	SWORD state = MSG_ReadShort();
 

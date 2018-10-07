@@ -2073,7 +2073,7 @@ void G_DoPlayDemo(bool justStreamInput)
 			if (!validplayer(con))
 			{
 				Z_Free(demobuffer);
-				Printf(PRINT_HIGH, "DOOM Demo: invalid console player %d of %d\n", who + 1, players.size());
+				Printf(PRINT_ERROR, "DOOM Demo: invalid console player %d of %d\n", who + 1, players.size());
 				gameaction = ga_fullconsole;
 				return;
 			}
@@ -2228,7 +2228,7 @@ void G_CleanupDemo()
 		cvar_t::C_RestoreCVars();		// [RH] Restore cvars demo might have changed
 
 		demorecording = false;
-		Printf(PRINT_HIGH, "Demo %s recorded\n", demoname);
+		Printf(PRINT_WARNING, "Demo %s recorded\n", demoname);
 
 		// reset longtics after demo recording
 		longtics = !(Args.CheckParm("-shorttics"));
@@ -2286,7 +2286,7 @@ BOOL G_CheckDemoStatus (void)
 				return false;
 			}
 			else
-				Printf (PRINT_HIGH, "Demo ended.\n");
+				Printf (PRINT_WARNING, "Demo ended.\n");
 
 			gameaction = ga_fullconsole;
 			timingdemo = false;
