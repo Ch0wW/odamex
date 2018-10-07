@@ -127,7 +127,10 @@ BOOL PIT_StompThing (AActor *thing)
 		return true;
 
 	// Unblocked players shouldn't telefrag friendlies.  Thanks Amateur Spammer!
-	if (tmthing->player && thing->player && sv_unblockplayers)
+	// In Coop, telefrag shouldn't even happen.  Thanks Amateur Spammer!
+	// Ch0wW: Apparently, Amateur Spammer's sv_unblock player is good, but it's better to enable Telefrags only when TD is enabled, 
+	// or in non-cooperation gamemodes.
+	if (GAME.IsCooperation() && !sv_friendlyfire && (tmthing->player && thing->player))
 		return true;
 
 	// don't clip against self
@@ -491,6 +494,13 @@ BOOL PIT_CheckLine (line_t *ld)
 	return true;
 }
 
+bool P_ActorsOverlapping(const AActor* actor1, const AActor* actor2)
+{
+	return	abs(actor1->x - actor2->x) < (actor1->radius + actor2->radius) &&
+			abs(actor1->y - actor2->y) < (actor1->radius + actor2->radius) &&
+			(!co_realactorheight ||	abs(actor1->z + actor1->height / 2 - actor2->x + actor2->height / 2) < (actor1->height - actor2->z - actor2->height / 2));
+	}
+
 //
 // PIT_CheckThing
 //
@@ -510,8 +520,11 @@ static BOOL PIT_CheckThing (AActor *thing)
 		(tmthing->player && tmthing->player->spectator))
 		return true;
 
-    if (tmthing->player && thing->player && sv_unblockplayers)
-        return true;
+	// Ch0wW: Optimisation of Amateur Spammer's idea.
+	// To move, either you use sv_unblockplayers (which will unblock anyone)
+	// Or, disabling the cvar, and check if 2+ players are "telefraggable" to make them move.
+	if ((tmthing->player && thing->player) && (P_ActorsOverlapping(thing, tmthing) || sv_unblockplayers))
+		return true;
 
 	fixed_t blockdist = thing->radius + tmthing->radius;
 	if (abs(thing->x - tmx) >= blockdist || abs(thing->y - tmy) >= blockdist)
