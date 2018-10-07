@@ -2039,6 +2039,11 @@ void CL_UpdatePlayerState(void)
 
 	for (int i = 0; i < NUMPSPRITES; i++)
 		P_SetPsprite(&player, i, stnum[i]);
+
+	if (GAME.IsCooperation()) {
+		for (int i = 0; i < NUMCARDS; i++)
+			player.cards[i] = MSG_ReadByte();
+	}
 }
 
 //
