@@ -1459,10 +1459,9 @@ int DLevelScript::DoSpawnSpot(int type, int spot, int tid, int angle)
 	return spawned;
 }*/
 
-void DLevelScript::DoFadeTo (int r, int g, int b, int a, fixed_t time)
+void DLevelScript::DoFadeTo(int r, int g, int b, int a, fixed_t time)
 {
-    Printf(PRINT_HIGH,"DoFadeRange now... \n");
-	DoFadeRange (0, 0, 0, -1, r, g, b, a, time);
+	DoFadeRange(0, 0, 0, -1, clamp(r, 0, 255), clamp(g, 0, 255), clamp(b, 0, 255), clamp(a, 0, FRACUNIT), time);
 }
 
 static void DoActualFadeRange(player_s* viewer, float ftime, bool fadingFrom,
