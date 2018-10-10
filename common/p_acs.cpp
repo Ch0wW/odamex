@@ -57,7 +57,7 @@ static bool P_GetScriptGoing (AActor *who, line_t *where, int num, int *code,
 
 struct FBehavior::ArrayInfo
 {
-	int ArraySize;
+	DWORD ArraySize;
 	SDWORD *Elements;
 };
 
@@ -423,7 +423,7 @@ FBehavior::FBehavior (BYTE *object, int len)
 
 	if (object[0] != 'A' || object[1] != 'C' || object[2] != 'S')
 	{
-		Format = ACS_Unknown;
+		delete[] object;
 		return;
 	}
 
@@ -439,7 +439,7 @@ FBehavior::FBehavior (BYTE *object, int len)
 		Format = ACS_LittleEnhanced;
 		break;
 	default:
-		Format = ACS_Unknown;
+		delete[] object;
 		return;
 	}
 
@@ -531,8 +531,9 @@ FBehavior::FBehavior (BYTE *object, int len)
 			Functions += 8;
 		}
 
+		//memset(level.vars, 0, sizeof(level.vars));
 		chunk = (DWORD *)FindChunk(MAKE_ID('M','I','N','I'));
-		if (chunk != NULL)
+		/*while*/ if (chunk != NULL)
 		{
 			int numvars = LELONG(chunk[1])/4;
 			int firstvar = LELONG(chunk[2]);
@@ -540,6 +541,7 @@ FBehavior::FBehavior (BYTE *object, int len)
 			{
 				level.vars[i+firstvar] = LELONG(chunk[3+i]);
 			}
+			//chunk = (DWORD *)NextChunk((BYTE *)chunk);
 		}
 
 		chunk = (DWORD *)FindChunk(MAKE_ID('A','R','A','Y'));
@@ -563,9 +565,9 @@ FBehavior::FBehavior (BYTE *object, int len)
 			int arraynum = level.vars[LELONG(chunk[2])];
 			if ((unsigned)arraynum < (unsigned)NumArrays)
 			{
-				int initsize = MIN<int> (Arrays[arraynum].ArraySize, (LELONG(chunk[1])-4)/4);
+				unsigned int initsize = MIN<unsigned int> (Arrays[arraynum].ArraySize, (LELONG(chunk[1])-4)/4);
 				SDWORD *elems = Arrays[arraynum].Elements;
-				for (i = 0; i < initsize; ++i)
+				for (unsigned i = 0; i < initsize; ++i)
 				{
 					elems[i] = LELONG(chunk[3+i]);
 				}
@@ -579,6 +581,10 @@ FBehavior::FBehavior (BYTE *object, int len)
 
 FBehavior::~FBehavior ()
 {
+	if (Scripts != NULL) {
+		delete[] Scripts;
+		Scripts = NULL;
+	}
 	// Object file is freed by the zone heap
 	if(Arrays != NULL)
 	{
@@ -1366,6 +1372,8 @@ void DLevelScript::ChangeFlat (int tag, int name, bool floorOrCeiling)
 		else
 			sectors[secnum].ceilingpic = flat;
 	}
+
+	// TODO Ch0wW : Is this change spread to the clients by the server?
 }
 
 extern size_t P_NumPlayersInGame();
