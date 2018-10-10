@@ -186,7 +186,7 @@ next:
         MSG_WriteShort(&ml_message, timeleft);
     
 	// Teams
-	if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if( GAME.IsTeamGame() )
 	{
 		// Team data
 		MSG_WriteByte(&ml_message, 2);
@@ -240,7 +240,7 @@ next:
 		for (int i = 3; i >= 0; i--)
 			MSG_WriteByte(&ml_message, it->userinfo.color[i]);
 
-		if(sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+		if ( GAME.IsTeamGame() )
 			MSG_WriteByte(&ml_message, it->userinfo.team);
 
 		MSG_WriteShort(&ml_message, it->ping);
@@ -266,7 +266,6 @@ next:
 		MSG_WriteShort(&ml_message, it->fragcount);
 		MSG_WriteShort(&ml_message, it->killcount);
 		MSG_WriteShort(&ml_message, it->deathcount);
-		MSG_WriteShort(&ml_message, it->fragspree);
 	}
 }
 

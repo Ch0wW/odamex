@@ -72,6 +72,7 @@
 #include <vector>
 
 extern void G_DeferedInitNew (char *mapname);
+extern size_t P_NumPlayersInGame();
 extern level_locals_t level;
 
 // Unnatural Level Progression.  True if we've used 'map' or another command
@@ -817,7 +818,7 @@ void SV_Sound (fixed_t x, fixed_t y, byte channel, const char *name, byte attenu
 //
 void SV_UpdateFrags(player_t &player)
 {
-	for (Players::iterator it = players.begin();it != players.end();++it)
+	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		client_t *cl = &(it->client);
 
@@ -825,8 +826,11 @@ void SV_UpdateFrags(player_t &player)
 		MSG_WriteByte(&cl->reliablebuf, player.id);
 		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? player.killcount : player.fragcount);
 		MSG_WriteShort(&cl->reliablebuf, player.deathcount);
-		MSG_WriteShort(&cl->reliablebuf, player.points);
-		MSG_WriteShort(&cl->reliablebuf, player.fragspree);
+		if (!GAME.IsCooperation())
+		{
+			MSG_WriteShort(&cl->reliablebuf, player.points);
+			MSG_WriteShort(&cl->reliablebuf, player.fragspree);
+		}
 	}
 }
 
@@ -1606,8 +1610,12 @@ void SV_ClientFullUpdate(player_t &pl)
 		MSG_WriteByte(&cl->reliablebuf,	 it->id);
 		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
 		MSG_WriteShort(&cl->reliablebuf, it->deathcount);
-		MSG_WriteShort(&cl->reliablebuf, it->points);
-		MSG_WriteShort(&cl->reliablebuf, it->fragspree);
+		if (!GAME.IsCooperation())
+		{
+			MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP
+			MSG_WriteShort(&cl->reliablebuf, it->fragspree);
+		}
+
 
 		MSG_WriteMarker (&cl->reliablebuf, svc_spectate);
 		MSG_WriteByte (&cl->reliablebuf, it->id);
@@ -3658,19 +3666,12 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		if ((level.time > player.joinafterspectatortime + TICRATE * 3) ||
 			level.time > player.joinafterspectatortime + TICRATE * 5)
 		{
-
 			// Check to see if there is an empty spot on the server
-			int NumPlayers = 0;
-			for (Players::iterator it = players.begin(); it != players.end(); ++it)
-				if (it->ingame() && !it->spectator)
-					NumPlayers++;
-
-			// Too many players.
-			if (!(NumPlayers < sv_maxplayers))
+			if (!( P_NumPlayersInGame() < sv_maxplayers))
 				return;
 
 			// Check to make sure we're not exceeding sv_maxplayersperteam.
-			if (sv_maxplayersperteam && (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF))
+			if (sv_maxplayersperteam && GAME.IsTeamGame())
 			{
 				if (P_NumPlayersOnTeam(player.userinfo.team) >= sv_maxplayersperteam)
 				{

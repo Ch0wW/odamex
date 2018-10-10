@@ -1003,8 +1003,11 @@ BEGIN_COMMAND (ready) {
 		MSG_WriteMarker(&net_buffer, clc_ready);
 } END_COMMAND (ready)
 
-BEGIN_COMMAND (join)
+BEGIN_COMMAND(join)
 {
+	if (!connected)
+		return;
+
 	if (P_NumPlayersInGame() >= sv_maxplayers)
 	{
 		C_MidPrint("The game is currently full", NULL);
@@ -1013,6 +1016,12 @@ BEGIN_COMMAND (join)
 
 	MSG_WriteMarker(&net_buffer, clc_spectate);
 	MSG_WriteByte(&net_buffer, false);
+
+	// Ch0wW : New implementation of teams
+	/*if (argc > 1)
+		MSG_WriteString(&net_buffer, argv[1]);
+	else
+		MSG_WriteString(&net_buffer, "");*/
 }
 END_COMMAND (join)
 
@@ -1405,8 +1414,11 @@ void CL_UpdateFrags(void)
 	else
 		p.fragcount = MSG_ReadShort();
 	p.deathcount = MSG_ReadShort();
-	p.points = MSG_ReadShort();
-	p.fragspree = MSG_ReadShort();
+
+	if (!GAME.IsCooperation()) {
+		p.points = MSG_ReadShort();
+		p.fragspree = MSG_ReadShort();
+	}
 }
 
 //
