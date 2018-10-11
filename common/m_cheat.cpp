@@ -282,8 +282,8 @@ void cht_DoCheat (player_t *player, int cheat)
 	}
 	if (serverside)
 		SV_BroadcastPrintf (PRINT_GAMEEVENT, "%s activated a cheat: %s\n", player->userinfo.GetName(), msg);
-	else if (clientside && player == &consoleplayer())
-		Printf(PRINT_HIGH, "%s\n", msg);
+	if ((clientside && player == &consoleplayer()) || GAME.IsSinglePlayer())
+		Printf(PRINT_HIGH, "%s\n", msg);	
 }
 
 void cht_Give (player_t *player, const char *name)

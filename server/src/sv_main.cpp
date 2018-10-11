@@ -4144,7 +4144,7 @@ void SV_WantWad(player_t &player)
 		MSG_ReadLong();
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
+		MSG_WriteByte(&cl->reliablebuf, PRINT_WARNING);
 		MSG_WriteString(&cl->reliablebuf, "Server: Downloading is disabled\n");
 
 		SV_DropClient(player);
@@ -4172,17 +4172,17 @@ void SV_WantWad(player_t &player)
 	if (i == wadfiles.size())
 	{
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
+		MSG_WriteByte (&cl->reliablebuf, PRINT_WARNING);
 		MSG_WriteString (&cl->reliablebuf, "Server: Bad wad request\n");
 		SV_DropClient(player);
 		return;
 	}
-
+	 
 	// denis - do not download commercial wads
 	if (W_IsIWAD(wadfiles[i]))
 	{
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
+		MSG_WriteByte (&cl->reliablebuf, PRINT_ERROR);
 		char message[256];	
 		sprintf(message, "Server: %s is a commercial wad and will not be downloaded\n",
 				D_CleanseFileName(wadfiles[i]).c_str());
@@ -4378,7 +4378,7 @@ void SV_ParseCommands(player_t &player)
 
 		if (net_message.overflowed)
 		{
-			Printf (PRINT_HIGH, "SV_ReadClientMessage: badread %d(%s)\n",
+			Printf (PRINT_ERROR, "SV_ReadClientMessage: badread %d(%s)\n",
 					    (int)cmd,
 					    clc_info[cmd].getName());
 			SV_DropClient(player);
