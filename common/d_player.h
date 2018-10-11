@@ -252,6 +252,7 @@ public:
 
 		std::string	digest;			// randomly generated string that the client must use for any hashes it sends back
 		bool        allow_rcon;     // allow remote admin
+		bool		bJoin_Ok;	// Ch0wW : OK if join_password is correct.
 		bool		displaydisconnect; // display disconnect message when disconnecting
 
 		huffman_server	compressor;	// denis - adaptive huffman compression
@@ -296,6 +297,7 @@ public:
 			relpackets = MAX_UDP_PACKET*50;
 			digest = "";
 			allow_rcon = false;
+			bJoin_Ok = false;
 			displaydisconnect = true;
 		/*
 		huffman_server	compressor;	// denis - adaptive huffman compression*/
@@ -319,6 +321,7 @@ public:
 			lastclientcmdtic(other.lastclientcmdtic),
 			digest(other.digest),
 			allow_rcon(false),
+			bJoin_Ok(false),
 			displaydisconnect(true),
 			compressor(other.compressor),
 			download(other.download)

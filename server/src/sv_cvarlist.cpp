@@ -75,8 +75,8 @@ CVAR_RANGE_FUNC_DECL(sv_maxplayersperteam, "3", "Maximum number of players that 
 CVAR_FUNC_DECL(	sv_password, "", "Clients can connect if they have this password",
 				CVARTYPE_STRING, CVAR_SERVERARCHIVE | CVAR_NOENABLEDISABLE)
 
-/*CVAR_FUNC_DECL(sv_joinpassword, "", "Clients can connect if they have this password",
-				CVARTYPE_STRING, CVAR_SERVERARCHIVE | CVAR_NOENABLEDISABLE)*/
+CVAR_FUNC_DECL( sv_joinpassword, "", "Clients can play if they have this password",
+				CVARTYPE_STRING, CVAR_SERVERARCHIVE | CVAR_NOENABLEDISABLE)
 
 CVAR_FUNC_DECL(	rcon_password, "", "Remote console password",
 				CVARTYPE_STRING, CVAR_SERVERARCHIVE | CVAR_NOENABLEDISABLE)

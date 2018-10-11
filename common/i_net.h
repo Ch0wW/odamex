@@ -169,12 +169,13 @@ enum clc_t
 	clc_ack,
 	clc_rcon,
 	clc_rcon_password,
+	clc_join_password,		// Ch0wW - Join Password
 	clc_changeteam,			// [NightFang] - Change your team [Toke - Teams] Made this actualy work
 	clc_ctfcommand,			// Ch0wW - THIS MUST BE REMOVED AS INCOMPLETE
 	clc_spectate,			// denis - [byte:state]
 	clc_wantwad,			// denis - string:name, string:hash
 	clc_kill,				// denis - suicide
-	clc_cheat,				// denis - god, pumpkins, etc
+	clc_cheat,				// denis - god, noclip, etc
 	clc_cheatgive,			// Ch0wW - "give X" command
     clc_cheatpulse,         // Russell - one off cheats (idkfa, idfa etc)
 	clc_callvote,			// [AM] - Calling a vote

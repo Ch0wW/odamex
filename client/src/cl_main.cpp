@@ -975,6 +975,18 @@ PLAYER STATUS COMMANDS
 =============================================================================================
 */
 
+BEGIN_COMMAND(join_password)
+{
+	if (connected && argc > 1)
+	{
+		MSG_WriteMarker(&net_buffer, clc_join_password);
+
+		std::string password = argv[1];
+		MSG_WriteString(&net_buffer, MD5SUM(password + digest).c_str());
+	}
+}
+END_COMMAND(join_password)
+
 BEGIN_COMMAND(join)
 {
 	if (!connected)

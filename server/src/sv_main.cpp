@@ -232,6 +232,15 @@ CVAR_FUNC_IMPL (sv_password)
 		Printf(PRINT_HIGH, "Connect password cleared.");
 }
 
+// Private server settings
+CVAR_FUNC_IMPL(sv_joinpassword)
+{
+	if (strlen(var.cstring()))
+		Printf(PRINT_HIGH, "Join password set.");
+	else
+		Printf(PRINT_HIGH, "Join password cleared.");
+}
+
 CVAR_FUNC_IMPL (rcon_password) // Remote console password.
 {
 	if( strlen(var.cstring()) < 5 )
@@ -3626,6 +3635,10 @@ void SV_Spectate(player_t &player)
 	if (!player.ingame())
 		return;
 
+	if (!player.client.bJoin_Ok) {
+		SV_MidPrint("Incorrect join_password.", &player, 5);
+		return;
+	}
 	/*if (Code == 5)
 	{
 		// GhostlyDeath -- Prevent Cheaters
@@ -3958,7 +3971,40 @@ void SV_RConPassword (player_t &player)
 		Printf(PRINT_WARNING, "[RCON] Login failure from %s (%s)\n", player.userinfo.GetName(), cl->address.ToString());
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
 		MSG_WriteByte (&cl->reliablebuf, PRINT_WARNING);
-		MSG_WriteString (&cl->reliablebuf, "Bad password\n");
+		MSG_WriteString (&cl->reliablebuf, "Bad RCON password.\n");
+	}
+}
+
+//
+// SV_RConPassword
+// denis
+//
+void SV_CheckJoinPassword(player_t &player)
+{
+	client_t *cl = &player.client;
+
+	std::string challenge = MSG_ReadString();
+
+	if (strlen(sv_joinpassword.cstring()) == 0)
+		return;
+
+	std::string password = sv_joinpassword.cstring();
+
+	// Don't display login messages again if the client is already logged in
+	if (cl->bJoin_Ok)
+		return;
+
+	if (!password.empty() && MD5SUM(password + cl->digest) == challenge)
+	{
+		cl->bJoin_Ok = true;
+		Printf("ACCEPTED");
+	}
+	else
+	{
+		Printf(PRINT_WARNING, "[JOIN_PASSWORD] Login failure from %s\n", player.userinfo.GetName());
+		MSG_WriteMarker(&cl->reliablebuf, svc_print);
+		MSG_WriteByte(&cl->reliablebuf, PRINT_WARNING);
+		MSG_WriteString(&cl->reliablebuf, "Incorrect join password.\n");
 	}
 }
 
@@ -4239,6 +4285,12 @@ void SV_ParseCommands(player_t &player)
 
 				break;
 			}
+
+		case clc_join_password:
+		{
+			SV_CheckJoinPassword(player);
+			break;
+		}
 
 		case clc_changeteam:
 			SV_ChangeTeam(player);

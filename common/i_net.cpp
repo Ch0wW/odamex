@@ -940,6 +940,7 @@ void InitNetMessageFormats()
       MSG(clc_ack,                "x"),
       MSG(clc_rcon,               "s"),
       MSG(clc_rcon_password,      "x"),
+	  MSG(clc_join_password,      "s"),
       MSG(clc_changeteam,         "b"),
       MSG(clc_ctfcommand,         "x"),
       MSG(clc_spectate,           "b"),
