@@ -63,7 +63,6 @@ static player_t nullplayer;		// used to indicate 'player not found' when searchi
 EXTERN_CVAR (sv_allowmovebob)
 EXTERN_CVAR (cl_movebob)
 EXTERN_CVAR(cl_spectator_freelook_force)
-EXTERN_CVAR(cl_spectator_autofly)
 
 player_t &idplayer(byte id)
 {
@@ -97,6 +96,12 @@ player_t &nameplayer(const std::string &netname)
 	return nullplayer;
 }
 
+/*
+// Checks if the player is a valid one.
+//
+// @param  ref	Name of player to look for.
+// @return		TRUE if valid, FALSE if not.
+*/
 bool validplayer(player_t &ref)
 {
 	if (&ref == &nullplayer)
@@ -142,9 +147,10 @@ size_t P_NumReadyPlayersInGame()
 	return num_players;
 }
 
+// 
 // P_NumPlayersOnTeam()
+// Returns the number of active players on a team. No specs or downloaders.
 //
-// Returns the number of active players on a team.  No specs or downloaders.
 size_t P_NumPlayersOnTeam(team_t team)
 {
 	size_t num_players = 0;
@@ -157,7 +163,7 @@ size_t P_NumPlayersOnTeam(team_t team)
 }
 
 //
-// P_Thrust
+// P_SideThrust
 // Moves the given origin along a given angle.
 //
 void P_SideThrust (player_t *player, angle_t angle, fixed_t move)
@@ -168,6 +174,10 @@ void P_SideThrust (player_t *player, angle_t angle, fixed_t move)
 	player->mo->momy += FixedMul (move, finesine[angle]);
 }
 
+//
+// P_ForwardThrust
+// Moves the given origin along a given angle.
+//
 void P_ForwardThrust (player_t *player, angle_t angle, fixed_t move)
 {
 	angle >>= ANGLETOFINESHIFT;
@@ -373,9 +383,7 @@ void P_MovePlayer (player_t *player)
 	if(clientside || step_mode)
 	{
 		mo->angle += player->cmd.yaw << 16;
-
-		// Look up/down stuff
-		P_PlayerLookUpDown(player);
+		P_PlayerLookUpDown(player);			// Look up/down stuff
 	}
 
 	// killough 10/98:
@@ -605,6 +613,13 @@ bool P_AreTeammates(player_t &a, player_t &b)
 	return GAME.IsCooperation() || ((a.userinfo.team == b.userinfo.team) && GAME.IsTeamGame());
 }
 
+//
+// Checks if you can spy another player according to your own status.
+// Params:
+// @viewer : The player asking the Spying request.
+// @other : The player we want to spectate
+// @demo : If our check is done during a demo.
+//
 bool P_CanSpy(player_t &viewer, player_t &other, bool demo)
 {
 	// Viewers can always spy themselves.
@@ -658,10 +673,10 @@ void P_PlayerThink (player_t *player)
 	else
 		player->mo->flags &= ~MF_NOCLIP;
 
+	// Check flying status (also spectator)
 	if (player->spectator)
 	{
-		if (cl_spectator_autofly)
-			player->mo->flags |= MF_NOGRAVITY, player->mo->flags2 |= MF2_FLY;	// Fly by default as a spectator
+		player->mo->flags |= MF_NOGRAVITY, player->mo->flags2 |= MF2_FLY;	// Spectators are forced to fly.
 	}
 	else
 	{
@@ -671,7 +686,7 @@ void P_PlayerThink (player_t *player)
 			player->mo->flags &= ~MF_NOGRAVITY, player->mo->flags2 &= ~MF2_FLY;
 	}
 
-	// chain saw run forward
+	// Chainsaw run forward
 	if (player->mo->flags & MF_JUSTATTACKED)
 	{
 		player->cmd.yaw = 0;
@@ -680,6 +695,7 @@ void P_PlayerThink (player_t *player)
 		player->mo->flags &= ~MF_JUSTATTACKED;
 	}
 
+	// Run the death Think if dead
 	if (player->playerstate == PST_DEAD)
 	{
 		P_DeathThink(player);

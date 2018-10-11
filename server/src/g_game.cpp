@@ -367,8 +367,10 @@ void G_PlayerFinishLevel (player_t &player)
 	memset (p->powers, 0, sizeof (p->powers));
 	memset (p->cards, 0, sizeof (p->cards));
 
-	if(p->mo)
-		p->mo->flags &= ~MF_SHADOW; 	// cancel invisibility
+	// Ch0wW : ToDo : Cancel all other MF2 flags.
+	if (p->mo) {
+		p->mo->flags &= ~MF_SHADOW | ~MF_NOCLIP; 	// cancel invisibility
+	}
 
 	p->extralight = 0;					// cancel gun flashes
 	p->fixedcolormap = 0;				// cancel ir goggles
@@ -385,18 +387,28 @@ void G_PlayerFinishLevel (player_t &player)
 void G_PlayerReborn (player_t &p) // [Toke - todo] clean this function
 {
 	size_t i;
+
+	// Weapons
+	for (i = 0; i < NUMWEAPONS; i++)
+		p.weaponowned[i] = false;
+
+	// Ammo
 	for (i = 0; i < NUMAMMO; i++)
 	{
 		p.maxammo[i] = maxammo[i];
 		p.ammo[i] = 0;
 	}
-	for (i = 0; i < NUMWEAPONS; i++)
-		p.weaponowned[i] = false;
+
+	p.weaponowned[wp_fist] = true;
+	p.weaponowned[wp_pistol] = true;
+	p.ammo[am_clip] = deh.StartBullets; // [RH] Used to be 50
+
 	if (!sv_keepkeys)
 	{
 		for (i = 0; i < NUMCARDS; i++)
 			p.cards[i] = false;
 	}
+
 	for (i = 0; i < NUMPOWERS; i++)
 		p.powers[i] = false;
 	for (i = 0; i < NUMFLAGS; i++)
@@ -409,12 +421,11 @@ void G_PlayerReborn (player_t &p) // [Toke - todo] clean this function
 	p.armortype = 0;
 	p.armorpoints = 0;
 	p.readyweapon = p.pendingweapon = wp_pistol;
-	p.weaponowned[wp_fist] = true;
-	p.weaponowned[wp_pistol] = true;
-	p.ammo[am_clip] = deh.StartBullets; // [RH] Used to be 50
+
 	p.cheats = 0;						// Ch0wW: reset cheats
 
 	p.RespawnTime = 0;
+
 	p.tic = 0;
 }
 
@@ -694,7 +705,7 @@ void G_DeathMatchSpawnPlayer (player_t &player)
 	int selections;
 	mapthing2_t *spot;
 
-	if(sv_gametype == GM_COOP)
+	if (GAME.IsCooperation())	// Don't even think about COOP Spawns in Deathmatch !
 		return;
 
 	if( GAME.IsTeamGame() )
@@ -784,13 +795,6 @@ void G_DoReborn (player_t &player)
 	P_SpawnPlayer (player, &playerstarts[playernum%playerstarts.size()]);
 }
 
-
-void G_ScreenShot(const char *filename)
-{
-}
-
-
-
 //
 // G_InitFromSavegame
 // Can be called by the startup code or the menu task.
@@ -804,38 +808,6 @@ void G_LoadGame (char* name)
 	strcpy (savename, name);
 	gameaction = ga_loadgame;
 }
-
-
-void G_DoLoadGame (void)
-{
-}
-
-
-//
-// G_SaveGame
-// Called by the menu task.
-// Description is a 24 byte text string
-//
-void G_SaveGame (int slot, char *description)
-{
-}
-
-void G_BuildSaveName (std::string &name, int slot)
-{
-}
-
-void G_DoSaveGame (void)
-{
-}
-
-//
-// G_PlayDemo
-//
-
-void G_DeferedPlayDemo (char *name)
-{
-}
-
 
 // [RH] Process all the information in a FORM ZDEM
 //		until a BODY chunk is entered.

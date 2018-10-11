@@ -70,7 +70,7 @@ EXTERN_CVAR (sv_fragexitswitch)
 EXTERN_CVAR (sv_teamsinplay)
 
 EXTERN_CVAR (sv_maxplayers)
-EXTERN_CVAR (join_password)
+EXTERN_CVAR (sv_password)
 EXTERN_CVAR (sv_website)
 
 EXTERN_CVAR (sv_natport)
@@ -271,7 +271,7 @@ void SV_SendServerInfo()
     }
 
     MSG_WriteLong(&ml_message, (DWORD)0x01020305);
-    MSG_WriteShort(&ml_message, strlen(join_password.cstring()) ? 1 : 0);
+    MSG_WriteShort(&ml_message, strlen(sv_password.cstring()) ? 1 : 0);
     
     // GhostlyDeath -- Send Game Version info
     MSG_WriteLong(&ml_message, GAMEVER);

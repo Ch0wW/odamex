@@ -224,28 +224,28 @@ EXTERN_CVAR (sv_scorelimit)
 EXTERN_CVAR (sv_friendlyfire)
 
 // Private server settings
-CVAR_FUNC_IMPL (join_password)
+CVAR_FUNC_IMPL (sv_password)
 {
-	if (strlen(var.cstring()))
-		Printf(PRINT_HIGH, "join password set");
+	if ( strlen(var.cstring()) )
+		Printf(PRINT_HIGH, "Connect password set.");
 	else
-		Printf(PRINT_HIGH, "join password cleared");
+		Printf(PRINT_HIGH, "Connect password cleared.");
 }
 
 CVAR_FUNC_IMPL (rcon_password) // Remote console password.
 {
-	if(strlen(var.cstring()) < 5)
+	if( strlen(var.cstring()) < 5 )
 	{
 		if(!strlen(var.cstring()))
-			Printf(PRINT_HIGH, "rcon password cleared");
+			Printf(PRINT_HIGH, "Rcon password cleared.");
 		else
 		{
-			Printf(PRINT_HIGH, "rcon password must be at least 5 characters");
+			Printf(PRINT_HIGH, "Rcon password must be at least 5 characters long.");
 			var.Set("");
 		}
 	}
 	else
-		Printf(PRINT_HIGH, "rcon password set");
+		Printf(PRINT_HIGH, "Rcon password set.");
 }
 
 //
@@ -1644,8 +1644,8 @@ void SV_ClientFullUpdate(player_t &pl)
 
 	SV_UpdateHiddenMobj();
 
-	// update flags
-	if (sv_gametype == GM_CTF)
+	// update CTF Flags
+	if (GAME.IsCTF())
 		CTF.SendFullUpdate(pl);
 
 	// update sectors
@@ -1986,7 +1986,7 @@ void SV_ConnectClient()
 	}
 
 	std::string passhash = MSG_ReadString();
-	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
+	if (strlen(sv_password.cstring()) && MD5SUM(sv_password.cstring()) != passhash)
 	{
 		Printf("%s disconnected (wrong password).\n", net_from.ToString());
 
@@ -3651,7 +3651,7 @@ void SV_Spectate(player_t &player)
 // param to spec or unspec the player without a broadcasted message.
 void P_SetSpectatorFlags(player_t &player);
 
-void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
+void SV_SetPlayerSpec(player_t &player, bool setting, bool silent /*, char *team */)
 {
 	// We don't care about spectators during intermission
 	if (gamestate == GS_INTERMISSION)
@@ -3660,6 +3660,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	if (player.ingame() == false)
 		return;
 
+	// If we want to join (Setting = FALSE)
 	if (!setting && player.spectator)
 	{
 		// We want to unspectate the player.
@@ -3724,6 +3725,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			}
 		}
 	}
+	// IF WE WANT TO SPECTATE (SETTING = TRUE)
 	else if (setting && !player.spectator)
 	{
 		// We want to spectate the player
@@ -4787,7 +4789,7 @@ BEGIN_COMMAND (	playerinfo)
 	Printf(PRINT_HIGH, "---------------[player info]----------- \n");
 	Printf(PRINT_HIGH, " IP Address       - %s \n",		player->client.address.ToString());
 	Printf(PRINT_HIGH, " Name - %s \n",		player->userinfo.GetName());
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 		Printf(PRINT_HIGH, " Team    - %s \n",		team);
 	Printf(PRINT_HIGH, " Aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
 	Printf(PRINT_HIGH, " Unlagged   - %d \n",		player->userinfo.unlag);

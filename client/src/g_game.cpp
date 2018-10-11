@@ -1510,7 +1510,7 @@ void G_DoLoadGame (void)
 	FILE *stdfile = fopen (savename, "rb");
 	if (stdfile == NULL)
 	{
-		Printf (PRINT_HIGH, "Could not read savegame '%s'\n", savename);
+		Printf (PRINT_WARNING, "Could not read savegame '%s'\n", savename);
 		return;
 	}
 
@@ -1518,7 +1518,7 @@ void G_DoLoadGame (void)
 	fread (text, 16, 1, stdfile);
 	if (strncmp (text, SAVESIG, 16))
 	{
-		Printf (PRINT_HIGH, "Savegame '%s' is from a different version\n", savename);
+		Printf (PRINT_WARNING, "Savegame '%s' is from a different version\n", savename);
 
 		fclose(stdfile);
 
@@ -1926,8 +1926,8 @@ BEGIN_COMMAND(playdemo)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "Cannot play demo because WAD didn't load\n");
-			Printf(PRINT_HIGH, "Use the 'wad' command\n");
+			Printf(PRINT_WARNING, "Cannot play demo because WAD didn't load\n");
+			Printf(PRINT_WARNING, "Use the 'wad' command\n");
 		}
 	}
 	else
@@ -2165,8 +2165,7 @@ void G_DoPlayDemo(bool justStreamInput)
 	else
 	{
 		democlassic = false;
-		Printf(PRINT_ERROR, "Unsupported demo format.  If you are trying to play an Odamex " \
-						"netdemo, please use the netplay command\n");
+		Printf(PRINT_ERROR, "Unsupported demo format.\nIf you are trying to play an Odamex netdemo, please use the netplay command.\n");
 		gameaction = ga_nothing;
 	}
 }
@@ -2278,8 +2277,7 @@ BOOL G_CheckDemoStatus (void)
 				int realtics = endtime * TICRATE / 1000;
 				float fps = float(gametic * TICRATE) / realtics;
 
-				Printf(PRINT_HIGH, "timed %i gametics in %i realtics (%.1f fps)\n",
-						gametic, realtics, fps);
+				Printf(PRINT_HIGH, "timed %i gametics in %i realtics (%.1f fps)\n", gametic, realtics, fps);
 
 				// exit the application
 				CL_QuitCommand();

@@ -372,7 +372,7 @@ static void CL_ResyncWorldIndex()
 
 void Host_EndGame(const char *msg)
 {
-    Printf(PRINT_HIGH, "%s", msg);
+    Printf(PRINT_WARNING, "%s", msg);
 	CL_QuitNetGame();
 }
 
@@ -627,13 +627,13 @@ void CL_StepTics(unsigned int count)
 		M_Ticker();
 		HU_Ticker();
 
-		if (P_AtInterval(TICRATE))
+		if ( P_AtInterval(TICRATE) )
 			CL_PlayerTimes();
 
-		if (GAME.IsCTF())
+		if ( GAME.IsCTF() )
 			CTF.Ticker ();
 
-		Maplist_Runtic();
+		Maplist_Ticker();
 
 		R_InterpolationTicker();
 
@@ -709,6 +709,7 @@ void CL_RunTics()
 
 /////// CONSOLE COMMANDS ///////
 
+#ifdef DEBUG
 BEGIN_COMMAND (stepmode)
 {
 	step_mode = !step_mode;
@@ -720,6 +721,7 @@ BEGIN_COMMAND (step)
 	nextstep = argc > 1 ? atoi(argv[1]) : 1;
 }
 END_COMMAND (step)
+#endif
 
 BEGIN_COMMAND (connect)
 {
@@ -763,7 +765,7 @@ BEGIN_COMMAND (connect)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "Could not resolve host %s\n", target.c_str());
+			Printf(PRINT_ERROR, "Could not resolve host %s\n", target.c_str());
 			memset(&serveraddr, 0, sizeof(serveraddr));
 		}
 	}
@@ -785,6 +787,13 @@ BEGIN_COMMAND (reconnect)
 	CL_Reconnect();
 }
 END_COMMAND (reconnect)
+
+
+/*
+=============================================================================================
+INFORMATIVE COMMANDS
+=============================================================================================
+*/
 
 BEGIN_COMMAND (players)
 {
@@ -815,7 +824,7 @@ BEGIN_COMMAND (playerinfo)
 
 		if (!validplayer(p))
 		{
-			Printf (PRINT_HIGH, "Bad player number\n");
+			Printf (PRINT_WARNING, "Bad player number\n");
 			return;
 		}
 		else
@@ -824,7 +833,7 @@ BEGIN_COMMAND (playerinfo)
 
 	if (!validplayer(*player))
 	{
-		Printf (PRINT_HIGH, "Not a valid player\n");
+		Printf (PRINT_WARNING, "Not a valid player\n");
 		return;
 	}
 
@@ -853,17 +862,6 @@ BEGIN_COMMAND (playerinfo)
 	Printf (PRINT_HIGH, "--------------------------------------- \n");
 }
 END_COMMAND (playerinfo)
-
-
-BEGIN_COMMAND (kill)
-{
-    if (sv_allowcheats || sv_gametype == GM_COOP || warmup.get_status() == warmup.WARMUP)
-        MSG_WriteMarker(&net_buffer, clc_kill);
-    else
-        Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
-}
-END_COMMAND (kill)
-
 
 BEGIN_COMMAND (serverinfo)
 {
@@ -922,7 +920,11 @@ CVAR_FUNC_IMPL (rate)
 	}
 }
 
-
+/*
+=============================================================================================
+RCON COMMANDS 
+=============================================================================================
+*/
 BEGIN_COMMAND (rcon)
 {
 	if (connected && argc > 1)
@@ -967,41 +969,11 @@ BEGIN_COMMAND (rcon_logout)
 }
 END_COMMAND (rcon_logout)
 
-
-BEGIN_COMMAND (playerteam)
-{
-	Printf (PRINT_HIGH, "Your Team is %d \n", consoleplayer().userinfo.team);
-}
-END_COMMAND (playerteam)
-
-BEGIN_COMMAND (changeteams)
-{
-	if (consoleplayer().userinfo.team == TEAM_BLUE)
-		cl_team.Set("RED");
-	else if (consoleplayer().userinfo.team == TEAM_RED)
-		cl_team.Set("BLUE");
-}
-END_COMMAND (changeteams)
-
-BEGIN_COMMAND (spectate)
-{
-	if (consoleplayer().spectator)
-	{
-		// reset camera to self, do not send any messages
-		displayplayer_id = consoleplayer_id;
-		CL_CheckDisplayPlayer();
-		return;
-	}
-
-	MSG_WriteMarker(&net_buffer, clc_spectate);
-	MSG_WriteByte(&net_buffer, true);
-}
-END_COMMAND (spectate)
-
-BEGIN_COMMAND (ready) {
-	if (warmup.get_status() != warmup.DISABLED)
-		MSG_WriteMarker(&net_buffer, clc_ready);
-} END_COMMAND (ready)
+/*
+=============================================================================================
+PLAYER STATUS COMMANDS
+=============================================================================================
+*/
 
 BEGIN_COMMAND(join)
 {
@@ -1019,11 +991,65 @@ BEGIN_COMMAND(join)
 
 	// Ch0wW : New implementation of teams
 	/*if (argc > 1)
-		MSG_WriteString(&net_buffer, argv[1]);
+	MSG_WriteString(&net_buffer, argv[1]);
 	else
-		MSG_WriteString(&net_buffer, "");*/
+	MSG_WriteString(&net_buffer, "");*/
 }
-END_COMMAND (join)
+END_COMMAND(join)
+
+BEGIN_COMMAND(team)
+{
+	Printf(PRINT_HIGH, "Your Team is %d \n", consoleplayer().userinfo.team);
+}
+END_COMMAND(team)
+
+BEGIN_COMMAND(changeteams)
+{
+	if (consoleplayer().userinfo.team == TEAM_BLUE)
+		cl_team.Set("RED");
+	else if (consoleplayer().userinfo.team == TEAM_RED)
+		cl_team.Set("BLUE");
+}
+END_COMMAND(changeteams)
+
+BEGIN_COMMAND(kill)
+{
+	if (sv_allowcheats || GAME.IsCooperation() || warmup.get_status() == warmup.WARMUP)
+		MSG_WriteMarker(&net_buffer, clc_kill);
+	else
+		Printf(PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
+}
+END_COMMAND(kill)
+
+BEGIN_COMMAND(ready) {
+
+	if (!connected || GAME.IsSinglePlayer() || warmup.get_status() == warmup.DISABLED)
+		return;
+
+	MSG_WriteMarker(&net_buffer, clc_ready);
+
+} END_COMMAND(ready)
+
+/*
+=============================================================================================
+SPECTATING COMMANDS
+=============================================================================================
+*/
+
+BEGIN_COMMAND(spectate)
+{
+	if (consoleplayer().spectator)
+	{
+		// reset camera to self, do not send any messages
+		displayplayer_id = consoleplayer_id;
+		CL_CheckDisplayPlayer();
+		return;
+	}
+
+	MSG_WriteMarker(&net_buffer, clc_spectate);
+	MSG_WriteByte(&net_buffer, true);
+}
+END_COMMAND(spectate)
 
 BEGIN_COMMAND (flagnext)
 {
@@ -1097,9 +1123,11 @@ BEGIN_COMMAND (exit)
 }
 END_COMMAND (exit)
 
-//
-// NetDemo related functions
-//
+/*
+=============================================================================================
+NETDEMO RELATED COMMANDS
+=============================================================================================
+*/
 
 CVAR_FUNC_IMPL (cl_netdemoname)
 {
@@ -1164,31 +1192,17 @@ void CL_NetDemoPlay(const std::string &filename)
 	netdemo.startPlaying(newfilename);
 }
 
-BEGIN_COMMAND(stopnetdemo)
-{
-	if (netdemo.isRecording())
-	{
-		netdemo.stopRecording();
-	}
-	else if (netdemo.isPlaying())
-	{
-		netdemo.stopPlaying();
-	}
-}
-END_COMMAND(stopnetdemo)
-
 BEGIN_COMMAND(netrecord)
 {
 	if (netdemo.isRecording())
 	{
-		Printf(PRINT_HIGH, "Already recording a netdemo.  Please stop recording before "\
-				"beginning a new netdemo recording.\n");
+		Printf(PRINT_WARNING, "Already recording a netdemo.  Please stop recording before beginning a new netdemo recording.\n");
 		return;
 	}
 
 	if (!connected || simulated_connection)
 	{
-		Printf(PRINT_HIGH, "You must be connected to a server to record a netdemo.\n");
+		Printf(PRINT_WARNING, "You must be connected to a server to record a netdemo.\n");
 		return;
 	}
 
@@ -1203,6 +1217,19 @@ BEGIN_COMMAND(netrecord)
 }
 END_COMMAND(netrecord)
 
+BEGIN_COMMAND(stopnetdemo)
+{
+	if (netdemo.isRecording())
+	{
+		netdemo.stopRecording();
+	}
+	else if (netdemo.isPlaying())
+	{
+		netdemo.stopPlaying();
+	}
+}
+END_COMMAND(stopnetdemo)
+
 BEGIN_COMMAND(netpause)
 {
 	if (netdemo.isPaused())
@@ -1215,7 +1242,7 @@ BEGIN_COMMAND(netpause)
 	{
 		netdemo.pause();
 		paused = true;
-		Printf(PRINT_HIGH, "Demo paused.\n");
+		Printf(PRINT_WARNING, "Demo paused.\n");
 	}
 }
 END_COMMAND(netpause)
@@ -1345,8 +1372,8 @@ void CL_SendUserInfo(void)
 	MSG_WriteBool	(&net_buffer, coninfo->predict_weapons);
 	MSG_WriteByte	(&net_buffer, (char)coninfo->update_rate);
 	MSG_WriteByte	(&net_buffer, (char)coninfo->switchweapon);
-	for (size_t i = 0; i < NUMWEAPONS; i++)
-	{
+
+	for (size_t i = 0; i < NUMWEAPONS; i++) {
 		MSG_WriteByte (&net_buffer, coninfo->weapon_prefs[i]);
 	}
 }
@@ -1574,7 +1601,7 @@ bool CL_PrepareConnect(void)
 	MSG_ReadString();
 
 	// Receive conditional teamplay information
-	if (gamemode == GM_CTF || gamemode == GM_TEAMDM)
+	if ( GAME.IsTeamGame() )
 	{
 		MSG_ReadLong();
 
@@ -1744,7 +1771,7 @@ void CL_InitNetwork (void)
     if (v)
     {
 		localport = atoi (v);
-		Printf (PRINT_HIGH, "using alternate port %i\n", localport);
+		Printf (PRINT_WARNING, "using alternate port %i\n", localport);
     }
     else
 		localport = CLIENTPORT;

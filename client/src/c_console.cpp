@@ -884,10 +884,12 @@ static int C_PrintString(int printlevel, const char* color_code, const char* out
 		if (printlevel < PRINTLEVELS)
 			sprintf(printlevel_color_code, "\\c%c", 'a' + PrintColors[printlevel]);
 		else {
-			if (printlevel == PRINT_WARNING)
-				sprintf(printlevel_color_code, "\\c%c", 'a' + CR_YELLOW);
-			else if (printlevel == PRINT_ERROR)
-				sprintf(printlevel_color_code, "\\c%c", 'a' + CR_RED);
+			if (printlevel == PRINT_WARNING) {
+				sprintf(printlevel_color_code, TEXTCOLOR_YELLOW);
+			}
+			if (printlevel == PRINT_ERROR) {
+				sprintf(printlevel_color_code, TEXTCOLOR_RED);
+			}
 		}
 		color_code = printlevel_color_code;
 	}
@@ -1139,7 +1141,9 @@ static void C_DrawNotifyText()
 				continue;
 
 			int color;
-			if (NotifyStrings[i].printlevel >= PRINTLEVELS)
+			if (NotifyStrings[i].printlevel == PRINT_WARNING)		// Ch0WW : Add PRINT_WARNING as a visible color
+				color = CR_YELLOW;
+			else if (NotifyStrings[i].printlevel >= PRINTLEVELS)	// Don't mind with PRINT_ERROR, it's RED.
 				color = CR_RED;
 			else
 				color = PrintColors[NotifyStrings[i].printlevel];

@@ -422,7 +422,7 @@ void CL_MaplistUpdate(void) {
 }
 
 // Handle tic-by-tic maintenance of the various maplist functionality.
-void Maplist_Runtic() {
+void Maplist_Ticker() {
 	MaplistCache::instance().ev_tic();
 }
 

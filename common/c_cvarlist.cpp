@@ -258,9 +258,6 @@ CVAR_RANGE_FUNC_DECL(sv_splashfactor, "1.0", "Rocket explosion thrust effect?",
 
 CVAR(               cl_waddownloaddir, "", "Set custom WAD download directory",
 					CVARTYPE_STRING, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE)
-
-CVAR(				cl_spectator_autofly, "1", "Automatically flies as a spectator", 
-					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 	
 CVAR_RANGE(			cl_spectator_flybob, "1.0", "Fly bobbing as a spectator", 
 					CVARTYPE_FLOAT, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 1.0f)

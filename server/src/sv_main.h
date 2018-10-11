@@ -115,7 +115,7 @@ bool CMD_KickCheck(std::vector<std::string> arguments, std::string &error,
 void SV_KickPlayer(player_t &player, const std::string &reason = "");
 bool CMD_ForcespecCheck(const std::vector<std::string> &arguments,
 						std::string &error, size_t &pid);
-void SV_SetPlayerSpec(player_t &player, bool setting, bool silent = false);
+void SV_SetPlayerSpec(player_t &player, bool setting, bool silent = false /*, char *team */);	// Ch0wW : Add a team
 void SV_SetReady(player_t &player, bool setting, bool silent = false);
 
 void SV_SendLoadMap(const std::vector<std::string> &wadnames,

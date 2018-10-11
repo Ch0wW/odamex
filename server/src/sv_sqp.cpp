@@ -41,7 +41,7 @@
 
 static buf_t ml_message(MAX_UDP_PACKET);
 
-EXTERN_CVAR(join_password)
+EXTERN_CVAR(sv_password)
 EXTERN_CVAR(sv_timelimit)
 
 struct CvarField_t
@@ -165,7 +165,7 @@ next:
 		}
 	}
 
-	MSG_WriteHexString(&ml_message, strlen(join_password.cstring()) ? MD5SUM(join_password.cstring()).c_str() : "");
+	MSG_WriteHexString(&ml_message, strlen(sv_password.cstring()) ? MD5SUM(sv_password.cstring()).c_str() : "");
 
 	MSG_WriteString(&ml_message, level.mapname);
 
