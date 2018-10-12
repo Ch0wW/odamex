@@ -112,14 +112,24 @@ void cht_DoCheat (player_t *player, int cheat)
 	const char *msg = "";
 	char msgbuild[32];
 
+	if ( player->health <= 0 || !player || player->spectator || player->playerstate == PST_DEAD )
+		return;
+
 	switch (cheat) {
+
+		case CHT_FLY:
+			player->cheats ^= CF_FLY;
+			if (player->cheats & CF_FLY)
+				msg = "You feel lighter";
+			else
+				msg = "Gravity weighs you down";
+			break;
+
+			Printf("CALLING");
+
 
 		// IDDQD also uses CHT_GOD, so don't break.
 		case CHT_IDDQD:
-
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			if (!(player->cheats & CF_GODMODE)) {
 				if (player->mo)
 					player->mo->health = deh.GodHealth;
@@ -127,10 +137,6 @@ void cht_DoCheat (player_t *player, int cheat)
 				player->health = deh.GodHealth;
 			}	
 		case CHT_GOD:
-
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			player->cheats ^= CF_GODMODE;
 			if (player->cheats & CF_GODMODE)
 				msg = GStrings(STSTR_DQDON);
@@ -139,10 +145,6 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_NOCLIP:
-
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			player->cheats ^= CF_NOCLIP;
 			if (player->cheats & CF_NOCLIP)
 				msg = GStrings(STSTR_NCON);
@@ -150,23 +152,7 @@ void cht_DoCheat (player_t *player, int cheat)
 				msg = GStrings(STSTR_NCOFF);
 			break;
 
-		case CHT_FLY:
-
-			if (player->health <= 0 || !player)
-				return;
-
-			player->cheats ^= CF_FLY;
-			if (player->cheats & CF_FLY)
-				msg = "You feel lighter";
-			else
-				msg = "Gravity weighs you down";
-			break;
-
 		case CHT_NOTARGET:
-			
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 				player->cheats ^= CF_NOTARGET;
 				if (player->cheats & CF_NOTARGET)
 					msg = "notarget ON";
@@ -175,28 +161,13 @@ void cht_DoCheat (player_t *player, int cheat)
 			
 			break;
 
-		case CHT_CHASECAM:
-			player->cheats ^= CF_CHASECAM;
-			if (player->cheats & CF_CHASECAM)
-				msg = "chasecam ON";
-			else
-				msg = "chasecam OFF";
-			break;
-
 		case CHT_CHAINSAW:
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			player->weaponowned[wp_chainsaw] = true;
 			player->powers[pw_invulnerability] = true;
 			msg = GStrings(STSTR_CHOPPERS);
 			break;
 
 		case CHT_IDKFA:
-			
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			cht_Give (player, "backpack");
 			cht_Give (player, "weapons");
 			cht_Give (player, "ammo");
@@ -207,10 +178,6 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_IDFA:
-
-			if (player->health <= 0 || !player || player->spectator)
-				return;
-
 			cht_Give (player, "backpack");
 			cht_Give (player, "weapons");
 			cht_Give (player, "ammo");

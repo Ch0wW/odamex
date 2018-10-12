@@ -1155,6 +1155,8 @@ void G_PlayerReborn (player_t &p) // [Toke - todo] clean this function
 
 	p.RespawnTime = 0;
 	p.tic = 0;
+
+	p.cheats = 0;						// Disable all cheats
 }
 
 //

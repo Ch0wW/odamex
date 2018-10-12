@@ -799,13 +799,16 @@ BEGIN_COMMAND (chase)
 	}
 	else
 	{
-		if (CheckCheatmode ())
-			return;
+		// Chase is a local cheat that may only work on SP and Coop
+		if (GAME.IsCooperation() || GAME.IsSinglePlayer())
+		{
+			consoleplayer().cheats ^= CF_CHASECAM;
+			if (consoleplayer().cheats & CF_CHASECAM)
+				Printf(PRINT_LOCALEVENT, "chasecam ON");
+			else
+				Printf(PRINT_LOCALEVENT, "chasecam OFF");
+		}
 
-		cht_DoCheat(&consoleplayer(), CHT_CHASECAM);
-
-		MSG_WriteMarker(&net_buffer, clc_cheat);
-		MSG_WriteByte(&net_buffer, CHT_CHASECAM);
 	}
 }
 END_COMMAND (chase)
