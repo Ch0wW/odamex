@@ -190,7 +190,7 @@ void SV_SendServerInfo()
 			MSG_WriteShort(&ml_message, it->fragcount);
 			MSG_WriteLong(&ml_message, it->ping);
 
-			if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+			if (GAME.IsTeamGame() )
 				MSG_WriteByte(&ml_message, it->userinfo.team);
 			else
 				MSG_WriteByte(&ml_message, TEAM_NONE);
@@ -202,13 +202,13 @@ void SV_SendServerInfo()
 
 	MSG_WriteString(&ml_message, sv_website.cstring());
 
-	if (sv_gametype == GM_TEAMDM || sv_gametype == GM_CTF)
+	if (GAME.IsTeamGame())
 	{
 		MSG_WriteLong(&ml_message, sv_scorelimit.asInt());
 		
 		for(size_t i = 0; i < NUMTEAMS; i++)
 		{
-			if ((sv_gametype == GM_CTF && i < 2) || (sv_gametype != GM_CTF && i < sv_teamsinplay)) {
+			if ((GAME.IsCTF() && i < 2) || (!GAME.IsCTF() && i < sv_teamsinplay)) {
 				MSG_WriteByte(&ml_message, 1);
 				MSG_WriteLong(&ml_message, TEAMpoints[i]);
 			} else {

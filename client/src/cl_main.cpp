@@ -1452,6 +1452,7 @@ void CL_UpdateFrags(void)
 		p.killcount = MSG_ReadShort();
 	else
 		p.fragcount = MSG_ReadShort();
+
 	p.deathcount = MSG_ReadShort();
 
 	if (!GAME.IsCooperation()) {
@@ -1613,7 +1614,7 @@ bool CL_PrepareConnect(void)
 	MSG_ReadString();
 
 	// Receive conditional teamplay information
-	if ( GAME.IsTeamGame() )
+	if (GAME.IsTeamGame(gamemode))
 	{
 		MSG_ReadLong();
 

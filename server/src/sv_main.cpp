@@ -1938,6 +1938,7 @@ void SV_ConnectClient()
 	cl->lastcmdtic = 0;
 	cl->lastclientcmdtic = 0;
 	cl->allow_rcon = false;
+	cl->bJoin_Ok = false;
 	cl->displaydisconnect = false;
 
 	// generate a random string

@@ -42,10 +42,18 @@ const char *GIClass::GetShortName() const
 	return "UNKNOWN";
 }
 
+// Checks if the Current game is a Team-based Game.
+// Ch
 bool GIClass::IsTeamGame()
 {
-	return (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM);
+	return (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM);			// Do not forget to do the same with the same function below!
 }
+
+bool GIClass::IsTeamGame(byte gamebyte)
+{
+	return (gamebyte == GM_CTF || gamebyte == GM_TEAMDM);				// Do not forget to do the same with the same function above!
+}
+
 
 bool GIClass::IsSinglePlayer()
 {

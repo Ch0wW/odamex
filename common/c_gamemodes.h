@@ -19,6 +19,7 @@ public:
 	bool IsTeamDM();
 	bool IsCTF();
 	bool IsTeamGame();
+	bool IsTeamGame(byte gamebyte);
 
 	void Set_Gamemode(int game);
 };

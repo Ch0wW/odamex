@@ -1079,7 +1079,9 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 		{
 			MSG_WriteShort(netbuffer, it->killcount);
 			MSG_WriteShort(netbuffer, it->deathcount);
-			MSG_WriteShort(netbuffer, it->fragspree);
+
+			if (!GAME.IsCooperation())
+				MSG_WriteShort(netbuffer, it->fragspree);
 			
 			int timeingame = (time(NULL) - it->JoinTime) / 60;
 			if (timeingame < 0)
