@@ -21,7 +21,12 @@ const char *GIClass::GetFullName() const
 		return "TEAM DEATHMATCH";
 	else if (sv_gametype == 3)
 		return "CAPTURE THE FLAG";
-
+	else if (sv_gametype == 4)
+		return "LAST MAN STANDING";
+	else if (sv_gametype = 5)
+		return "TEAM LAST MAN STANDING";
+	/*else if (sv_gametype == 6)
+		return "SURVIVAL";*/
 
 	return "UNKNOWN";
 }
@@ -38,6 +43,12 @@ const char *GIClass::GetShortName() const
 		return "TDM";
 	else if (sv_gametype == 3)
 		return "CTF";
+	else if (sv_gametype == 4)
+		return "LMS";
+	else if (sv_gametype = 5)
+		return "TLMS";
+	/*else if (sv_gametype == 6)
+		return "SURV";*/
 
 	return "UNKNOWN";
 }
@@ -46,14 +57,18 @@ const char *GIClass::GetShortName() const
 // Ch
 bool GIClass::IsTeamGame()
 {
-	return (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM);			// Do not forget to do the same with the same function below!
+	return (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM || sv_gametype == GM_TEAMLMS);			// Do not forget to do the same with the same function below!
 }
 
 bool GIClass::IsTeamGame(byte gamebyte)
 {
-	return (gamebyte == GM_CTF || gamebyte == GM_TEAMDM);				// Do not forget to do the same with the same function above!
+	return (gamebyte == GM_CTF || gamebyte == GM_TEAMDM || gamebyte == GM_TEAMLMS);				// Do not forget to do the same with the same function above!
 }
 
+bool GIClass::HasCountdown()
+{
+	return (sv_gametype == GM_LMS || sv_gametype == GM_TEAMLMS /*|| sv_gametype == GM_SURVIVAL*/);
+}
 
 bool GIClass::IsSinglePlayer()
 {

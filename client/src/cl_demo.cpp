@@ -1018,7 +1018,7 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 		MSG_WriteString	(netbuffer, tmpname.c_str());
 	}
 		
-	MSG_WriteBool	(netbuffer, sv_gametype);		// deathmatch?
+	MSG_WriteBool	(netbuffer, sv_gametype);		// what gamemode?
 	MSG_WriteByte	(netbuffer, 0);					// sv_skill
 
 	for (Players::const_iterator it = players.begin();it != players.end();++it)

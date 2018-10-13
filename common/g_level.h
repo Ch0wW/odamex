@@ -129,10 +129,12 @@ struct level_locals_t {
 	level_info_t*	info;
 	int				cluster;
 	int				levelnum;
-	char			level_name[64];			// the descriptive name (Outer Base, etc)
-	char			mapname[8];				// the server name (base1, etc)
+	char			level_name[64];			// the descriptive name (Hangar, Tenements, etc)
+	char			mapname[8];				// the mapname according to the lump (e1m1, map12, etc)
 	char			nextmap[8];				// go here when sv_fraglimit is hit
 	char			secretmap[8];			// map to go to when used secret exit
+
+	int				round;					// Ch0wW : Rounds for LMS/TLMS
 
 	DWORD			flags;
 
@@ -148,14 +150,9 @@ struct level_locals_t {
 	char			skypic[8];
 	char			skypic2[8];
 
-	int				total_secrets;
-	int				found_secrets;
-
-	int				total_items;
-	int				found_items;
-
-	int				total_monsters;
-	int				killed_monsters;
+	int				found_secrets, total_secrets;			// Secrets found in the level
+	int				found_items, total_items;				// items taken in the level
+	int				killed_monsters, total_monsters;		// Monsters infos in the level
 
 	float			gravity;
 	fixed_t			aircontrol;

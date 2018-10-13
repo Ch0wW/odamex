@@ -1863,19 +1863,14 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
 		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString(&cl->reliablebuf,
-                        (const char *)FormattedString.str().c_str());
+		MSG_WriteString(&cl->reliablebuf, (const char *)FormattedString.str().c_str());
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_disconnect);
 
 		SV_SendPacket(*it);
 
 		// GhostlyDeath -- And we tell the server
-		Printf(PRINT_HIGH,
-                "%s -- Version mismatch (%s != %s)\n",
-                net_from.ToString(),
-                VersionStr,
-                OurVersionStr);
+		Printf(PRINT_ERROR, "%s -- Version mismatch (%s != %s)\n", net_from.ToString(), VersionStr, OurVersionStr);
 	}
 
 	return AllowConnect;

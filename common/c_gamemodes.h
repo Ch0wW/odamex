@@ -21,6 +21,8 @@ public:
 	bool IsTeamGame();
 	bool IsTeamGame(byte gamebyte);
 
+	bool HasCountdown();				// Ch0wW: 
+
 	void Set_Gamemode(int game);
 };
 

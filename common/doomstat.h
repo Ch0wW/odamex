@@ -80,11 +80,28 @@ typedef enum
 	GM_COOP = 0,
 	GM_DM,
 	GM_TEAMDM,
-	GM_CTF
+	GM_CTF,
+
+	// Ch0wW : New gamemodes
+	GM_LMS,
+	GM_TEAMLMS,
+	//GM_SURVIVAL,
+	//GM_COMPETITIVECOOP,
+
+	MAX_GAMEMODES,
 } gametype_t;
 
 #include "c_gamemodes.h"
 
+
+typedef enum
+{
+	GAME_WARMUP,				// Warming up (aka not enough players)
+	GAME_GAMECOUNTDOWN,			// Warmup is done, prepare to play !
+	LMS_ROUNDCOUNTDOWN,			// Round countdown (LMS only)
+	LMS_ROUNDSTARTED,			// Round is officially started (LMS only)
+	LMS_ROUNDOVER,				// Round is over
+}gamecountdown_t;
 
 // -------------------------
 // Internal parameters for sound rendering.

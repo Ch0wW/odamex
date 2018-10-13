@@ -579,20 +579,23 @@ void P_DeathThink (player_t *player)
 	if (player->damagecount && reduce_redness && !predicting)
 		player->damagecount--;
 
-#ifdef SERVER_APP
+//
 	if(serverside)
 	{
+
 		bool overtime_respawn = GAME.IsCTF() && warmup.get_overtime();
 
 		bool force_respawn =	(!clientside && sv_forcerespawn &&
 								level.time >= player->RespawnTime + sv_forcerespawntime * TICRATE);
 
 		int respawn_time;
+#ifdef SERVER_APP
 		// [SL] Can we respawn yet?
 		if (overtime_respawn)
 			respawn_time = player->RespawnTime + warmup.get_ctf_penalty() * TICRATE;
 		else
 			respawn_time = player->RespawnTime + sv_spawndelaytime * TICRATE;
+#endif
 		bool delay_respawn =	(!clientside && level.time < respawn_time);
 
 		// [Toke - dmflags] Old location of DF_FORCE_RESPAWN
@@ -601,7 +604,7 @@ void P_DeathThink (player_t *player)
 			player->playerstate = PST_REBORN;
 		}
 	}
-#endif
+//#endif
 }
 
 bool P_AreTeammates(player_t &a, player_t &b)
