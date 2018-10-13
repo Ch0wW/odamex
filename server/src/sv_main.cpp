@@ -3631,7 +3631,7 @@ void SV_Spectate(player_t &player)
 	if (!player.ingame())
 		return;
 
-	if (sv_joinpassword && !player.client.bJoin_Ok) {
+	if (strlen(sv_joinpassword.cstring()) && !player.client.bJoin_Ok) {
 		SV_MidPrint("Incorrect join_password.", &player, 5);
 		return;
 	}

@@ -935,7 +935,7 @@ static menuitem_t MessagesItems[] = {
 	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
 
 	{ discrete, "Show Pickup Messages", {&message_showpickups}, {3.0}, {0.0},   {0.0}, {OnOff} },
-	{ discrete, "Show Obitruaries", {&message_showdeathevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
+	{ discrete, "Show Obituaries", {&message_showdeathevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
 	{ discrete, "Show Player Status Messages", {&message_showlocalevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
 	{ discrete, "Reveal Secrets", { &hud_revealsecrets }, { 2.0 }, { 0.0 }, { 0.0 },   { OnOff } },
 	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },

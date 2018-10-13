@@ -513,7 +513,7 @@ static void setmsgcolor(int index, const char *color);
 
 cvar_t msglevel("msg", "0", "", CVARTYPE_STRING, CVAR_ARCHIVE);
 CVAR(message_showpickups, "1", "Shows pickup messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
-CVAR(message_showdeathevents, "1", "Shows Obitruaries messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_showdeathevents, "1", "Shows Obituaries messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 CVAR(message_showlocalevents, "1", "Shows own frags / local events messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 CVAR(message_showgameevents, "1", "Shows game event messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 
