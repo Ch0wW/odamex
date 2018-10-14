@@ -53,23 +53,6 @@ const char *GIClass::GetShortName() const
 	return "UNKNOWN";
 }
 
-// Checks if the Current game is a Team-based Game.
-// Ch
-bool GIClass::IsTeamGame()
-{
-	return (sv_gametype == GM_CTF || sv_gametype == GM_TEAMDM || sv_gametype == GM_TEAMLMS);			// Do not forget to do the same with the same function below!
-}
-
-bool GIClass::IsTeamGame(byte gamebyte)
-{
-	return (gamebyte == GM_CTF || gamebyte == GM_TEAMDM || gamebyte == GM_TEAMLMS);				// Do not forget to do the same with the same function above!
-}
-
-bool GIClass::HasCountdown()
-{
-	return (sv_gametype == GM_LMS || sv_gametype == GM_TEAMLMS /*|| sv_gametype == GM_SURVIVAL*/);
-}
-
 bool GIClass::IsSinglePlayer()
 {
 	return (multiplayer == false);
@@ -85,16 +68,6 @@ bool GIClass::IsDeathmatch()
 	return (sv_gametype == GM_DM);
 }
 
-bool GIClass::IsDuel()
-{
-	return (sv_gametype == GM_DM && sv_maxplayers == 2);
-}
-
-bool GIClass::isFFA()
-{
-	return (sv_gametype == GM_DM && sv_maxplayers != 2);
-}
-
 bool GIClass::IsTeamDM()
 {
 	return (sv_gametype == GM_TEAMDM);
@@ -103,6 +76,41 @@ bool GIClass::IsTeamDM()
 bool GIClass::IsCTF()
 {
 	return (sv_gametype == GM_CTF);
+}
+
+
+/*==================================================
+GAMEMODE CHECKS
+==================================================
+*/
+bool GIClass::isFFA()
+{
+	return (this->IsDeathmatch() && sv_maxplayers != 2);
+}
+
+bool GIClass::IsDuel()
+{
+	return (this->IsDeathmatch() && sv_maxplayers == 2);
+}
+
+bool GIClass::IsTeamGame()
+{
+	return (this->IsTeamDM() || this->IsCTF() || sv_gametype == GM_TEAMLMS);			// Do not forget to do the same with the same function below!
+}
+
+bool GIClass::IsTeamGame(byte gamebyte)
+{
+	return (gamebyte == GM_CTF || gamebyte == GM_TEAMDM || gamebyte == GM_TEAMLMS);				// Do not forget to do the same with the same function above!
+}
+
+bool GIClass::HasWarmup()
+{
+	return (this->IsDuel() || this->IsCTF() || this->IsTeamDM());
+}
+
+bool GIClass::HasCountdown()
+{
+	return (sv_gametype == GM_LMS || sv_gametype == GM_TEAMLMS /*|| sv_gametype == GM_SURVIVAL*/);
 }
 
 void GIClass::Set_Gamemode(int game)

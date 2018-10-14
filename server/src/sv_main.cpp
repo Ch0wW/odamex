@@ -1609,8 +1609,11 @@ void SV_ClientFullUpdate(player_t &pl)
 				return;
 	}
 
-	// update warmup state
-	SV_SendWarmupState(pl, warmup.get_status(), warmup.get_countdown());
+	// Send the current warmup state only on specific conditions
+	if (sv_warmup && GAME.HasWarmup() )
+		SV_SendWarmupState(pl, warmup.get_status(), warmup.get_countdown());
+	//else if (GAME.IsLMS() || GAME.IsTeamLMS() || GAME.IsSurvival())
+	//	SV_SendSurvivalStatus(pl, SV_GetStatus(), SV_GetCountDown());
 
 	// update frags/points/.tate./ready
 	for (Players::iterator it = players.begin();it != players.end();++it)
@@ -1625,15 +1628,18 @@ void SV_ClientFullUpdate(player_t &pl)
 			MSG_WriteShort(&cl->reliablebuf, it->fragspree);
 		}
 
-
+		// Set the spectator status
 		MSG_WriteMarker (&cl->reliablebuf, svc_spectate);
 		MSG_WriteByte (&cl->reliablebuf, it->id);
 		MSG_WriteByte (&cl->reliablebuf, it->spectator);
 
-		MSG_WriteMarker (&cl->reliablebuf, svc_readystate);
-		MSG_WriteByte (&cl->reliablebuf, it->id);
-		MSG_WriteByte (&cl->reliablebuf, it->ready);
-
+		// Only send Ready status if the server has the conditions to do so
+		if (sv_warmup && GAME.HasWarmup())
+		{
+			MSG_WriteMarker(&cl->reliablebuf, svc_readystate);
+			MSG_WriteByte(&cl->reliablebuf, it->id);
+			MSG_WriteByte(&cl->reliablebuf, it->ready);
+		}
 		
 		if (it->cheats)	// Don't waste netbytes if the player hasn't any cheat enabled.
 		{

@@ -21,6 +21,7 @@ public:
 	bool IsTeamGame();
 	bool IsTeamGame(byte gamebyte);
 
+	bool HasWarmup();					// Ch0wW : if the gamemode can use warmups
 	bool HasCountdown();				// Ch0wW: 
 
 	void Set_Gamemode(int game);
