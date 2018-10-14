@@ -165,6 +165,11 @@ EXTERN_CVAR (r_forceteamcolor)
 static byte enemycolor[4];
 static byte teamcolor[4];
 
+// Ch0wW : filter messages
+EXTERN_CVAR(message_filter_chat)
+EXTERN_CVAR(message_filter_teamchat)
+EXTERN_CVAR(message_filter_privmsg)
+
 argb_t CL_GetPlayerColor(player_t *player)
 {
 	if (!player)
@@ -1934,12 +1939,16 @@ void CL_Say()
 	int levelchat;
 	char* soundinfo;
 
-	if (message_visibility == 0) {
+	if (message_visibility == 0) {				// Normal Chat
 		levelchat = PRINT_CHAT;
 		soundinfo = gameinfo.chatSound;
 	}
-	else if (message_visibility == 1) {
+	else if (message_visibility == 1) {			// Team Chat
 		levelchat = PRINT_TEAMCHAT;
+		soundinfo = "misc/teamchat";
+	}
+	else if (message_visibility == 2) {			// Private Chat
+		levelchat = PRINT_PRIVATECHAT;
 		soundinfo = "misc/teamchat";
 	}
 
@@ -1948,7 +1957,10 @@ void CL_Say()
 	else
 		Printf(levelchat, "%s: %s\n", name, message);
 
-	if (show_messages)
+	if ( show_messages 
+		|| (levelchat == PRINT_CHAT			&& !message_filter_chat) 
+		|| (levelchat == PRINT_TEAMCHAT		&& !message_filter_teamchat) 
+		|| (levelchat == PRINT_PRIVATECHAT	&& !message_filter_privmsg) )
 		S_Sound(CHAN_INTERFACE, soundinfo, 1, ATTN_NONE);
 }
 

@@ -882,6 +882,7 @@ EXTERN_CVAR (msg3color)
 EXTERN_CVAR (msg4color)
 EXTERN_CVAR (msg5color)
 EXTERN_CVAR (msg6color)
+EXTERN_CVAR (msg7color)
 EXTERN_CVAR (msgmidcolor)
 EXTERN_CVAR (msglevel)
 
@@ -953,7 +954,8 @@ static menuitem_t MessagesItems[] = {
 	{ cdiscrete, "Console Messages",	{&msg4color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
 	{ cdiscrete, "Chat Messages",		{&msg5color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
 	{ cdiscrete, "Team Messages",		{&msg6color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
-	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
+	{ cdiscrete, "Private Messages",	{&msg7color},			{21.0},	{0.0},	{0.0}, {TextColors} },
+	{ redtext,	" ",					{NULL},					{0.0},	{0.0},	{0.0}, {NULL} },
 	{ cdiscrete, "Centered Messages",	{&msgmidcolor},			{21.0}, {0.0},	{0.0}, {TextColors} }
 };
 

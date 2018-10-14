@@ -195,10 +195,11 @@ typedef enum
 	// AT THIS POINT, ANY RCON'd PERSON SHOULDN'T HAVE ACCESS TO IT
 	PRINT_CHAT,			// chat messages
 	PRINT_TEAMCHAT,		// chat messages from a teammate
-	PRINT_SERVERCHAT,	// chat messages from the server
+	PRINT_PRIVATECHAT,	// Ch0wW: private chat messages
+	PRINT_SERVERCHAT,	// Ch0wW: chat messages from the server
 	PRINT_NO_RCON,		// Ch0wW: message that won't be printed for a RCON player.
-	PRINT_WARNING,		// Ch0wW: RCON messages, or just a warning msg			- Color must be forced to YELLOW
-	PRINT_ERROR,		// Ch0wW: ERROR messages								- Color must be forced to RED/BRICK
+	PRINT_WARNING,		// Ch0wW: RCON messages, or just a warning msg			- Color is forced to YELLOW
+	PRINT_ERROR,		// Ch0wW: ERROR messages								- Color is forced to RED/BRICK
 
 	PRINT_MAXPRINT,
 } printlevel_t;

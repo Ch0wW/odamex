@@ -2704,9 +2704,9 @@ void SVC_TeamSay(player_t &player, const char* message)
 		sprintf(team, "RED");
 
 	if (strnicmp(message, "/me ", 4) == 0)
-		Printf(PRINT_TEAMCHAT, "<%s TEAM> * %s %s\n", team, player.userinfo.GetName(), &message[4]);
+		Printf("<%s TEAM> * %s %s\n", team, player.userinfo.GetName(), &message[4]);
 	else
-		Printf(PRINT_TEAMCHAT, "<%s TEAM> %s: %s\n", team, player.userinfo.GetName(), message);
+		Printf("<%s TEAM> %s: %s\n", team, player.userinfo.GetName(), message);
 
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
@@ -2736,9 +2736,9 @@ void SVC_TeamSay(player_t &player, const char* message)
 void SVC_SpecSay(player_t &player, const char* message)
 {
 	if (strnicmp(message, "/me ", 4) == 0)
-		Printf(PRINT_TEAMCHAT, "<SPEC> * %s %s\n", player.userinfo.GetName(), &message[4]);
+		Printf("<SPEC> * %s %s\n", player.userinfo.GetName(), &message[4]);
 	else
-		Printf(PRINT_TEAMCHAT, "<SPEC> %s: %s\n", player.userinfo.GetName(), message);
+		Printf("<SPEC> %s: %s\n", player.userinfo.GetName(), message);
 
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
@@ -2794,12 +2794,12 @@ void SVC_Say(player_t &player, const char* message)
 void SVC_PrivMsg(player_t &player, player_t &dplayer, const char* message)
 {
 	if (strnicmp(message, "/me ", 4) == 0)
-		Printf(PRINT_CHAT, "<PRIVMSG> * %s (to %s) %s\n", player.userinfo.GetName(), dplayer.userinfo.GetName(), &message[4]);
+		Printf("<PRIVMSG> * %s (to %s) %s\n", player.userinfo.GetName(), dplayer.userinfo.GetName(), &message[4]);
 	else
-		Printf(PRINT_CHAT, "<PRIVMSG> %s (to %s): %s\n", player.userinfo.GetName(), dplayer.userinfo.GetName(), message);
+		Printf("<PRIVMSG> %s (to %s): %s\n", player.userinfo.GetName(), dplayer.userinfo.GetName(), message);
 
 	MSG_WriteMarker(&dplayer.client.reliablebuf, svc_say);
-	MSG_WriteByte(&dplayer.client.reliablebuf, 1);
+	MSG_WriteByte(&dplayer.client.reliablebuf, 2);
 	MSG_WriteByte(&dplayer.client.reliablebuf, player.id);
 	MSG_WriteString(&dplayer.client.reliablebuf, message);
 
@@ -2808,7 +2808,7 @@ void SVC_PrivMsg(player_t &player, player_t &dplayer, const char* message)
 	if (player.id != dplayer.id)
 	{
 		MSG_WriteMarker(&player.client.reliablebuf, svc_say);
-		MSG_WriteByte(&player.client.reliablebuf, 1);
+		MSG_WriteByte(&player.client.reliablebuf, 2);
 		MSG_WriteByte(&player.client.reliablebuf, player.id);
 		MSG_WriteString(&player.client.reliablebuf, message);
 	}

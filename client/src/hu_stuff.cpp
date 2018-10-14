@@ -617,12 +617,15 @@ END_COMMAND (say_team)
 
 BEGIN_COMMAND (say_to)
 {
+	if (!connected)
+		return;
+
 	if (argc > 2)
 	{
 		player_t &player = nameplayer(argv[1]);
 		if (!validplayer(player))
 		{
-			Printf(PRINT_HIGH, "%s isn't the name of anybody on the server.\n", argv[1]);
+			Printf(PRINT_WARNING, "%s isn't the name of anybody on the server.\n", argv[1]);
 			return;
 		}
 

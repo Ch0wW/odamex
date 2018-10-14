@@ -107,8 +107,18 @@ static struct NotifyText
 	byte text[256];
 } NotifyStrings[NUMNOTIFIES];
 
-#define PRINTLEVELS 7
-int PrintColors[PRINTLEVELS+1] = { CR_RED, CR_GOLD, CR_GRAY, CR_GRAY, CR_GRAY, CR_GREEN, CR_GREEN, CR_GOLD };
+#define PRINTLEVELS 8
+int PrintColors[PRINTLEVELS+1] = { 
+	CR_RED,			// Pickup messages
+	CR_GOLD,		// Obituaries
+	CR_WHITE,		// Local Event
+	CR_WHITE,		// Game Event
+	CR_WHITE,		// Console messages
+	CR_GREEN,		// Chat messages
+	CR_BRICK,		// Team messages
+	CR_YELLOW,		// Private messages
+	CR_GOLD,		// Centered messages
+};
 
 
 // ============================================================================
@@ -517,6 +527,9 @@ CVAR(message_showdeathevents, "1", "Shows Obituaries messages", CVARTYPE_BOOL, C
 CVAR(message_showlocalevents, "1", "Shows own frags / local events messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 CVAR(message_showgameevents, "1", "Shows game event messages", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 
+CVAR(message_filter_chat, "0", "Filters displaying public chat messages (you can still get them in the console)", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_filter_teamchat, "0", "Filters displaying public teamchat messages (you can still get them in the console)", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
+CVAR(message_filter_privmsg, "0", "Filters displaying private chat messages (you can still get them in the console)", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE);
 
 
 CVAR_FUNC_IMPL(msg0color)
@@ -552,6 +565,11 @@ CVAR_FUNC_IMPL(msg5color)
 CVAR_FUNC_IMPL(msg6color)
 {
 	setmsgcolor(6, var.cstring());
+}
+
+CVAR_FUNC_IMPL(msg7color)
+{
+	setmsgcolor(7, var.cstring());
 }
 
 CVAR_FUNC_IMPL(msgmidcolor)
@@ -796,6 +814,12 @@ void C_AddNotifyString(int printlevel, const char* color_code, const char* sourc
 	if (printlevel == PRINT_LOCALEVENT && !message_showlocalevents)
 		return;
 	if (printlevel == PRINT_GAMEEVENT && !message_showgameevents)
+		return;
+	if (printlevel == PRINT_CHAT && message_filter_chat)
+		return;
+	if (printlevel == PRINT_TEAMCHAT && message_filter_teamchat)
+		return;
+	if (printlevel == PRINT_PRIVATECHAT && message_filter_privmsg)
 		return;
 
 	int width = I_GetSurfaceWidth() / V_TextScaleXAmount();
@@ -1141,8 +1165,8 @@ static void C_DrawNotifyText()
 				continue;
 
 			int color;
-			if (NotifyStrings[i].printlevel == PRINT_WARNING)		// Ch0WW : Add PRINT_WARNING as a visible color
-				color = CR_YELLOW;
+			if (NotifyStrings[i].printlevel == PRINT_WARNING)		// Ch0WW : PRINT_WARNING is only visible from the console (hides RCON messages)
+				continue;
 			else if (NotifyStrings[i].printlevel >= PRINTLEVELS)	// Don't mind with PRINT_ERROR, it's RED.
 				color = CR_RED;
 			else
