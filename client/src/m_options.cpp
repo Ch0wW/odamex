@@ -569,7 +569,7 @@ static menuitem_t SoundItems[] = {
 	{ discrete	,	"Music System Backend"				, {&snd_musicsystem},	{num_mussys},	{0.0},		{0.0},		{MusSys} },
 	{ redtext   ,	" "                                 , {NULL},	            {0.0},      	{0.0},      {0.0},      {NULL} },
 	{ bricktext ,   "Sound Options"                     , {NULL},	            {0.0},      	{0.0},      {0.0},      {NULL} },
-	{ discrete  ,   "CTF Alerts"                        , {&snd_ctfalerts},		{2.0},			{0.0},		{0.0},		{OnOff} },
+	{ discrete  ,   "CTF Flag Alert SFX"	            , {&snd_ctfalerts},		{2.0},			{0.0},		{0.0},		{OnOff} },
 	{ discrete  ,   "Announcer Type"                    , {&snd_voxtype},		{3.0},			{0.0},		{0.0},		{VoxType} },
 	{ discrete  ,   "Player Connect Alert"              , {&cl_connectalert},	{2.0},			{0.0},		{0.0},		{OnOff} },
 	{ discrete  ,   "Player Disconnect Alert"           , {&cl_disconnectalert},{2.0},			{0.0},		{0.0},		{OnOff} }
@@ -936,9 +936,9 @@ static menuitem_t MessagesItems[] = {
 	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
 
 	{ discrete, "Show Pickup Messages", {&message_showpickups}, {3.0}, {0.0},   {0.0}, {OnOff} },
-	{ discrete, "Show Obituaries", {&message_showdeathevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
+	{ discrete, "Show Obituaries",		{&message_showdeathevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
 	{ discrete, "Show Player Status Messages", {&message_showlocalevents}, {3.0}, {0.0},   {0.0}, {OnOff} },
-	{ discrete, "Reveal Secrets", { &hud_revealsecrets }, { 2.0 }, { 0.0 }, { 0.0 },   { OnOff } },
+	{ discrete, "Reveal Secrets",		{ &hud_revealsecrets }, { 2.0 }, { 0.0 }, { 0.0 },   { OnOff } },
 	{ redtext,	" ",					{NULL},					{0.0}, {0.0},	{0.0}, {NULL} },
 	
 	{ slider,	"Scale message text",    {&hud_scaletext},		{1.0}, {4.0}, 	{1.0}, {NULL} },
@@ -956,7 +956,7 @@ static menuitem_t MessagesItems[] = {
 	{ cdiscrete, "Team Messages",		{&msg6color},		   	{21.0}, {0.0},	{0.0}, {TextColors} },
 	{ cdiscrete, "Private Messages",	{&msg7color},			{21.0},	{0.0},	{0.0}, {TextColors} },
 	{ redtext,	" ",					{NULL},					{0.0},	{0.0},	{0.0}, {NULL} },
-	{ cdiscrete, "Centered Messages",	{&msgmidcolor},			{21.0}, {0.0},	{0.0}, {TextColors} }
+	{ cdiscrete, "MidPrint Messages",	{&msgmidcolor},			{21.0}, {0.0},	{0.0}, {TextColors} }
 };
 
 menu_t MessagesMenu = {

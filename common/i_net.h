@@ -110,6 +110,7 @@ enum svc_t
 	svc_spawnhiddenplayer,	// [denis] when client can't see player
 	svc_updatedeaths,		// [byte] [short]
 	svc_ctfevent,			// [Toke - CTF] - [int]
+	svc_gameevent,			// Ch0wW - Game Events Handler for LMS / Survival / Competitive Survival
 	svc_serversettings,		// 55 [Toke] - informs clients of server settings
 	svc_spectate,			// [Nes] - [byte:state], [short:playernum]
 	svc_connectclient,

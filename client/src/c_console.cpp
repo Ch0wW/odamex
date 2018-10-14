@@ -809,17 +809,13 @@ void C_AddNotifyString(int printlevel, const char* color_code, const char* sourc
 		(gamestate != GS_LEVEL && gamestate != GS_INTERMISSION) )
 		return;
 
-	if (printlevel == PRINT_DEATHEVENT && !message_showdeathevents)
-		return;
-	if (printlevel == PRINT_LOCALEVENT && !message_showlocalevents)
-		return;
-	if (printlevel == PRINT_GAMEEVENT && !message_showgameevents)
-		return;
-	if (printlevel == PRINT_CHAT && message_filter_chat)
-		return;
-	if (printlevel == PRINT_TEAMCHAT && message_filter_teamchat)
-		return;
-	if (printlevel == PRINT_PRIVATECHAT && message_filter_privmsg)
+	// Filter on-screen messages
+	if ((printlevel == PRINT_DEATHEVENT && !message_showdeathevents)
+	||  (printlevel == PRINT_LOCALEVENT && !message_showlocalevents)
+	||  (printlevel == PRINT_GAMEEVENT && !message_showgameevents)
+	||  (printlevel == PRINT_CHAT && message_filter_chat)
+	||  (printlevel == PRINT_TEAMCHAT && message_filter_teamchat)
+	||  (printlevel == PRINT_PRIVATECHAT && message_filter_privmsg))
 		return;
 
 	int width = I_GetSurfaceWidth() / V_TextScaleXAmount();
@@ -1172,6 +1168,7 @@ static void C_DrawNotifyText()
 			else
 				color = PrintColors[NotifyStrings[i].printlevel];
 
+			// Ch0wW : Reenable centered text later on ? (possible idea)
 			screen->DrawTextStretched(color, 0, ypos, NotifyStrings[i].text,
 						V_TextScaleXAmount(), V_TextScaleYAmount());
 			ypos += 8 * V_TextScaleYAmount();

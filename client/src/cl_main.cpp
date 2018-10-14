@@ -1888,11 +1888,14 @@ void CL_Print (void)
 	else
 		Printf(level, "%s", str);
 
-	if (show_messages)
+	if (show_messages 
+		|| (level == PRINT_CHAT && !message_filter_chat)
+		|| (level == PRINT_TEAMCHAT && !message_filter_teamchat)
+		|| (level == PRINT_PRIVATECHAT && !message_filter_privmsg))
 	{
 		if (level == PRINT_CHAT || level == PRINT_SERVERCHAT)
 			S_Sound(CHAN_INTERFACE, gameinfo.chatSound, 1, ATTN_NONE);
-		else if (level == PRINT_TEAMCHAT)
+		else if (level == PRINT_TEAMCHAT || level == PRINT_PRIVATECHAT)
 			S_Sound(CHAN_INTERFACE, "misc/teamchat", 1, ATTN_NONE);
 	}
 }
@@ -3636,6 +3639,8 @@ void CL_InitCommands(void)
 	cmds[svc_forceteam]			= &CL_ForceSetTeam;
 
 	cmds[svc_ctfevent]			= &CTF_ParseEvent;
+	//cmds[svc_gameevent]			= &CL_ParseGameEvent;
+
 	cmds[svc_serversettings]	= &CL_GetServerSettings;
 	cmds[svc_disconnect]		= &CL_EndGame;
 	cmds[svc_full]				= &CL_FullGame;
