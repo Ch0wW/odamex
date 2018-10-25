@@ -4827,6 +4827,12 @@ BEGIN_COMMAND (	playerinfo)
 		else
 			player = &p;
 	}
+	else
+	{
+		Printf(PRINT_WARNING, "Usage : playerinfo <#playerid>\n");
+		Printf(PRINT_WARNING, "Gives additionnal infos about the selected player.\n");
+		return;
+	}
 
 	if (!validplayer(*player))
 	{
@@ -4869,8 +4875,8 @@ BEGIN_COMMAND (playerlist)
 
 	for (Players::reverse_iterator it = players.rbegin();it != players.rend();++it)
 	{
-		Printf(PRINT_HIGH, "(%02d): %s - %s - frags:%d ping:%d\n",
-		       it->id, it->userinfo.GetName(), it->client.address.ToString(), it->fragcount, it->ping);
+		Printf(PRINT_HIGH, "(%02d): %s - %s - frags:%d - time:%d - ping:%d\n",
+		       it->id, it->userinfo.GetName(), it->client.address.ToString(), it->fragcount, it->GameTime, it->ping);
 		anybody = true;
 	}
 
