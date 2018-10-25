@@ -42,12 +42,41 @@
 EXTERN_CVAR(sv_maxclients)
 EXTERN_CVAR(sv_maxplayers)
 
+EXTERN_CVAR(cl_autorecord)
+EXTERN_CVAR(cl_autorecord_ffa)
+EXTERN_CVAR(cl_autorecord_duel)
+EXTERN_CVAR(cl_autorecord_tdm)
+EXTERN_CVAR(cl_autorecord_ctf)
+EXTERN_CVAR(cl_autorecord_coop)
+
+
 extern std::string server_host;
 extern std::string digest;
 extern std::vector<std::string> wadfiles, wadhashes;
 
 argb_t CL_GetPlayerColor(player_t*);
 
+
+//
+// canAutoRecord()
+// Checks if Odamex can autorecord a netdemo 
+// according to its filters
+//
+bool NetDemo::canAutoRecord()
+{
+	if (cl_autorecord)
+	{
+		if ((GAME.IsDeathmatch() && cl_autorecord_ffa)
+			|| (GAME.IsDuel() && cl_autorecord_duel)
+			|| (GAME.IsTeamDM() && cl_autorecord_tdm)
+			|| (GAME.IsCTF() && cl_autorecord_ctf)
+			|| (GAME.IsCooperation() && cl_autorecord_coop)
+		)
+			return true;
+	}
+
+	return false;
+}
 
 NetDemo::NetDemo() :
 	state(st_stopped), oldstate(st_stopped), filename(""),
@@ -139,7 +168,7 @@ void NetDemo::cleanUp()
 void NetDemo::error(const std::string &message)
 {
 	cleanUp();
-	Printf(PRINT_HIGH, "%s\n", message.c_str());
+	Printf(PRINT_ERROR, "%s\n", message.c_str());
 }
 
 /**

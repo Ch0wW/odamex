@@ -284,7 +284,6 @@ EXTERN_CVAR (sv_freelook)
 EXTERN_CVAR (cl_connectalert)
 EXTERN_CVAR (cl_disconnectalert)
 EXTERN_CVAR (waddirs)
-EXTERN_CVAR (cl_autorecord)
 EXTERN_CVAR (cl_splitnetdemos)
 
 void CL_PlayerTimes (void);
@@ -3421,7 +3420,7 @@ void CL_LoadMap(void)
 		if (param && Args.GetArg(param + 1))
 			filename = Args.GetArg(param + 1);
 
-		if (splitnetdemo || cl_autorecord || param)
+		if (splitnetdemo || netdemo.canAutoRecord() || param)
 		{
 			if (filename.empty())
 				filename = CL_GenerateNetDemoFileName();

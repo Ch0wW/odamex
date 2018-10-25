@@ -167,6 +167,14 @@ EXTERN_CVAR (cl_predictsectors)
 EXTERN_CVAR (cl_predictweapons)
 EXTERN_CVAR (cl_serverdownload)
 
+EXTERN_CVAR(cl_splitnetdemos)
+EXTERN_CVAR(cl_autorecord)
+EXTERN_CVAR(cl_autorecord_ffa)
+EXTERN_CVAR(cl_autorecord_duel)
+EXTERN_CVAR(cl_autorecord_tdm)
+EXTERN_CVAR(cl_autorecord_ctf)
+EXTERN_CVAR(cl_autorecord_coop)
+
 // Weapon Preferences
 EXTERN_CVAR (cl_switchweapon)
 EXTERN_CVAR (cl_weaponpref_fst)
@@ -650,7 +658,7 @@ static value_t PredictSectors[] = {
 };
 
 static menuitem_t NetworkItems[] = {
-    { redtext,	" ",					{NULL},	{0.0}, {0.0}, {0.0}, {NULL} },
+    { redtext,		" ",					{NULL},	{0.0}, {0.0}, {0.0}, {NULL} },
 	{ bricktext,	"Adjust Network Settings",		{NULL},				{0.0},		{0.0},		{0.0},		{NULL} },
 	{ discrete,		"Bandwidth",					{&rate},			{4.0},		{0.0},		{0.0},		{BandwidthLevels} },
 	{ discrete,		"Position update freq",			{&cl_updaterate},	{3.0},		{0.0},		{0.0},		{UpdateRate} },
@@ -661,7 +669,18 @@ static menuitem_t NetworkItems[] = {
 	{ discrete,		"Predict sector actions",		{&cl_predictsectors},{3.0},		{0.0},		{0.0},		{PredictSectors} },
 	{ discrete,		"Predict weapon effects",		{&cl_predictweapons},{2.0},		{0.0},		{0.0},		{OnOff} },
 	{ redtext,		" ",							{NULL},				{0.0}, 		{0.0}, 		{0.0}, 		{NULL} },
-	{ discrete, 	"Download From Server", 		{&cl_serverdownload}, {2.0}, 		{0.0}, 		{0.0}, 		{OnOff} }
+	{ discrete, 	"Download From Server", 		{&cl_serverdownload}, {2.0}, 		{0.0}, 		{0.0}, 		{OnOff} },
+	{ redtext,		" ",{ NULL },{ 0.0 },{ 0.0 },{ 0.0 },{ NULL } },
+	{ bricktext,	"Netdemo Settings",{ NULL },{ 0.0 },{ 0.0 },{ 0.0 },{ NULL } },
+	{ discrete,		"Split after every level",{ &cl_splitnetdemos },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ discrete,		"Autorecord demos",{ &cl_autorecord },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ redtext,		" ",{ NULL },{ 0.0 },{ 0.0 },{ 0.0 },{ NULL } },
+	{ bricktext,	"Autorecord Filters",{ NULL },{ 0.0 },{ 0.0 },{ 0.0 },{ NULL } },
+	{ discrete,		"Record FFA demos",{ &cl_autorecord_ffa },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ discrete,		"Record Duel demos",{ &cl_autorecord_duel },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ discrete,		"Record TDM demos",{ &cl_autorecord_tdm },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ discrete,		"Record CTF demos",{ &cl_autorecord_ctf },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
+	{ discrete,		"Record COOP demos",{ &cl_autorecord_coop },{ 2.0 },{ 0.0 },{ 0.0 },{ OnOff } },
 };
 
 menu_t NetworkMenu = {

@@ -16,6 +16,7 @@ public:
 	NetDemo(const NetDemo &rhs);
 	NetDemo& operator=(const NetDemo &rhs);
 	
+	bool canAutoRecord();
 	bool startPlaying(const std::string &filename);
 	bool startRecording(const std::string &filename);
 	bool stopPlaying();
