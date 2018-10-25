@@ -78,6 +78,15 @@ bool GIClass::IsCTF()
 	return (sv_gametype == GM_CTF);
 }
 
+bool GIClass::IsLMS()
+{
+	return (sv_gametype == GM_LMS);
+}
+
+bool GIClass::IsTeamLMS()
+{
+	return (sv_gametype == GM_TEAMLMS);
+}
 
 /*==================================================
 GAMEMODE CHECKS
@@ -95,7 +104,7 @@ bool GIClass::IsDuel()
 
 bool GIClass::IsTeamGame()
 {
-	return (this->IsTeamDM() || this->IsCTF() || sv_gametype == GM_TEAMLMS);			// Do not forget to do the same with the same function below!
+	return (this->IsTeamDM() || this->IsCTF() || this->IsTeamLMS());			// Do not forget to do the same with the same function below!
 }
 
 bool GIClass::IsTeamGame(byte gamebyte)
@@ -108,9 +117,9 @@ bool GIClass::HasWarmup()
 	return (this->IsDuel() || this->IsCTF() || this->IsTeamDM());
 }
 
-bool GIClass::HasCountdown()
+bool GIClass::HasRounds()
 {
-	return (sv_gametype == GM_LMS || sv_gametype == GM_TEAMLMS /*|| sv_gametype == GM_SURVIVAL*/);
+	return (this->IsLMS() || this->IsTeamLMS() /*|| sv_gametype == GM_SURVIVAL*/);
 }
 
 void GIClass::Set_Gamemode(int game)

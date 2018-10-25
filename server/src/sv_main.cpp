@@ -1618,20 +1618,24 @@ void SV_ClientFullUpdate(player_t &pl)
 	// update frags/points/.tate./ready
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
-		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
-		MSG_WriteByte(&cl->reliablebuf,	 it->id);
-		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
-		MSG_WriteShort(&cl->reliablebuf, it->deathcount);
-		if (!GAME.IsCooperation())
 		{
-			MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP
-			MSG_WriteShort(&cl->reliablebuf, it->fragspree);
+			MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
+			MSG_WriteByte(&cl->reliablebuf, it->id);
+			MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
+			MSG_WriteShort(&cl->reliablebuf, it->deathcount);
+			if (!GAME.IsCooperation())
+			{
+				MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP though
+				MSG_WriteShort(&cl->reliablebuf, it->fragspree);
+			}
 		}
 
-		// Set the spectator status
-		MSG_WriteMarker (&cl->reliablebuf, svc_spectate);
-		MSG_WriteByte (&cl->reliablebuf, it->id);
-		MSG_WriteByte (&cl->reliablebuf, it->spectator);
+		{
+			// Set the spectator status
+			MSG_WriteMarker(&cl->reliablebuf, svc_spectate);
+			MSG_WriteByte(&cl->reliablebuf, it->id);
+			MSG_WriteByte(&cl->reliablebuf, it->spectator);
+		}
 
 		// Only send Ready status if the server has the conditions to do so
 		if (sv_warmup && GAME.HasWarmup())
@@ -2033,9 +2037,9 @@ void SV_ConnectClient()
 			// send the client the scores and list of other clients
 			SV_ClientFullUpdate(*player);
 
+			// [SL] 2011-07-30 - clients should consider downloaders as spectators
 			for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
 			{
-				// [SL] 2011-07-30 - clients should consider downloaders as spectators
 				MSG_WriteMarker(&pit->client.reliablebuf, svc_spectate);
 				MSG_WriteByte(&pit->client.reliablebuf, player->id);
 				MSG_WriteByte(&pit->client.reliablebuf, true);
@@ -4373,7 +4377,7 @@ void SV_ParseCommands(player_t &player)
 			break;
 
 		default:
-			Printf(PRINT_HIGH, "SV_ParseCommands: Unknown client message %d.\n", (int)cmd);
+			Printf(PRINT_ERROR, "SV_ParseCommands: Unknown client message %d.\n", (int)cmd);
 			SV_DropClient(player);
 			return;
 		}

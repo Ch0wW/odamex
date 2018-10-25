@@ -18,11 +18,13 @@ public:
 	bool IsDuel();
 	bool IsTeamDM();
 	bool IsCTF();
+	bool IsLMS();
+	bool IsTeamLMS();
 	bool IsTeamGame();
 	bool IsTeamGame(byte gamebyte);
 
 	bool HasWarmup();					// Ch0wW : if the gamemode can use warmups
-	bool HasCountdown();				// Ch0wW: 
+	bool HasRounds();					// Ch0wW: if the gamemode uses rounds (LMS/TLMS/Surv)
 
 	void Set_Gamemode(int game);
 };
