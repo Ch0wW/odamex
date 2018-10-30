@@ -37,6 +37,9 @@
 #include "cmdlib.h"
 #include "m_fileio.h"
 
+
+FScriptParser sc;
+
 // MACROS ------------------------------------------------------------------
 
 #define MAX_STRING_SIZE 4096
@@ -47,53 +50,26 @@
 #define LUMP_SCRIPT 1
 #define FILE_ZONE_SCRIPT 2
 
-// TYPES -------------------------------------------------------------------
-
-// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
-
-// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
-
-static void SC_PrepareScript (void);
-static void CheckOpen (void);
-
-// EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-// PUBLIC DATA DEFINITIONS -------------------------------------------------
-
-char *sc_String;
-int sc_Number;
-float sc_Float;
-int sc_Line;
-BOOL sc_End;
-BOOL sc_Crossed;
-BOOL sc_FileScripts = false;
-char *sc_ScriptsDir;
-
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-static std::string ScriptName;
-static char *ScriptBuffer;
-static char *ScriptPtr;
-static char *ScriptEndPtr;
-static char StringBuffer[MAX_STRING_SIZE];
-static BOOL ScriptOpen = false;
-static int ScriptSize;
-static BOOL AlreadyGot = false;
-static BOOL FreeScript = false;
-static char *SavedScriptPtr;
-static int SavedScriptLine;
-
 // CODE --------------------------------------------------------------------
 
+
+// Constructor
+FScriptParser::FScriptParser()
+{
+	ScriptOpen = false;
+}
+
+// Destructor
+FScriptParser::~FScriptParser()
+{
+}
 
 //
 // SC_Open
 //
-void SC_Open (const char *name)
+void FScriptParser::Open (const char *lumpname)
 {
-	SC_OpenLumpNum (W_GetNumForName (name), name);
+	this->OpenLumpNum (W_GetNumForName (lumpname), lumpname);
 }
 
 
@@ -103,13 +79,13 @@ void SC_Open (const char *name)
 // Loads a script (from a file). Uses the zone memory allocator for
 // memory allocation and de-allocation.
 //
-void SC_OpenFile (const char *name)
+void FScriptParser::OpenFile (const char *filename)
 {
-	SC_Close ();
-	ScriptSize = M_ReadFile (name, (byte **)&ScriptBuffer);
-	M_ExtractFileBase (name, ScriptName);
+	this->Close ();
+	ScriptSize = M_ReadFile (filename, (byte **)&this->ScriptBuffer);
+	M_ExtractFileBase (filename, this->ScriptName);
 	FreeScript = true;
-	SC_PrepareScript ();
+	this->PrepareScript ();
 }
 
 
@@ -119,14 +95,14 @@ void SC_OpenFile (const char *name)
 // Prepares a script that is already in memory for parsing. The caller is
 // responsible for freeing it, if needed.
 //
-void SC_OpenMem (const char *name, char *buffer, int size)
+void FScriptParser::OpenMem (const char *name, char *buffer, int size)
 {
-	SC_Close ();
+	this->Close ();
 	ScriptSize = size;
-	ScriptBuffer = buffer;
-	ScriptName = name;
+	this->ScriptBuffer = buffer;
+	this->ScriptName = name;
 	FreeScript = false;
-	SC_PrepareScript ();
+	this->PrepareScript ();
 }
 
 
@@ -135,30 +111,39 @@ void SC_OpenMem (const char *name, char *buffer, int size)
 //
 // Loads a script (from the WAD files).
 //
-void SC_OpenLumpNum (int lump, const char *name)
+void FScriptParser::OpenLumpNum (int lump, const char *name)
 {
-	SC_Close ();
-	ScriptBuffer = (char *)W_CacheLumpNum (lump, PU_STATIC);
+	this->Close ();
+	this->ScriptBuffer = (char *)W_CacheLumpNum (lump, PU_STATIC);
 	ScriptSize = W_LumpLength (lump);
-	ScriptName = name;
+	this->ScriptName = name;
 	FreeScript = true;
-	SC_PrepareScript ();
+	this->PrepareScript ();
 }
 
+//
+// CheckOpen
+//
+void FScriptParser::CheckOpen(void)
+{
+	if (ScriptOpen == false) {
+		I_FatalError("SC_ call before SC_Open().");
+	}
+}
 
 //
 // SC_PrepareScript
 //
 // Prepares a script for parsing.
 //
-static void SC_PrepareScript (void)
+void FScriptParser::PrepareScript (void)
 {
-	ScriptPtr = ScriptBuffer;
-	ScriptEndPtr = ScriptPtr + ScriptSize;
-	sc_Line = 1;
-	sc_End = false;
+	this->ScriptPtr = this->ScriptBuffer;
+	ScriptEndPtr = this->ScriptPtr + ScriptSize;
+	this->Line = 1;
+	this->End = false;
 	ScriptOpen = true;
-	sc_String = StringBuffer;
+	this->String = StringBuffer;
 	AlreadyGot = false;
 	SavedScriptPtr = NULL;
 }
@@ -167,13 +152,13 @@ static void SC_PrepareScript (void)
 //
 // SC_Close
 //
-void SC_Close (void)
+void FScriptParser::Close (void)
 {
 	if (ScriptOpen)
 	{
-		if (FreeScript && ScriptBuffer)
-			Z_Free (ScriptBuffer);
-		ScriptBuffer = NULL;
+		if (FreeScript && this->ScriptBuffer)
+			Z_Free (this->ScriptBuffer);
+		this->ScriptBuffer = NULL;
 		ScriptOpen = false;
 	}
 }
@@ -184,17 +169,17 @@ void SC_Close (void)
 //
 // Saves the current script location for restoration later
 //
-void SC_SavePos (void)
+void FScriptParser::SavePos (void)
 {
-	CheckOpen ();
-	if (sc_End)
+	this->CheckOpen ();
+	if (this->End)
 	{
 		SavedScriptPtr = NULL;
 	}
 	else
 	{
-		SavedScriptPtr = ScriptPtr;
-		SavedScriptLine = sc_Line;
+		SavedScriptPtr = this->ScriptPtr;
+		SavedScriptLine = this->Line;
 	}
 }
 
@@ -204,13 +189,13 @@ void SC_SavePos (void)
 //
 // Restores the previously saved script location
 //
-void SC_RestorePos (void)
+void FScriptParser::RestorePos (void)
 {
 	if (SavedScriptPtr)
 	{
-		ScriptPtr = SavedScriptPtr;
-		sc_Line = SavedScriptLine;
-		sc_End = false;
+		this->ScriptPtr = SavedScriptPtr;
+		this->Line = SavedScriptLine;
+		this->End = false;
 		AlreadyGot = false;
 	}
 }
@@ -219,47 +204,47 @@ void SC_RestorePos (void)
 //
 // SC_GetString
 //
-BOOL SC_GetString (void)
+bool FScriptParser::GetString (void)
 {
 	char *text;
 	BOOL foundToken;
 
-	CheckOpen();
+	this->CheckOpen();
 	if (AlreadyGot)
 	{
 		AlreadyGot = false;
 		return true;
 	}
 	foundToken = false;
-	sc_Crossed = false;
-	if (ScriptPtr >= ScriptEndPtr)
+	this->Crossed = false;
+	if (this->ScriptPtr >= ScriptEndPtr)
 	{
-		sc_End = true;
+		this->End = true;
 		return false;
 	}
 	while (foundToken == false)
 	{
-		while (*ScriptPtr <= 32)
+		while (*this->ScriptPtr <= 32)
 		{
-			if (ScriptPtr >= ScriptEndPtr)
+			if (this->ScriptPtr >= ScriptEndPtr)
 			{
-				sc_End = true;
+				this->End = true;
 				return false;
 			}
 			if (*ScriptPtr++ == '\n')
 			{
-				sc_Line++;
-				sc_Crossed = true;
+				this->Line++;
+				this->Crossed = true;
 			}
 			if (ScriptPtr >= ScriptEndPtr)
 			{
-				sc_End = true;
+				this->End = true;
 				return false;
 			}
 		}
 		if (ScriptPtr >= ScriptEndPtr)
 		{
-			sc_End = true;
+			this->End = true;
 			return false;
 		}
 		if (*ScriptPtr != ASCII_COMMENT &&
@@ -276,13 +261,13 @@ BOOL SC_GetString (void)
 				{
 					if (ScriptPtr[0] == '\n')
 					{
-						sc_Line++;
-						sc_Crossed = true;
+						this->Line++;
+						this->Crossed = true;
 					}
 					ScriptPtr++;
 					if (ScriptPtr >= ScriptEndPtr - 1)
 					{
-						sc_End = true;
+						this->End = true;
 						return false;
 					}
 				}
@@ -294,16 +279,16 @@ BOOL SC_GetString (void)
 				{
 					if (ScriptPtr >= ScriptEndPtr)
 					{
-						sc_End = true;
+						this->End = true;
 						return false;
 					}
 				}
-				sc_Line++;
-				sc_Crossed = true;
+				this->Line++;
+				this->Crossed = true;
 			}
 		}
 	}
-	text = sc_String;
+	text = this->String;
 	if (*ScriptPtr == ASCII_QUOTE)
 	{ // Quoted string
 		ScriptPtr++;
@@ -311,7 +296,7 @@ BOOL SC_GetString (void)
 		{
 			*text++ = *ScriptPtr++;
 			if (ScriptPtr == ScriptEndPtr
-				|| text == &sc_String[MAX_STRING_SIZE-1])
+				|| text == &this->String[MAX_STRING_SIZE-1])
 			{
 				break;
 			}
@@ -320,20 +305,20 @@ BOOL SC_GetString (void)
 	}
 	else
 	{ // Normal string
-		if (strchr ("{}|=", *ScriptPtr))
+		if (strchr ("{}|=", *this->ScriptPtr))
 		{
-			*text++ = *ScriptPtr++;
+			*text++ = *this->ScriptPtr++;
 		}
 		else
 		{
-			while ((*ScriptPtr > 32) && (strchr ("{}|=", *ScriptPtr) == NULL)
-				&& (*ScriptPtr != ASCII_COMMENT)
-				&& !(ScriptPtr[0] == CPP_COMMENT && (ScriptPtr < ScriptEndPtr - 1) &&
-					 (ScriptPtr[1] == CPP_COMMENT || ScriptPtr[1] == C_COMMENT)))
+			while ((*this->ScriptPtr > 32) && (strchr ("{}|=", *this->ScriptPtr) == NULL)
+				&& (*this->ScriptPtr != ASCII_COMMENT)
+				&& !(this->ScriptPtr[0] == CPP_COMMENT && (this->ScriptPtr < ScriptEndPtr - 1) &&
+					 (this->ScriptPtr[1] == CPP_COMMENT || this->ScriptPtr[1] == C_COMMENT)))
 			{
-				*text++ = *ScriptPtr++;
-				if (ScriptPtr == ScriptEndPtr
-					|| text == &sc_String[MAX_STRING_SIZE-1])
+				*text++ = *this->ScriptPtr++;
+				if (this->ScriptPtr == ScriptEndPtr
+					|| text == &this->String[MAX_STRING_SIZE-1])
 				{
 					break;
 				}
@@ -348,11 +333,10 @@ BOOL SC_GetString (void)
 //
 // SC_MustGetString
 //
-void SC_MustGetString (void)
+void FScriptParser::MustGetString (void)
 {
-	if (SC_GetString () == false)
-	{
-		SC_ScriptError ("Missing string (unexpected end of file).");
+	if (this->GetString () == false) {
+		this->ScriptError("Missing string (unexpected end of file).");
 	}
 }
 
@@ -360,15 +344,15 @@ void SC_MustGetString (void)
 //
 // SC_MustGetStringName
 //
-void SC_MustGetStringName (const char *name)
+void FScriptParser::MustGetStringName (const char *name)
 {
-	SC_MustGetString ();
-	if (SC_Compare (name) == false)
+	this->MustGetString ();
+	if (this->Compare(name) == false)
 	{
 		const char *args[2];
 		args[0] = name;
-		args[1] = sc_String;
-		SC_ScriptError ("Expected '%s', got '%s'.", args);
+		args[1] = this->String;
+		this->ScriptError("Expected '%s', got '%s'.", args);
 	}
 }
 
@@ -376,29 +360,29 @@ void SC_MustGetStringName (const char *name)
 //
 // SC_GetNumber
 //
-BOOL SC_GetNumber (void)
+bool FScriptParser::GetNumber (void)
 {
 	char *stopper;
 
-	CheckOpen ();
-	if (SC_GetString())
+	this->CheckOpen();
+	if (sc.GetString())
 	{
-		if (strcmp (sc_String, "MAXINT") == 0)
+		if (strcmp (this->String, "MAXINT") == 0)
 		{
-			sc_Number = MAXINT;
+			this->Number = MAXINT;
 		}
 		else
 		{
-			sc_Number = strtol (sc_String, &stopper, 0);
+			this->Number = strtol (this->String, &stopper, 0);
 			if (*stopper != 0)
 			{
 				//I_Error ("SC_GetNumber: Bad numeric constant \"%s\".\n"
-				//	"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
-				Printf (PRINT_HIGH,"SC_GetNumber: Bad numeric constant \"%s\".\n"
-					"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
+				//	"Script %s, Line %d\n", sc_String, this->ScriptName.c_str(), this->Line);
+				Printf (PRINT_WARNING,"SC_GetNumber: Bad numeric constant \"%s\".\n"
+					"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
 			}
 		}
-		sc_Float = (float)sc_Number;
+		this->Float = (float)this->Number;
 		return true;
 	}
 	else
@@ -411,11 +395,10 @@ BOOL SC_GetNumber (void)
 //
 // SC_MustGetNumber
 //
-void SC_MustGetNumber (void)
+void FScriptParser::MustGetNumber (void)
 {
-	if (SC_GetNumber() == false)
-	{
-		SC_ScriptError ("Missing integer (unexpected end of file).");
+	if (this->GetNumber() == false) {
+		this->ScriptError("Missing integer (unexpected end of file).");
 	}
 }
 
@@ -423,22 +406,22 @@ void SC_MustGetNumber (void)
 //
 // SC_GetFloat
 //
-BOOL SC_GetFloat (void)
+BOOL FScriptParser::GetFloat (void)
 {
 	char *stopper;
 
-	CheckOpen ();
-	if (SC_GetString())
+	this->CheckOpen();
+	if (this->GetString())
 	{
-		sc_Float = (float)strtod (sc_String, &stopper);
+		this->Float = (float)strtod (this->String, &stopper);
 		if (*stopper != 0)
 		{
 			//I_Error ("SC_GetFloat: Bad numeric constant \"%s\".\n"
-			//	"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
-			Printf (PRINT_HIGH,"SC_GetFloat: Bad numeric constant \"%s\".\n"
-				"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
+			//	"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
+			Printf (PRINT_WARNING, "SC_GetFloat: Bad numeric constant \"%s\".\n"
+				"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
 		}
-		sc_Number = (int)sc_Float;
+		this->Number = (int)this->Float;
 		return true;
 	}
 	else
@@ -451,11 +434,10 @@ BOOL SC_GetFloat (void)
 //
 // SC_MustGetFloat
 //
-void SC_MustGetFloat (void)
+void FScriptParser::MustGetFloat (void)
 {
-	if (SC_GetFloat() == false)
-	{
-		SC_ScriptError ("Missing floating-point number (unexpected end of file).");
+	if (this->GetFloat() == false) {
+		this->ScriptError("Missing floating-point number (unexpected end of file).");
 	}
 }
 
@@ -463,9 +445,9 @@ void SC_MustGetFloat (void)
 //
 // SC_UnGet
 //
-// Assumes there is a valid string in sc_String.
+// Assumes there is a valid string in sc.String.
 //
-void SC_UnGet (void)
+void FScriptParser::UnGet (void)
 {
 	AlreadyGot = true;
 }
@@ -476,15 +458,13 @@ void SC_UnGet (void)
 //
 // Returns true if another token is on the current line.
 //
-
-
 /*
 BOOL SC_Check(void)
 {
 	char *text;
 
-	CheckOpen();
-	text = ScriptPtr;
+	this->CheckOpen();
+	text = this->ScriptPtr;
 	if(text >= ScriptEndPtr)
 	{
 		return false;
@@ -513,17 +493,16 @@ BOOL SC_Check(void)
 //
 // SC_MatchString
 //
-// Returns the index of the first match to sc_String from the passed
+// Returns the index of the first match to sc.String from the passed
 // array of strings, or -1 if not found.
 //
-int SC_MatchString (const char **strings)
+int FScriptParser::MatchString (const char **strings)
 {
 	int i;
 
 	for (i = 0; *strings != NULL; i++)
 	{
-		if (SC_Compare (*strings++))
-		{
+		if (this->Compare(*strings++)) {
 			return i;
 		}
 	}
@@ -534,15 +513,15 @@ int SC_MatchString (const char **strings)
 //
 // SC_MustMatchString
 //
-int SC_MustMatchString (const char **strings)
+int FScriptParser::MustMatchString (const char **strings)
 {
 	int i;
 
-	i = SC_MatchString (strings);
-	if (i == -1)
-	{
-		SC_ScriptError (NULL);
+	i = this->MatchString (strings);
+	if (i == -1) {
+		this->ScriptError(NULL);
 	}
+
 	return i;
 }
 
@@ -550,16 +529,16 @@ int SC_MustMatchString (const char **strings)
 //
 // SC_Compare
 //
-BOOL SC_Compare (const char *text)
+bool FScriptParser::Compare (const char *text)
 {
-	return (stricmp (text, sc_String) == 0);
+	return (stricmp (text, this->String) == 0);
 }
 
 
 //
 // SC_ScriptError
 //
-void SC_ScriptError (const char *message, const char **args)
+void FScriptParser::ScriptError (const char *message, const char **args)
 {
 	//char composed[2048];
 	if (message == NULL)
@@ -574,23 +553,11 @@ void SC_ScriptError (const char *message, const char **args)
 	vsprintf (composed, message, args);
 #endif*/
 
-    Printf(PRINT_HIGH,"Script error, \"%s\" line %d: %s\n", ScriptName.c_str(),
-		sc_Line, message);
+    Printf(PRINT_ERROR,"Script error, \"%s\" line %d: %s\n", this->ScriptName.c_str(),
+		this->Line, message);
 
-	//I_Error ("Script error, \"%s\" line %d: %s\n", ScriptName.c_str(),
-	//	sc_Line, message);
-}
-
-
-//
-// CheckOpen
-//
-static void CheckOpen(void)
-{
-	if (ScriptOpen == false)
-	{
-		I_FatalError ("SC_ call before SC_Open().");
-	}
+	//I_Error ("Script error, \"%s\" line %d: %s\n", this->ScriptName.c_str(),
+	//	this->Line, message);
 }
 
 VERSION_CONTROL (sc_man_cpp, "$Id$")
