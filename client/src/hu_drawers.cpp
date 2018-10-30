@@ -20,6 +20,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#include "hudmessages.h"
 #include "hu_drawers.h"
 #include "i_video.h"
 #include "v_video.h"
@@ -298,5 +299,19 @@ void DrawPatchScaled(const int x, const int y,
 	                   patch, force_opaque, use_patch_offsets);
 }
 
+
+/*void AttachMessage(DHUDMessage *msg, DWORD id)
+{
+	DHUDMessage *old = NULL;
+
+	old = (id == 0) ? NULL : DetachMessage(id);
+	if (old != NULL)
+	{
+		delete old;
+	}
+	msg->Next = Messages;
+	msg->SBarID = id;
+	Messages = msg;
+}*/
 
 }	// end of namespace hud

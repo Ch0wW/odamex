@@ -78,6 +78,8 @@ void DrawPatchScaled(const int x, const int y,
                      const x_align_t x_origin, const y_align_t y_origin,
                      const patch_t* patch, const bool force_opaque = false,
                      const bool use_patch_offsets = false);
+
+
 }
 
 #endif

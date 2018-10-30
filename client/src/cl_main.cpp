@@ -70,6 +70,8 @@
 #include "v_text.h"
 #include "hu_stuff.h"
 
+#include "hudmessages.h"
+
 #include <string>
 #include <vector>
 #include <map>
@@ -978,6 +980,14 @@ END_COMMAND (rcon_logout)
 PLAYER STATUS COMMANDS
 =============================================================================================
 */
+
+/*BEGIN_COMMAND(testcmd_hudmessage)
+{
+	DHUDMessage lolz = DHUDMessage("HELLO WORLD \n RASPI POWER", 0.0f, 0.0f, CR_YELLOW, 10.0f);
+	lolz.Draw(0);
+	lolz.DoDraw(1, 0, 0, 1, 1, true);
+}
+END_COMMAND(testcmd_hudmessage)*/
 
 BEGIN_COMMAND(join_password)
 {
@@ -3530,8 +3540,7 @@ void CL_Spectate()
 		if (player.spectator)
 		{
 			player.playerstate = PST_LIVE; // resurrect dead spectators
-			// GhostlyDeath -- Sometimes if the player spectates while he is falling down he squats
-			player.deltaviewheight = 1000 << FRACBITS;
+			player.deltaviewheight = 1000 << FRACBITS;	// GhostlyDeath -- Sometimes if the player spectates while he is falling down he squats
 		}
 		else
 		{
@@ -3702,10 +3711,10 @@ void CL_ParseCommands(void)
 		if(i == cmds.end())
 		{
 			CL_QuitNetGame();
-			Printf("CL_ParseCommands: Unknown server message %d following: \n", (int)cmd);
+			Printf(PRINT_ERROR, "CL_ParseCommands: Unknown server message %d following: \n", (int)cmd);
 
 			for(size_t j = 0; j < history.size(); j++)
-				Printf("CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
+				Printf(PRINT_WARNING, "CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
 			Printf("\n");
 			break;
 		}
@@ -3715,14 +3724,14 @@ void CL_ParseCommands(void)
 		if (net_message.overflowed)
 		{
 			CL_QuitNetGame();
-			Printf("CL_ParseCommands: Bad server message\n");
-			Printf("CL_ParseCommands: %d(%s) overflowed\n",
+			Printf(PRINT_ERROR, "CL_ParseCommands: Bad server message\n");
+			Printf(PRINT_WARNING, "CL_ParseCommands: %d(%s) overflowed\n",
 					   (int)cmd,
 					   svc_info[cmd].getName());
-			Printf("CL_ParseCommands: It was command number %d in the packet\n", (int)history.back());
+			Printf(PRINT_WARNING, "CL_ParseCommands: It was command number %d in the packet\n", (int)history.back());
 
 			for(size_t j = 0; j < history.size(); j++)
-				Printf("CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
+				Printf(PRINT_WARNING, "CL_ParseCommands: message #%d [%d %s]\n", j, history[j], svc_info[history[j]].getName());
 		}
 
 		// Measure length of each message, so we can keep track of bandwidth.
