@@ -56,6 +56,7 @@ public:
 	int MustMatchString(const char **strings);
 
 	bool GetNumber(void);
+	bool CheckNumber(void);
 	void MustGetNumber(void);
 
 	BOOL GetFloat(void);

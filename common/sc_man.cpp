@@ -69,7 +69,7 @@ FScriptParser::~FScriptParser()
 //
 void FScriptParser::Open (const char *lumpname)
 {
-	this->OpenLumpNum (W_GetNumForName (lumpname), lumpname);
+	OpenLumpNum (W_GetNumForName (lumpname), lumpname);
 }
 
 
@@ -81,11 +81,11 @@ void FScriptParser::Open (const char *lumpname)
 //
 void FScriptParser::OpenFile (const char *filename)
 {
-	this->Close ();
-	ScriptSize = M_ReadFile (filename, (byte **)&this->ScriptBuffer);
-	M_ExtractFileBase (filename, this->ScriptName);
+	Close ();
+	ScriptSize = M_ReadFile (filename, (byte **)&ScriptBuffer);
+	M_ExtractFileBase (filename, ScriptName);
 	FreeScript = true;
-	this->PrepareScript ();
+	PrepareScript ();
 }
 
 
@@ -97,12 +97,12 @@ void FScriptParser::OpenFile (const char *filename)
 //
 void FScriptParser::OpenMem (const char *name, char *buffer, int size)
 {
-	this->Close ();
+	Close ();
 	ScriptSize = size;
-	this->ScriptBuffer = buffer;
-	this->ScriptName = name;
+	ScriptBuffer = buffer;
+	ScriptName = name;
 	FreeScript = false;
-	this->PrepareScript ();
+	PrepareScript ();
 }
 
 
@@ -113,12 +113,12 @@ void FScriptParser::OpenMem (const char *name, char *buffer, int size)
 //
 void FScriptParser::OpenLumpNum (int lump, const char *name)
 {
-	this->Close ();
-	this->ScriptBuffer = (char *)W_CacheLumpNum (lump, PU_STATIC);
+	Close ();
+	ScriptBuffer = (char *)W_CacheLumpNum (lump, PU_STATIC);
 	ScriptSize = W_LumpLength (lump);
-	this->ScriptName = name;
+	ScriptName = name;
 	FreeScript = true;
-	this->PrepareScript ();
+	PrepareScript ();
 }
 
 //
@@ -138,12 +138,12 @@ void FScriptParser::CheckOpen(void)
 //
 void FScriptParser::PrepareScript (void)
 {
-	this->ScriptPtr = this->ScriptBuffer;
-	ScriptEndPtr = this->ScriptPtr + ScriptSize;
-	this->Line = 1;
-	this->End = false;
+	ScriptPtr = ScriptBuffer;
+	ScriptEndPtr = ScriptPtr + ScriptSize;
+	Line = 1;
+	End = false;
 	ScriptOpen = true;
-	this->String = StringBuffer;
+	String = StringBuffer;
 	AlreadyGot = false;
 	SavedScriptPtr = NULL;
 }
@@ -156,9 +156,9 @@ void FScriptParser::Close (void)
 {
 	if (ScriptOpen)
 	{
-		if (FreeScript && this->ScriptBuffer)
-			Z_Free (this->ScriptBuffer);
-		this->ScriptBuffer = NULL;
+		if (FreeScript && ScriptBuffer)
+			Z_Free (ScriptBuffer);
+		ScriptBuffer = NULL;
 		ScriptOpen = false;
 	}
 }
@@ -171,16 +171,14 @@ void FScriptParser::Close (void)
 //
 void FScriptParser::SavePos (void)
 {
-	this->CheckOpen ();
-	if (this->End)
-	{
+	CheckOpen ();
+	if (End) {
 		SavedScriptPtr = NULL;
 	}
-	else
-	{
-		SavedScriptPtr = this->ScriptPtr;
-		SavedScriptLine = this->Line;
+	else {
+		SavedScriptPtr = ScriptPtr;
 	}
+	SavedScriptLine = Line;
 }
 
 
@@ -193,11 +191,16 @@ void FScriptParser::RestorePos (void)
 {
 	if (SavedScriptPtr)
 	{
-		this->ScriptPtr = SavedScriptPtr;
-		this->Line = SavedScriptLine;
-		this->End = false;
-		AlreadyGot = false;
+		ScriptPtr = SavedScriptPtr;
+		Line = SavedScriptLine;
+		End = false;
 	}
+	else {
+		End = true;
+	}
+	AlreadyGot = false;
+	//LastGotToken = false;
+	Crossed = false;
 }
 
 
@@ -209,42 +212,42 @@ bool FScriptParser::GetString (void)
 	char *text;
 	BOOL foundToken;
 
-	this->CheckOpen();
+	CheckOpen();
 	if (AlreadyGot)
 	{
 		AlreadyGot = false;
 		return true;
 	}
 	foundToken = false;
-	this->Crossed = false;
-	if (this->ScriptPtr >= ScriptEndPtr)
+	Crossed = false;
+	if (ScriptPtr >= ScriptEndPtr)
 	{
-		this->End = true;
+		End = true;
 		return false;
 	}
 	while (foundToken == false)
 	{
-		while (*this->ScriptPtr <= 32)
+		while (*ScriptPtr <= 32)
 		{
-			if (this->ScriptPtr >= ScriptEndPtr)
+			if (ScriptPtr >= ScriptEndPtr)
 			{
-				this->End = true;
+				End = true;
 				return false;
 			}
 			if (*ScriptPtr++ == '\n')
 			{
-				this->Line++;
-				this->Crossed = true;
+				Line++;
+				Crossed = true;
 			}
 			if (ScriptPtr >= ScriptEndPtr)
 			{
-				this->End = true;
+				End = true;
 				return false;
 			}
 		}
 		if (ScriptPtr >= ScriptEndPtr)
 		{
-			this->End = true;
+			End = true;
 			return false;
 		}
 		if (*ScriptPtr != ASCII_COMMENT &&
@@ -261,13 +264,13 @@ bool FScriptParser::GetString (void)
 				{
 					if (ScriptPtr[0] == '\n')
 					{
-						this->Line++;
-						this->Crossed = true;
+						Line++;
+						Crossed = true;
 					}
 					ScriptPtr++;
 					if (ScriptPtr >= ScriptEndPtr - 1)
 					{
-						this->End = true;
+						End = true;
 						return false;
 					}
 				}
@@ -279,16 +282,16 @@ bool FScriptParser::GetString (void)
 				{
 					if (ScriptPtr >= ScriptEndPtr)
 					{
-						this->End = true;
+						End = true;
 						return false;
 					}
 				}
-				this->Line++;
-				this->Crossed = true;
+				Line++;
+				Crossed = true;
 			}
 		}
 	}
-	text = this->String;
+	text = String;
 	if (*ScriptPtr == ASCII_QUOTE)
 	{ // Quoted string
 		ScriptPtr++;
@@ -296,7 +299,7 @@ bool FScriptParser::GetString (void)
 		{
 			*text++ = *ScriptPtr++;
 			if (ScriptPtr == ScriptEndPtr
-				|| text == &this->String[MAX_STRING_SIZE-1])
+				|| text == &String[MAX_STRING_SIZE-1])
 			{
 				break;
 			}
@@ -305,20 +308,20 @@ bool FScriptParser::GetString (void)
 	}
 	else
 	{ // Normal string
-		if (strchr ("{}|=", *this->ScriptPtr))
+		if (strchr ("{}|=", *ScriptPtr))
 		{
-			*text++ = *this->ScriptPtr++;
+			*text++ = *ScriptPtr++;
 		}
 		else
 		{
-			while ((*this->ScriptPtr > 32) && (strchr ("{}|=", *this->ScriptPtr) == NULL)
-				&& (*this->ScriptPtr != ASCII_COMMENT)
-				&& !(this->ScriptPtr[0] == CPP_COMMENT && (this->ScriptPtr < ScriptEndPtr - 1) &&
-					 (this->ScriptPtr[1] == CPP_COMMENT || this->ScriptPtr[1] == C_COMMENT)))
+			while ((*ScriptPtr > 32) && (strchr ("{}|=", *ScriptPtr) == NULL)
+				&& (*ScriptPtr != ASCII_COMMENT)
+				&& !(ScriptPtr[0] == CPP_COMMENT && (ScriptPtr < ScriptEndPtr - 1) &&
+					 (ScriptPtr[1] == CPP_COMMENT || ScriptPtr[1] == C_COMMENT)))
 			{
-				*text++ = *this->ScriptPtr++;
-				if (this->ScriptPtr == ScriptEndPtr
-					|| text == &this->String[MAX_STRING_SIZE-1])
+				*text++ = *ScriptPtr++;
+				if (ScriptPtr == ScriptEndPtr
+					|| text == &String[MAX_STRING_SIZE-1])
 				{
 					break;
 				}
@@ -335,8 +338,8 @@ bool FScriptParser::GetString (void)
 //
 void FScriptParser::MustGetString (void)
 {
-	if (this->GetString () == false) {
-		this->ScriptError("Missing string (unexpected end of file).");
+	if (GetString () == false) {
+		ScriptError("Missing string (unexpected end of file).");
 	}
 }
 
@@ -346,13 +349,13 @@ void FScriptParser::MustGetString (void)
 //
 void FScriptParser::MustGetStringName (const char *name)
 {
-	this->MustGetString ();
-	if (this->Compare(name) == false)
+	MustGetString ();
+	if (Compare(name) == false)
 	{
 		const char *args[2];
 		args[0] = name;
-		args[1] = this->String;
-		this->ScriptError("Expected '%s', got '%s'.", args);
+		args[1] = String;
+		ScriptError("Expected '%s', got '%s'.", args);
 	}
 }
 
@@ -360,29 +363,27 @@ void FScriptParser::MustGetStringName (const char *name)
 //
 // SC_GetNumber
 //
-bool FScriptParser::GetNumber (void)
+bool FScriptParser::GetNumber(void)
 {
 	char *stopper;
 
-	this->CheckOpen();
+	CheckOpen();
 	if (sc.GetString())
 	{
-		if (strcmp (this->String, "MAXINT") == 0)
+		if (strcmp(String, "MAXINT") == 0)
 		{
-			this->Number = MAXINT;
+			Number = MAXINT;
 		}
 		else
 		{
-			this->Number = strtol (this->String, &stopper, 0);
+			Number = strtol(String, &stopper, 0);
 			if (*stopper != 0)
 			{
-				//I_Error ("SC_GetNumber: Bad numeric constant \"%s\".\n"
-				//	"Script %s, Line %d\n", sc_String, this->ScriptName.c_str(), this->Line);
-				Printf (PRINT_WARNING,"SC_GetNumber: Bad numeric constant \"%s\".\n"
-					"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
+				Printf(PRINT_WARNING, "SC_GetNumber: Bad numeric constant \"%s\".\n"
+					"Script %s, Line %d\n", String, ScriptName.c_str(), Line);
 			}
 		}
-		this->Float = (float)this->Number;
+		Float = (float)Number;
 		return true;
 	}
 	else
@@ -391,14 +392,53 @@ bool FScriptParser::GetNumber (void)
 	}
 }
 
+//==========================================================================
+//
+// FScriptParser :: CheckNumber
+//
+// similar to GetNumber but ungets the token if it isn't a number 
+// and does not print an error
+//
+//==========================================================================
+
+bool FScriptParser::CheckNumber()
+{
+	char *stopper;
+
+	if (GetString())
+	{
+		if (String[0] == 0)
+		{
+			UnGet();
+			return false;
+		}
+		else if (strcmp(String, "MAXINT") == 0) {
+			Number = INT_MAX;
+		}
+		else
+		{
+			Number = strtol(String, &stopper, 0);
+			if (*stopper != 0)
+			{
+				UnGet();
+				return false;
+			}
+		}
+		Float = Number;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 
 //
 // SC_MustGetNumber
 //
 void FScriptParser::MustGetNumber (void)
 {
-	if (this->GetNumber() == false) {
-		this->ScriptError("Missing integer (unexpected end of file).");
+	if (GetNumber() == false) {
+		ScriptError("Missing integer (unexpected end of file).");
 	}
 }
 
@@ -410,18 +450,18 @@ BOOL FScriptParser::GetFloat (void)
 {
 	char *stopper;
 
-	this->CheckOpen();
-	if (this->GetString())
+	CheckOpen();
+	if (GetString())
 	{
-		this->Float = (float)strtod (this->String, &stopper);
+		Float = (float)strtod (String, &stopper);
 		if (*stopper != 0)
 		{
 			//I_Error ("SC_GetFloat: Bad numeric constant \"%s\".\n"
-			//	"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
+			//	"Script %s, Line %d\n", String, ScriptName.c_str(), Line);
 			Printf (PRINT_WARNING, "SC_GetFloat: Bad numeric constant \"%s\".\n"
-				"Script %s, Line %d\n", this->String, this->ScriptName.c_str(), this->Line);
+				"Script %s, Line %d\n", String, ScriptName.c_str(), Line);
 		}
-		this->Number = (int)this->Float;
+		Number = (int)Float;
 		return true;
 	}
 	else
@@ -436,8 +476,8 @@ BOOL FScriptParser::GetFloat (void)
 //
 void FScriptParser::MustGetFloat (void)
 {
-	if (this->GetFloat() == false) {
-		this->ScriptError("Missing floating-point number (unexpected end of file).");
+	if (GetFloat() == false) {
+		ScriptError("Missing floating-point number (unexpected end of file).");
 	}
 }
 
@@ -463,8 +503,8 @@ BOOL SC_Check(void)
 {
 	char *text;
 
-	this->CheckOpen();
-	text = this->ScriptPtr;
+	CheckOpen();
+	text = ScriptPtr;
 	if(text >= ScriptEndPtr)
 	{
 		return false;
@@ -502,7 +542,7 @@ int FScriptParser::MatchString (const char **strings)
 
 	for (i = 0; *strings != NULL; i++)
 	{
-		if (this->Compare(*strings++)) {
+		if (Compare(*strings++)) {
 			return i;
 		}
 	}
@@ -517,9 +557,9 @@ int FScriptParser::MustMatchString (const char **strings)
 {
 	int i;
 
-	i = this->MatchString (strings);
+	i = MatchString (strings);
 	if (i == -1) {
-		this->ScriptError(NULL);
+		ScriptError(NULL);
 	}
 
 	return i;
@@ -531,7 +571,7 @@ int FScriptParser::MustMatchString (const char **strings)
 //
 bool FScriptParser::Compare (const char *text)
 {
-	return (stricmp (text, this->String) == 0);
+	return (stricmp (text, String) == 0);
 }
 
 
@@ -553,11 +593,7 @@ void FScriptParser::ScriptError (const char *message, const char **args)
 	vsprintf (composed, message, args);
 #endif*/
 
-    Printf(PRINT_ERROR,"Script error, \"%s\" line %d: %s\n", this->ScriptName.c_str(),
-		this->Line, message);
-
-	//I_Error ("Script error, \"%s\" line %d: %s\n", this->ScriptName.c_str(),
-	//	this->Line, message);
+    Printf(PRINT_ERROR,"Script error, \"%s\" line %d: %s\n", ScriptName.c_str(), Line, message);
 }
 
 VERSION_CONTROL (sc_man_cpp, "$Id$")
