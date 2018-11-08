@@ -132,5 +132,6 @@ struct ActionBits
 };
 
 extern unsigned int MakeKey (const char *s);
+extern unsigned int MakeKey(const char *s, size_t len);
 
 #endif //__C_DISPATCH_H__

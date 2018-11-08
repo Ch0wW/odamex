@@ -348,7 +348,7 @@ static void ParseMapInfoLower (MapInfoHandler *handlers,
 
 	while (sc.GetString())
 	{
-		if (sc.MustMatchString(MapInfoTopLevel) != -1)
+		if (sc.MatchString(MapInfoTopLevel) != -1)
 		{
 			sc.UnGet();
 			break;

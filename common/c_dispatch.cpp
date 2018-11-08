@@ -52,25 +52,26 @@ command_map_t &Commands()
 
 struct ActionBits actionbits[NUM_ACTIONS] =
 {
-	{ 0x00409, ACTION_USE,		  "use" },
-	{ 0x0074d, ACTION_BACK,		  "back" },
-	{ 0x007e4, ACTION_LEFT,		  "left" },
-	{ 0x00816, ACTION_JUMP,		  "jump" },
-	{ 0x0106d, ACTION_KLOOK,	  "klook" },
-	{ 0x0109d, ACTION_MLOOK,	  "mlook" },
-	{ 0x010d8, ACTION_RIGHT,	  "right" },
-	{ 0x0110a, ACTION_SPEED,	  "speed" },
-	{ 0x01fc5, ACTION_ATTACK,	  "attack" },
-	{ 0x021ae, ACTION_LOOKUP,	  "lookup" },
-	{ 0x021fe, ACTION_MOVEUP,	  "moveup" },
-	{ 0x02315, ACTION_STRAFE,	  "strafe" },
-	{ 0x041c4, ACTION_FORWARD,	  "forward" },
-	{ 0x08788, ACTION_LOOKDOWN,	  "lookdown" },
-	{ 0x088c4, ACTION_MOVELEFT,	  "moveleft" },
-	{ 0x088c8, ACTION_MOVEDOWN,	  "movedown" },
-	{ 0x11268, ACTION_MOVERIGHT,  "moveright" },
-	{ 0x2314d, ACTION_SHOWSCORES, "showscores" }
+	{ 0x1eefa611, ACTION_JUMP, "jump" },
+	{ 0x201f1c55, ACTION_RIGHT, "right" },
+	{ 0x23a99cd7, ACTION_BACK, "back" },
+	{ 0x4463f43a, ACTION_LOOKDOWN, "lookdown" },
+	{ 0x5622bf42, ACTION_ATTACK, "attack" },
+	{ 0x57c25cb2, ACTION_KLOOK, "klook" },
+	{ 0x59f3e907, ACTION_FORWARD, "forward" },
+	{ 0x6167ce99, ACTION_MOVEDOWN, "movedown" },
+	{ 0x6fa41b84, ACTION_MOVELEFT, "moveleft" },
+	{ 0x818f08e6, ACTION_MOVERIGHT, "moveright" },
+	{ 0xa2b62d8b, ACTION_MLOOK, "mlook" },
+	{ 0xb000b483, ACTION_LEFT, "left" },
+	{ 0xb62b1e49, ACTION_LOOKUP, "lookup" },
+	{ 0xb7e6a54b, ACTION_STRAFE, "strafe" },
+	{ 0xd5897c73, ACTION_SHOWSCORES, "showscores" },
+	{ 0xe0ccb317, ACTION_SPEED, "speed" },
+	{ 0xe0cfc260, ACTION_USE, "use" },
+	{ 0xfdd701c7, ACTION_MOVEUP, "moveup" },
 };
+
 byte Actions[NUM_ACTIONS];
 
 static int ListActionCommands (void)
@@ -85,18 +86,141 @@ static int ListActionCommands (void)
 	return NUM_ACTIONS * 2;
 }
 
-unsigned int MakeKey (const char *s)
+/* ======================================================================== */
+
+/* By Paul Hsieh (C) 2004, 2005.  Covered under the Paul Hsieh derivative
+license. See:
+http://www.azillionmonkeys.com/qed/weblicense.html for license details.
+
+http://www.azillionmonkeys.com/qed/hash.html */
+
+#undef get16bits
+#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
+  || defined(_MSC_VER) || defined (__BORLANDC__) || defined (__TURBOC__)
+#define get16bits(d) (*((const WORD *) (d)))
+#endif
+
+#if !defined (get16bits)
+#define get16bits(d) ((((DWORD)(((const BYTE *)(d))[1])) << 8)\
+                       +(DWORD)(((const BYTE *)(d))[0]) )
+#endif
+
+DWORD SuperFastHash(const char *data, size_t len)
 {
-	register unsigned int v = 0;
+	DWORD hash = 0, tmp;
+	size_t rem;
 
-	if (*s)
-		v = tolower(*s++);
-	if (*s)
-		v = (v*3) + tolower(*s++);
-	while (*s)
-		v = (v << 1) + tolower(*s++);
+	if (len == 0 || data == NULL) return 0;
 
-	return v;
+	rem = len & 3;
+	len >>= 2;
+
+	/* Main loop */
+	for (; len > 0; len--)
+	{
+		hash += get16bits(data);
+		tmp = (get16bits(data + 2) << 11) ^ hash;
+		hash = (hash << 16) ^ tmp;
+		data += 2 * sizeof(WORD);
+		hash += hash >> 11;
+	}
+
+	/* Handle end cases */
+	switch (rem)
+	{
+	case 3:	hash += get16bits(data);
+		hash ^= hash << 16;
+		hash ^= data[sizeof(WORD)] << 18;
+		hash += hash >> 11;
+		break;
+	case 2:	hash += get16bits(data);
+		hash ^= hash << 11;
+		hash += hash >> 17;
+		break;
+	case 1: hash += *data;
+		hash ^= hash << 10;
+		hash += hash >> 1;
+	}
+
+	/* Force "avalanching" of final 127 bits */
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+
+	return hash;
+}
+
+/* A modified version to do a case-insensitive hash */
+
+#undef get16bits
+#define get16bits(d) ((((DWORD)tolower(((const BYTE *)(d))[1])) << 8)\
+                       +(DWORD)tolower(((const BYTE *)(d))[0]) )
+
+DWORD SuperFastHashI(const char *data, size_t len)
+{
+	DWORD hash = 0, tmp;
+	size_t rem;
+
+	if (len <= 0 || data == NULL) return 0;
+
+	rem = len & 3;
+	len >>= 2;
+
+	/* Main loop */
+	for (; len > 0; len--)
+	{
+		hash += get16bits(data);
+		tmp = (get16bits(data + 2) << 11) ^ hash;
+		hash = (hash << 16) ^ tmp;
+		data += 2 * sizeof(WORD);
+		hash += hash >> 11;
+	}
+
+	/* Handle end cases */
+	switch (rem)
+	{
+	case 3:	hash += get16bits(data);
+		hash ^= hash << 16;
+		hash ^= tolower(data[sizeof(WORD)]) << 18;
+		hash += hash >> 11;
+		break;
+	case 2:	hash += get16bits(data);
+		hash ^= hash << 11;
+		hash += hash >> 17;
+		break;
+	case 1: hash += tolower(*data);
+		hash ^= hash << 10;
+		hash += hash >> 1;
+	}
+
+	/* Force "avalanching" of final 127 bits */
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+
+	return hash;
+}
+
+/* ======================================================================== */
+
+unsigned int MakeKey(const char *s)
+{
+	if (s == NULL)
+	{
+		return 0;
+	}
+	return SuperFastHashI(s, strlen(s));
+}
+
+unsigned int MakeKey(const char *s, size_t len)
+{
+	return SuperFastHashI(s, len);
 }
 
 // GetActionBit scans through the actionbits[] array
@@ -106,23 +230,10 @@ unsigned int MakeKey (const char *s)
 
 int GetActionBit (unsigned int key)
 {
-	int min = 0;
-	int max = NUM_ACTIONS - 1;
+	const ActionBits *bit;
 
-	while (min <= max)
-	{
-		int mid = (min + max) / 2;
-		unsigned int seekey = actionbits[mid].key;
-
-		if (seekey == key)
-			return actionbits[mid].index;
-		else if (seekey < key)
-			min = mid + 1;
-		else
-			max = mid - 1;
-	}
-
-	return -1;
+	bit = BinarySearch<ActionBits, unsigned int>(actionbits, NUM_ACTIONS, &ActionBits::key, key);
+	return bit ? bit->index : -1;
 }
 
 bool safemode = false;
@@ -841,11 +952,10 @@ BEGIN_COMMAND (key)
 	{
 		while (argc > 1)
 		{
-			Printf (PRINT_HIGH, " %08x", MakeKey (argv[1]));
+			Printf(PRINT_HIGH, "%s : 0x%08x (%d)\n", argv[1], MakeKey(argv[1]), MakeKey(argv[1]));
 			argc--;
 			argv++;
 		}
-		Printf (PRINT_HIGH, "\n");
 	}
 }
 END_COMMAND (key)
