@@ -365,8 +365,7 @@ void G_DoCompleted (void)
 	strncpy (wminfo.lname0, level.info->pname, 8);
 	strncpy (wminfo.current, level.mapname, 8);
 
-	if (!GAME.IsCooperation() &&
-		!(level.flags & LEVEL_CHANGEMAPCHEAT)) {
+	if (!GAME.IsCooperation() && !(level.flags & LEVEL_CHANGEMAPCHEAT)) {
 		strncpy (wminfo.next, level.mapname, 8);
 		strncpy (wminfo.lname1, level.info->pname, 8);
 	} else {
@@ -440,9 +439,9 @@ void G_DoCompleted (void)
 			//level.inttimeleft = 0;
 		}
 
-		if (!(sv_gametype == GM_DM) &&
+		if ( !GAME.IsDeathmatch() &&
 			((level.flags & LEVEL_NOINTERMISSION) ||
-			((nextcluster == thiscluster) && (thiscluster->flags & CLUSTER_HUB)))) {
+			((nextcluster == thiscluster) && (thiscluster->flags & CLUSTER_HUB))) ) {
 			G_WorldDone ();
 			return;
 		}
@@ -474,8 +473,8 @@ void G_DoLoadLevel (int position)
 
 	G_InitLevelLocals ();
 
-    Printf_Bold ("\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36"
-                 "\36\36\36\36\36\36\36\36\36\36\36\36\37\n"
+    Printf_Bold ("\n"
+				"\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n"
                  "%s: \"%s\"\n\n", level.mapname, level.level_name);
 
 	if (wipegamestate == GS_LEVEL)
@@ -514,6 +513,7 @@ void G_DoLoadLevel (int position)
 	// [RH] Set up details about sky rendering
 	R_InitSkyMap ();
 
+	// Reset the score system and keys for every player.
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
 		if (it->ingame() && it->playerstate == PST_DEAD)
