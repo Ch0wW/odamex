@@ -1992,11 +1992,11 @@ void G_DoPlayDemo(bool justStreamInput)
 	gameaction = ga_nothing;
 	int bytelen;
 
-	int demolump = W_CheckNumForName(defdemoname.c_str());
+	int demolump = wads.CheckNumForName(defdemoname.c_str());
 	if (demolump != -1)
 	{
-		demobuffer = demo_p = (byte*)W_CacheLumpNum(demolump, PU_STATIC);
-		bytelen = W_LumpLength(demolump);
+		demobuffer = demo_p = (byte*)wads.CacheLumpNum(demolump, PU_STATIC);
+		bytelen = wads.LumpLength(demolump);
 	}
 	else
 	{

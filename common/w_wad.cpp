@@ -65,14 +65,11 @@
 //
 // GLOBALS
 //
+WadCollection wads;
 
 // Location of each lump on disk.
 lumpinfo_t*		lumpinfo;
 size_t			numlumps;
-
-void**			lumpcache;
-
-static unsigned	stdisk_lumpnum;
 
 //
 // W_LumpNameHash
@@ -83,7 +80,7 @@ static unsigned	stdisk_lumpnum;
 //
 // [SL] taken from prboom-plus
 //
-unsigned int W_LumpNameHash(const char *s)
+unsigned int WadCollection::LumpNameHash(const char *s)
 {
 	unsigned int hash;
 
@@ -105,7 +102,7 @@ unsigned int W_LumpNameHash(const char *s)
 // killough 1/31/98: Initialize lump hash table
 // [SL] taken from prboom-plus
 //
-void W_HashLumps(void)
+void WadCollection::HashLumps(void)
 {
 	for (unsigned int i = 0; i < numlumps; i++)
 		lumpinfo[i].index = -1;			// mark slots empty
@@ -116,7 +113,7 @@ void W_HashLumps(void)
 
 	for (unsigned int i = 0; i < numlumps; i++)
 	{
-		unsigned int j = W_LumpNameHash(lumpinfo[i].name) % (unsigned int)numlumps;
+		unsigned int j = LumpNameHash(lumpinfo[i].name) % (unsigned int)numlumps;
 		lumpinfo[i].next = lumpinfo[j].index;     // Prepend to list
 		lumpinfo[j].index = i;
 	}
@@ -140,7 +137,7 @@ void uppercopy (char *to, const char *from)
 
 
 // denis - Standard MD5SUM
-std::string W_MD5(std::string filename)
+std::string WadCollection::GetMD5Hash(std::string filename)
 {
 	const int file_chunk_size = 8192;
 	FILE *fp = fopen(filename.c_str(), "rb");
@@ -214,7 +211,7 @@ void W_AddLumps(FILE* handle, filelump_t* fileinfo, size_t newlumps, bool client
 // Map reloads are supported through WAD reload so no need for vanilla tilde
 // reload hack here
 //
-std::string W_AddFile(std::string filename)
+std::string WadCollection::AddFile(std::string filename)
 {
 	FILE*			handle;
 	filelump_t*		fileinfo;
@@ -258,7 +255,7 @@ std::string W_AddFile(std::string filename)
 
 		if (length > (unsigned)M_FileLength(handle))
 		{
-			Printf(PRINT_HIGH, "\nbad number of lumps for %s\n", filename.c_str());
+			Printf(PRINT_ERROR, "\nbad number of lumps for %s\n", filename.c_str());
 			fclose(handle);
 			return "";
 		}
@@ -283,7 +280,7 @@ std::string W_AddFile(std::string filename)
 
 	delete [] fileinfo;
 
-	return W_MD5(filename);
+	return GetMD5Hash(filename);
 }
 
 
@@ -294,8 +291,7 @@ std::string W_AddFile(std::string filename)
 // (from BOOM)
 //
 //
-
-static BOOL IsMarker (const lumpinfo_t *lump, const char *marker)
+bool WadCollection::IsMarker (const lumpinfo_t *lump, const char *marker)
 {
 	return (lump->namespc == ns_global) && (!strncmp (lump->name, marker, 8) ||
 			(*(lump->name) == *marker && !strncmp (lump->name + 1, marker, 7)));
@@ -307,8 +303,7 @@ static BOOL IsMarker (const lumpinfo_t *lump, const char *marker)
 // Merge multiple tagged groups into one
 // Basically from BOOM, too, although I tried to write it independently.
 //
-
-void W_MergeLumps (const char *start, const char *end, int space)
+void WadCollection::MergeLumps (const char *start, const char *end, int space)
 {
 	char ustart[8], uend[8];
 	lumpinfo_t *newlumpinfos;
@@ -441,7 +436,7 @@ void W_MergeLumps (const char *start, const char *end, int space)
 }
 
 //
-// W_InitMultipleFiles
+// InitMultipleFiles
 // Pass a null terminated list of files to use.
 // All files are optional, but at least one file
 //  must be found.
@@ -453,7 +448,7 @@ void W_MergeLumps (const char *start, const char *end, int space)
 // The name searcher looks backwards, so a later file
 //  does override all earlier ones.
 //
-std::vector<std::string> W_InitMultipleFiles (std::vector<std::string> &filenames)
+std::vector<std::string> WadCollection::InitMultipleFiles (std::vector<std::string> &filenames)
 {
 	size_t		size, i;
 
@@ -472,7 +467,7 @@ std::vector<std::string> W_InitMultipleFiles (std::vector<std::string> &filename
 	{
 		if(std::find(loaded.begin(), loaded.end(), filenames[i].c_str()) == loaded.end())
 		{
-			hashes[j++] = W_AddFile(filenames[i].c_str());
+			hashes[j++] = AddFile(filenames[i].c_str());
 			loaded.push_back(filenames[i].c_str());
 		}
 	}
@@ -489,9 +484,9 @@ std::vector<std::string> W_InitMultipleFiles (std::vector<std::string> &filename
 	// [RH] Merge sprite and flat groups.
 	//		(We don't need to bother with patches, since
 	//		Doom doesn't use markers to identify them.)
-	W_MergeLumps ("S_START", "S_END", ns_sprites); // denis - fixme - security
-	W_MergeLumps ("F_START", "F_END", ns_flats);
-	W_MergeLumps ("C_START", "C_END", ns_colormaps);
+	MergeLumps ("S_START", "S_END", ns_sprites); // denis - fixme - security
+	MergeLumps ("F_START", "F_END", ns_flats);
+	MergeLumps ("C_START", "C_END", ns_colormaps);
 
     // set up caching
 	M_Free(lumpcache);
@@ -505,15 +500,15 @@ std::vector<std::string> W_InitMultipleFiles (std::vector<std::string> &filename
 	memset (lumpcache,0, size);
 
 	// killough 1/31/98: initialize lump hash table
-	W_HashLumps();
+	HashLumps();
 
-	stdisk_lumpnum = W_GetNumForName("STDISK");
+	stdisk_lumpnum = GetNumForName("STDISK");
 
 	return hashes;
 }
 
 //
-// W_CheckNumForName
+// CheckNumForName
 // Returns -1 if name not found.
 //
 // Rewritten by Lee Killough to use hash table for performance. Significantly
@@ -529,13 +524,13 @@ std::vector<std::string> W_InitMultipleFiles (std::vector<std::string> &filename
 //
 // [SL] taken from prboom-plus
 //
-int W_CheckNumForName(const char *name, int namespc)
+int WadCollection::CheckNumForName(const char *name, int namespc)
 {
 	// Hash function maps the name to one of possibly numlump chains.
 	// It has been tuned so that the average chain length never exceeds 2.
 
 	// proff 2001/09/07 - check numlumps==0, this happens when called before WAD loaded
-	register int i = (numlumps==0)?(-1):(lumpinfo[W_LumpNameHash(name) % numlumps].index);
+	register int i = (numlumps==0)?(-1):(lumpinfo[LumpNameHash(name) % numlumps].index);
 
 	// We search along the chain until end, looking for case-insensitive
 	// matches which also match a namespace tag. Separate hash tables are
@@ -552,30 +547,29 @@ int W_CheckNumForName(const char *name, int namespc)
 }
 
 //
-// W_GetNumForName
-// Calls W_CheckNumForName, but bombs out if not found.
-//
-int W_GetNumForName (const char* name)
+// GetNumForName
+// Calls wads.CheckNumForName, but bombs out if not found.
+int WadCollection::GetNumForName (const char* name)
 {
 	int	i;
 
-	i = W_CheckNumForName (name);
+	i = CheckNumForName (name);
 
 	if (i == -1)
-		I_Error ("W_GetNumForName: %s not found!", name);
+		I_Error ("WadCollection::GetNumForName: %s not found!", name);
 
 	return i;
 }
 
 
 //
-// W_LumpLength
+// LumpLength
 // Returns the buffer size needed to load the given lump.
 //
-unsigned W_LumpLength (unsigned lump)
+unsigned WadCollection::LumpLength (unsigned lump)
 {
 	if (lump >= numlumps)
-		I_Error ("W_LumpLength: %i >= numlumps",lump);
+		I_Error ("WadCollection::LumpLength : %i >= numlumps",lump);
 
 	return lumpinfo[lump].size;
 }
@@ -583,17 +577,17 @@ unsigned W_LumpLength (unsigned lump)
 
 
 //
-// W_ReadLump
+// ReadLump
 // Loads the lump into the given buffer,
-//  which must be >= W_LumpLength().
+//  which must be >= LumpLength().
 //
-void W_ReadLump(unsigned int lump, void* dest)
+void WadCollection::ReadLump(unsigned int lump, void* dest)
 {
 	int		c;
 	lumpinfo_t*	l;
 
 	if (lump >= numlumps)
-		I_Error ("W_ReadLump: %i >= numlumps",lump);
+		I_Error ("WadCollection::ReadLump : %i >= numlumps",lump);
 
 	l = lumpinfo + lump;
 
@@ -604,7 +598,7 @@ void W_ReadLump(unsigned int lump, void* dest)
 	c = fread (dest, l->size, 1, l->handle);
 
 	if (feof(l->handle))
-		I_Error ("W_ReadLump: only read %i of %i on lump %i", c, l->size, lump);
+		I_Error ("WadCollection::ReadLump : only read %i of %i on lump %i", c, l->size, lump);
 
 	if (lump != stdisk_lumpnum)
     	I_EndRead();
@@ -615,7 +609,7 @@ void W_ReadLump(unsigned int lump, void* dest)
 //
 // denis - for wad downloading
 //
-unsigned W_ReadChunk (const char *file, unsigned offs, unsigned len, void *dest, unsigned &filelen)
+unsigned WadCollection::ReadChunk (const char *file, unsigned offs, unsigned len, void *dest, unsigned &filelen)
 {
 	FILE *fp = fopen(file, "rb");
 	unsigned read = 0;
@@ -635,9 +629,9 @@ unsigned W_ReadChunk (const char *file, unsigned offs, unsigned len, void *dest,
 
 
 //
-// W_CheckLumpName
+// CheckLumpName
 //
-bool W_CheckLumpName (unsigned lump, const char *name)
+bool WadCollection::CheckLumpName (unsigned lump, const char *name)
 {
 	if (lump >= numlumps)
 		return false;
@@ -646,9 +640,9 @@ bool W_CheckLumpName (unsigned lump, const char *name)
 }
 
 //
-// W_GetLumpName
+// GetLumpName
 //
-void W_GetLumpName (char *to, unsigned  lump)
+void WadCollection::GetLumpName (char *to, unsigned  lump)
 {
 	if (lump >= numlumps)
 		*to = 0;
@@ -661,12 +655,12 @@ void W_GetLumpName (char *to, unsigned  lump)
 }
 
 //
-// W_CacheLumpNum
+// wads.CacheLumpNum
 //
-void* W_CacheLumpNum(unsigned int lump, int tag)
+void *WadCollection::CacheLumpNum(unsigned int lump, int tag)
 {
 	if ((unsigned)lump >= numlumps)
-		I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+		I_Error ("WadCollection::CacheLumpNum : %i >= numlumps",lump);
 
 	if (!lumpcache[lump])
 	{
@@ -674,12 +668,12 @@ void* W_CacheLumpNum(unsigned int lump, int tag)
 		// [RH] Allocate one byte more than necessary for the
 		//		lump and set the extra byte to zero so that
 		//		various text parsing routines can just call
-		//		W_CacheLumpNum() and not choke.
+		//		wads.CacheLumpNum() and not choke.
 
 		//DPrintf("cache miss on lump %i\n",lump);
-		unsigned int lump_length = W_LumpLength(lump);
+		unsigned int lump_length = LumpLength(lump);
 		lumpcache[lump] = (byte *)Z_Malloc(lump_length + 1, tag, &lumpcache[lump]);
-		W_ReadLump(lump, lumpcache[lump]);
+		ReadLump(lump, lumpcache[lump]);
 		*((unsigned char*)lumpcache[lump] + lump_length) = 0;
 	}
 	else
@@ -692,37 +686,37 @@ void* W_CacheLumpNum(unsigned int lump, int tag)
 }
 
 //
-// W_CacheLumpName
+// wads.CacheLumpName
 //
-void* W_CacheLumpName(const char* name, int tag)
+void *WadCollection::CacheLumpName(const char* name, int tag)
 {
-	return W_CacheLumpNum (W_GetNumForName(name), tag);
+	return CacheLumpNum (GetNumForName(name), tag);
 }
 
 size_t R_CalculateNewPatchSize(patch_t *patch, size_t length);
 void R_ConvertPatch(patch_t *rawpatch, patch_t *newpatch);
 
 //
-// W_CachePatch
+// wads.CachePatch
 //
 // [SL] Reads and caches a patch from disk. This takes care of converting the
 // patch from the standard Doom format of posts with 1-byte lengths and offsets
 // to a new format for posts that uses 2-byte lengths and offsets.
 //
-patch_t* W_CachePatch(unsigned lumpnum, int tag)
+patch_t* WadCollection::CachePatch(unsigned lumpnum, int tag)
 {
 	if (lumpnum >= numlumps)
-		I_Error ("W_CachePatch: %u >= numlumps", lumpnum);
+		I_Error ("WadCollection::CachePatch : %u >= numlumps", lumpnum);
 
 	if (!lumpcache[lumpnum])
 	{
 		// temporary storage of the raw patch in the old format
-		byte *rawlumpdata = new byte[W_LumpLength(lumpnum)];
+		byte *rawlumpdata = new byte[LumpLength(lumpnum)];
 
-		W_ReadLump(lumpnum, rawlumpdata);
+		ReadLump(lumpnum, rawlumpdata);
 		patch_t *rawpatch = (patch_t*)(rawlumpdata);
 
-		size_t newlumplen = R_CalculateNewPatchSize(rawpatch, W_LumpLength(lumpnum));
+		size_t newlumplen = R_CalculateNewPatchSize(rawpatch, wads.LumpLength(lumpnum));
 
 		if (newlumplen > 0)
 		{
@@ -747,29 +741,27 @@ patch_t* W_CachePatch(unsigned lumpnum, int tag)
 		Z_ChangeTag(lumpcache[lumpnum], tag);
 	}
 
-	// denis - todo - would be good to check whether the patch violates W_LumpLength here
+	// denis - todo - would be good to check whether the patch violates LumpLength here
 	// denis - todo - would be good to check for width/height == 0 here, and maybe replace those with a valid patch
 
 	return (patch_t*)lumpcache[lumpnum];
 }
 
-patch_t* W_CachePatch(const char* name, int tag)
+patch_t* WadCollection::CachePatch(const char* name, int tag)
 {
-	return W_CachePatch(W_GetNumForName(name), tag);
+	return CachePatch(GetNumForName(name), tag);
 	// denis - todo - would be good to replace non-existant patches with a default '404' patch
 }
 
-//
-// W_FindLump
-//
+//=======================
 // Find a named lump. Specifically allows duplicates for merging of e.g.
 // SNDINFO lumps.
 //
 // [SL] 2013-01-15 - Search forwards through the list of lumps in reverse pwad
 // ordering, returning older lumps with a matching name first.
 // Initialize search with lastlump == -1 before calling for the first time.
-//
-int W_FindLump (const char *name, int lastlump)
+//=======================
+int WadCollection::FindLump (const char *name, int lastlump)
 {
 	if (lastlump < -1)
 		lastlump = -1;
@@ -783,13 +775,10 @@ int W_FindLump (const char *name, int lastlump)
 	return -1;
 }
 
-//
-// W_Close
-//
+//=======================
 // Close all open files
-//
-
-void W_Close ()
+//=======================
+void WadCollection::Close ()
 {
 	// store closed handles, so that fclose isn't called multiple times
 	// for the same handle

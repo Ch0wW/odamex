@@ -254,7 +254,7 @@ void D_Init()
 	bool use_zone = !Args.CheckParm("-nozone");
 	Z_Init(use_zone);
 	if (first_time)
-		Printf(PRINT_HIGH, "Z_Init: Heapsize: %u megabytes\n", got_heapsize);
+		Printf("Z_Init: Heapsize: %u megabytes\n", got_heapsize);
 
 	// Load palette and set up colormaps
 	V_InitPalette("PLAYPAL");
@@ -266,12 +266,12 @@ void D_Init()
 
 	// [RH] Initialize localizable strings.
 	GStrings.FreeData();
-	GStrings.LoadStrings(W_GetNumForName("LANGUAGE"), STRING_TABLE_SIZE, false);
+	GStrings.LoadStrings(wads.GetNumForName("LANGUAGE"), STRING_TABLE_SIZE, false);
 	GStrings.Compact();
 
 	// init the renderer
 	if (first_time)
-		Printf(PRINT_HIGH, "R_Init: Init DOOM refresh daemon.\n");
+		Printf("R_Init: Init DOOM refresh daemon.\n");
 	R_Init();
 
 	G_SetLevelStrings();
@@ -322,7 +322,7 @@ void STACK_ARGS D_Shutdown()
 	GStrings.FreeData();
 
 	// close all open WAD files
-	W_Close();
+	wads.Close();
 
 //	Res_ShutdownTextureManager();
 

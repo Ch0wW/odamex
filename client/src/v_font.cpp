@@ -98,7 +98,7 @@ FFont::FFont(const char* name, const char* nametemplate, int first, int count, i
 	for (i = 0; i < count; i++)
 	{
 		sprintf(buffer, nametemplate, i + start);
-		lump = W_CheckNumForName(buffer);
+		lump = wads.CheckNumForName(buffer);
 		if (lump >= 0 && i + start == 121)
 		{
 			// HACKHACK: Don't load STCFN121 in doom(2), because
@@ -107,7 +107,7 @@ FFont::FFont(const char* name, const char* nametemplate, int first, int count, i
 		}
 		if (lump >= 0)
 		{
-			patch_t* patch = W_CachePatch(buffer);
+			patch_t* patch = wads.CachePatch(buffer);
 			int height = LELONG(patch->height());
 			int yoffs = LELONG(patch->topoffset());
 
@@ -141,7 +141,7 @@ FFont::FFont(const char* name, const char* nametemplate, int first, int count, i
 	for (i = neededsize = 0; i < count; i++)
 	{
 		sprintf(buffer, nametemplate, i + start);
-		lump = W_CheckNumForName(buffer);
+		lump = wads.CheckNumForName(buffer);
 		if (lump >= 0 && i + start == 121)
 		{
 			// HACKHACK: See above
@@ -149,7 +149,7 @@ FFont::FFont(const char* name, const char* nametemplate, int first, int count, i
 		}
 		if (lump >= 0)
 		{
-			patch_t* patch = W_CachePatch(lump);
+			patch_t* patch = wads.CachePatch(lump);
 			Chars[i].Data = Bitmaps + neededsize;
 			neededsize += Chars[i].Width * FontHeight;
 			RawDrawPatch(patch,
@@ -507,7 +507,7 @@ FFont::FFont()
 
 FSingleLumpFont::FSingleLumpFont(const char* name, int lump)
 {
-	byte* data = (byte*)W_CacheLumpNum(lump, PU_CACHE);
+	byte* data = (byte*)wads.CacheLumpNum(lump, PU_CACHE);
 
 	if (data[0] != 'F' || data[1] != 'O' || data[2] != 'N' ||
 		(data[3] != '1' && data[3] != '2'))
