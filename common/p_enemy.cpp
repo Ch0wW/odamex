@@ -77,8 +77,8 @@ dirtype_t diags[4] =
 };
 
 //================
-// DOOM2 & ZDoom 1.23 uses slightly different values of x/yspeed.
-// Store them in order to better emulate the physics
+// DOOM2 & ZDoom uses slightly different values of x/yspeed.
+// Store them in order to better emulate the physics (better vanilla accuracy for demoplaybacks)
 //================
 fixed_t xspeed[8][2] = { { FRACUNIT, FRACUNIT}, {47000, 46341}, {0, 0}, {-47000, -46341 }, {-FRACUNIT, -FRACUNIT}, {-47000, -46341 }, {0, 0}, {47000, 46341 }};
 fixed_t yspeed[8][2] = { { 0, 0 },{ 47000, 46341 },{ FRACUNIT, FRACUNIT }, { 47000, 46341 },{ 0, 0 },{ -47000, -46341 },{ -FRACUNIT, -FRACUNIT },{ -47000, -46341 } };

@@ -155,7 +155,7 @@ static bool I_CanGrab()
 		return false;
 	else if (configuring_controls)
 		return true;
-	else if (menuactive || ConsoleState == c_down || paused)
+	else if (menuactive || ConsoleState == c_down || ConsoleState == c_falling || paused)
 		return false;
 	else if ((gamestate == GS_LEVEL || gamestate == GS_INTERMISSION) && !demoplayback)
 		return true;

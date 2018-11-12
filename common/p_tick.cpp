@@ -47,10 +47,13 @@ void P_AnimationTick(AActor *mo);
 //
 void P_Ticker (void)
 {
-	if(paused)
+	if (paused)
 		return;
 
-	if (!multiplayer && !demoplayback && menuactive && players.begin()->viewz != 1)
+	if ( !multiplayer 
+		&& !demoplayback 
+		&& (menuactive || ConsoleState == c_down || ConsoleState == c_falling)
+		&& players.begin()->viewz != 1)
 		return;
 
 	if (clientside)
