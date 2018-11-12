@@ -25,13 +25,11 @@
 #ifndef __M_CHEAT_H__
 #define __M_CHEAT_H__
 
+class player_s;
+
 //
 // CHEAT SEQUENCE PACKAGE
 //
-
-#define SCRAMBLE(a) \
-((((a)&1)<<7) + (((a)&2)<<5) + ((a)&4) + (((a)&8)<<1) \
- + (((a)&16)>>1) + ((a)&32) + (((a)&64)>>5) + (((a)&128)>>7))
 
 enum ECheatCommand
 {
@@ -53,22 +51,28 @@ enum ECheatCommand
 	CHT_FLY,
 };
 
-typedef struct
+struct cheatseq_t
 {
-	unsigned char *sequence;
-	unsigned char *p;
-	
-} cheatseq_t;
+	unsigned char *Sequence;
+	unsigned char *Pos;
+	unsigned char DontCheck;
+	unsigned char CurrentArg;
+	unsigned char Args[2];
+	bool(*Handler)(cheatseq_t *);
+};
 
-int cht_CheckCheat (cheatseq_t *cht, char key);
 
-void cht_GetParam (cheatseq_t *cht, char *buffer);
+struct CheatInfos {
+public:
+	bool AreCheatsEnabled();
 
-// [RH] Functions that actually perform the cheating
-class player_s;
-void cht_DoCheat (player_s *player, int cheat);
-void cht_Give (player_s *player, const char *item);
-void cht_Suicide (player_s *player);
+	bool AddKey(cheatseq_t *cheat, unsigned char key, bool *eat);
+
+	void DoCheat(player_s *player, int cheat);
+	void Give(player_s *player, const char *item);
+};
+
+extern CheatInfos cht;
 
 #endif
 

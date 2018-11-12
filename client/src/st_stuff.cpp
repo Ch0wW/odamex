@@ -74,8 +74,6 @@ void ST_unloadNew (void);
 void ST_newDraw (void);
 void ST_newDrawCTF (void);
 
-extern bool simulated_connection;
-
 //
 // STATUS BAR DATA
 //
@@ -370,44 +368,108 @@ static int		st_weaponowned[6] = {0}, st_current_ammo;
 // a random number per tick
 static int		st_randomnumber;
 
-// these are now in d_dehacked.cpp
-extern byte cheat_mus_seq[9];
-extern byte cheat_choppers_seq[11];
-extern byte cheat_god_seq[6];
-extern byte cheat_ammo_seq[6];
-extern byte cheat_ammonokey_seq[5];
-extern byte cheat_noclip_seq[11];
-extern byte cheat_commercial_noclip_seq[7];
-extern byte cheat_powerup_seq[7][10];
-extern byte cheat_clev_seq[10];
-extern byte cheat_mypos_seq[8];
+// Smashing Pumpkins Into Small Piles Of Putrid Debris. 
+static BYTE CheatNoclip[] = { 'i','d','s','p','i','s','p','o','p','d',255 };
+static BYTE CheatNoclip2[] = { 'i','d','c','l','i','p',255 };
+static BYTE CheatMus[] = { 'i','d','m','u','s',0,0,255 };
+static BYTE CheatChoppers[] = { 'i','d','c','h','o','p','p','e','r','s',255 };
+static BYTE CheatGod[] = { 'i','d','d','q','d',255 };
+static BYTE CheatAmmo[] = { 'i','d','k','f','a',255 };
+static BYTE CheatAmmoNoKey[] = { 'i','d','f','a',255 };
+static BYTE CheatClev[] = { 'i','d','c','l','e','v',0,0,255 };
+static BYTE CheatMypos[] = { 'i','d','m','y','p','o','s',255 };
+static BYTE CheatAmap[] = { 'i','d','d','t',255 };
+
+BYTE CheatPowerup[7][10] =
+{
+	{ 'i','d','b','e','h','o','l','d','v', 255 },
+{ 'i','d','b','e','h','o','l','d','s', 255 },
+{ 'i','d','b','e','h','o','l','d','i', 255 },
+{ 'i','d','b','e','h','o','l','d','r', 255 },
+{ 'i','d','b','e','h','o','l','d','a', 255 },
+{ 'i','d','b','e','h','o','l','d','l', 255 },
+{ 'i','d','b','e','h','o','l','d', 255 }
+};
+
+extern bool SetGenericCheat(cheatseq_t *cheat);
+
+static bool Cht_Music(cheatseq_t *cheat)
+{
+	char buf[9] = "idmus xx";
+
+	buf[6] = cheat->Args[0];
+	buf[7] = cheat->Args[1];
+	C_DoCommand(buf);
+	return true;
+}
+
+static bool Cht_BeholdMenu(cheatseq_t *cheat)
+{
+	Printf("%s\n", GStrings(STSTR_BEHOLD));
+	return false;
+}
+
+extern  bool	automapactive;
+extern  int 	AutoMapCheat;
+static bool Cht_AutoMap(cheatseq_t *cheat)
+{
+	if (automapactive)
+	{
+		AutoMapCheat = (AutoMapCheat + 1) % 3;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+static bool Cht_ChangeLevel(cheatseq_t *cheat)
+{
+	char buf[16];
+
+	// [ML] Chex mode: always set the episode number to 1.
+	// FIXME: This is probably a horrible hack, it sure looks like one at least
+	if (gamemode == retail_chex)
+		sprintf(buf, "1%c", cheat->Args[1]);
+
+	snprintf(buf, sizeof(buf), "map %c%c\n", cheat->Args[0], cheat->Args[1]);
+	AddCommandString(buf);
+	return true;
+}
+
+static bool Cht_MyPos(cheatseq_t *cheat)
+{
+	C_DoCommand("toggle idmypos");
+	return true;
+}
+
+
+static cheatseq_t DoomCheats[] =
+{
+{ CheatMus,				0, 1, 0,{ 0,0 },			Cht_Music },
+{ CheatPowerup[6],		0, 1, 0,{ 0,0 },			Cht_BeholdMenu },
+{ CheatMypos,			0, 1, 0,{ 0,0 },			Cht_MyPos },
+{ CheatAmap,			0, 0, 0,{ 0,0 },			Cht_AutoMap },
+{ CheatGod,				0, 0, 0,{ CHT_IDDQD,0 },	SetGenericCheat },
+{ CheatAmmo,			0, 0, 0,{ CHT_IDKFA,0 },	SetGenericCheat },
+{ CheatAmmoNoKey,		0, 0, 0,{ CHT_IDFA,0 },		SetGenericCheat },
+{ CheatNoclip,			0, 0, 0,{ CHT_NOCLIP,0 },	SetGenericCheat },	// Special check given !
+{ CheatNoclip2,			0, 0, 0,{ CHT_NOCLIP,1 },	SetGenericCheat },	// Special Check given !
+{ CheatPowerup[0],		0, 0, 0,{ CHT_BEHOLDV,0 },	SetGenericCheat },
+{ CheatPowerup[1],		0, 0, 0,{ CHT_BEHOLDS,0 },	SetGenericCheat },
+{ CheatPowerup[2],		0, 0, 0,{ CHT_BEHOLDI,0 },	SetGenericCheat },
+{ CheatPowerup[3],		0, 0, 0,{ CHT_BEHOLDR,0 },	SetGenericCheat },
+{ CheatPowerup[4],		0, 0, 0,{ CHT_BEHOLDA,0 },	SetGenericCheat },
+{ CheatPowerup[5],		0, 0, 0,{ CHT_BEHOLDL,0 },	SetGenericCheat },
+{ CheatChoppers,		0, 0, 0,{ CHT_CHAINSAW,0 },	SetGenericCheat },
+{ CheatClev,			0, 0, 0,{ 0,0 },			Cht_ChangeLevel }
+};
+
+#define COUNT_CHEATS(l)		(sizeof(l)/sizeof(l[0]))
 
 // CTF...
 extern flagdata CTFdata[NUMFLAGS];
-
-// Now what?
-cheatseq_t		cheat_mus = { cheat_mus_seq, 0 };
-cheatseq_t		cheat_god = { cheat_god_seq, 0 };
-cheatseq_t		cheat_ammo = { cheat_ammo_seq, 0 };
-cheatseq_t		cheat_ammonokey = { cheat_ammonokey_seq, 0 };
-cheatseq_t		cheat_noclip = { cheat_noclip_seq, 0 };
-cheatseq_t		cheat_commercial_noclip = { cheat_commercial_noclip_seq, 0 };
-
-cheatseq_t		cheat_powerup[7] =
-{
-	{ cheat_powerup_seq[0], 0 },
-	{ cheat_powerup_seq[1], 0 },
-	{ cheat_powerup_seq[2], 0 },
-	{ cheat_powerup_seq[3], 0 },
-	{ cheat_powerup_seq[4], 0 },
-	{ cheat_powerup_seq[5], 0 },
-	{ cheat_powerup_seq[6], 0 }
-};
-
-cheatseq_t		cheat_choppers = { cheat_choppers_seq, 0 };
-cheatseq_t		cheat_clev = { cheat_clev_seq, 0 };
-cheatseq_t		cheat_mypos = { cheat_mypos_seq, 0 };
-
 
 //
 // STATUS BAR CODE
@@ -481,39 +543,14 @@ CVAR_FUNC_IMPL (st_scale)
 	ST_ForceRefresh();
 }
 
-
-EXTERN_CVAR (sv_allowcheats)
-
-// Checks whether cheats are enabled or not, returns true if they're NOT enabled
-// and false if they ARE enabled (stupid huh? not my work [Russell])
-BOOL CheckCheatmode (void)
-{
-	// [SL] 2012-04-04 - Don't allow cheat codes to be entered while playing
-	// back a netdemo
-	if (simulated_connection)
-		return true;
-
-	// [Russell] - Allow vanilla style "no message" in singleplayer when cheats
-	// are disabled
-	if (sv_skill == sk_nightmare && !multiplayer)
-        return true;
-
-	if ((multiplayer || sv_gametype != GM_COOP) && !sv_allowcheats)
-	{
-		Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
-		return true;
-	}
-
-	return false;
-}
-
 // Respond to keyboard input events, intercept cheats.
 // [RH] Cheats eatkey the last keypress used to trigger them
 bool ST_Responder (event_t *ev)
 {
-	  player_t *plyr = &consoleplayer();
-	  bool eatkey = false;
-	  int i;
+	
+	player_t *plyr = &consoleplayer();
+	bool eat = false;
+	int i;
 
 	  // Filter automap on/off.
 	  if (ev->type == ev_keyup && ((ev->data1 & 0xffff0000) == AM_MSGHEADER))
@@ -534,229 +571,59 @@ bool ST_Responder (event_t *ev)
 	// if a user keypress...
     else if (ev->type == ev_keydown)
     {
-        // 'dqd' cheat for toggleable god mode
-        if (cht_CheckCheat(&cheat_god, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
+		cheatseq_t *cheats = NULL;
 
-            // [Russell] - give full health
-            plyr->mo->health = deh.StartHealth;
-            plyr->health = deh.StartHealth;
-
-            AddCommandString("god");
-
-            // Net_WriteByte (DEM_GENERICCHEAT);
-            // Net_WriteByte (CHT_IDDQD);
-            eatkey = true;
-        }
-
-        // 'fa' cheat for killer fucking arsenal
-        else if (cht_CheckCheat(&cheat_ammonokey, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            Printf(PRINT_HIGH, "Ammo (No keys) Added\n");
-
-            plyr->armorpoints = deh.FAArmor;
-            plyr->armortype = deh.FAAC;
-
-            weapontype_t pendweap = plyr->pendingweapon;
-            for (i = 0; i<NUMWEAPONS; i++)
-                P_GiveWeapon (plyr, (weapontype_t)i, false);
-            plyr->pendingweapon = pendweap;
-
-            for (i=0; i<NUMAMMO; i++)
-                plyr->ammo[i] = plyr->maxammo[i];
-
-            MSG_WriteMarker(&net_buffer, clc_cheatpulse);
-            MSG_WriteByte(&net_buffer, 1);
-
-            eatkey = true;
-        }
-
-        // 'kfa' cheat for key full ammo
-        else if (cht_CheckCheat(&cheat_ammo, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            Printf(PRINT_HIGH, "Very Happy Ammo Added\n");
-
-            plyr->armorpoints = deh.KFAArmor;
-            plyr->armortype = deh.KFAAC;
-
-            weapontype_t pendweap = plyr->pendingweapon;
-            for (i = 0; i<NUMWEAPONS; i++)
-                P_GiveWeapon (plyr, (weapontype_t)i, false);
-            plyr->pendingweapon = pendweap;
-
-            for (i=0; i<NUMAMMO; i++)
-                plyr->ammo[i] = plyr->maxammo[i];
-
-            for (i=0; i<NUMCARDS; i++)
-                plyr->cards[i] = true;
-
-            MSG_WriteMarker(&net_buffer, clc_cheatpulse);
-            MSG_WriteByte(&net_buffer, 2);
-
-            eatkey = true;
-        }
-        // [Russell] - Only doom 1/registered can have idspispopd and
-        // doom 2/final can have idclip
-        else if (cht_CheckCheat(&cheat_noclip, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            if (gamemode != shareware && gamemode != registered &&
-                gamemode != retail && gamemode != retail_bfg)
-                return false;
-
-            AddCommandString("noclip");
-
-            // Net_WriteByte (DEM_GENERICCHEAT);
-            // Net_WriteByte (CHT_NOCLIP);
-            eatkey = true;
-        }
-        else if (cht_CheckCheat(&cheat_commercial_noclip, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            if (gamemode != commercial && gamemode != commercial_bfg)
-                return false;
-
-            AddCommandString("noclip");
-
-            // Net_WriteByte (DEM_GENERICCHEAT);
-            // Net_WriteByte (CHT_NOCLIP);
-            eatkey = true;
-        }
-        // 'behold?' power-up cheats
-        for (i=0; i<6; i++)
-        {
-            if (cht_CheckCheat(&cheat_powerup[i], (char)ev->data2))
-            {
-                if (CheckCheatmode ())
-                    return false;
-
-                Printf(PRINT_HIGH, "Power-up toggled\n");
-                if (!plyr->powers[i])
-                    P_GivePower( plyr, i);
-                else if (i!=pw_strength)
-                    plyr->powers[i] = 1;
-                else
-                    plyr->powers[i] = 0;
-
-                MSG_WriteMarker(&net_buffer, clc_cheatpulse);
-                MSG_WriteByte(&net_buffer, 3);
-                MSG_WriteByte(&net_buffer, (byte)i);
-
-                eatkey = true;
-            }
-        }
-
-        // 'behold' power-up menu
-        if (cht_CheckCheat(&cheat_powerup[6], (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            Printf (PRINT_HIGH, "%s\n", GStrings(STSTR_BEHOLD));
-
-        }
-
-        // 'choppers' invulnerability & chainsaw
-        else if (cht_CheckCheat(&cheat_choppers, (char)ev->data2))
-        {
-            if (CheckCheatmode ())
-                return false;
-
-            Printf(PRINT_HIGH, "... Doesn't suck - GM\n");
-            plyr->weaponowned[wp_chainsaw] = true;
-
-            MSG_WriteMarker(&net_buffer, clc_cheatpulse);
-            MSG_WriteByte(&net_buffer, 4);
-
-            eatkey = true;
-        }
-
-        // 'clev' change-level cheat
-        else if (cht_CheckCheat(&cheat_clev, (char)ev->data2))
-        {
-            char buf[16];
-			//char *bb;
-
-            cht_GetParam(&cheat_clev, buf);
-            buf[2] = 0;
-
-			// [ML] Chex mode: always set the episode number to 1.
-			// FIXME: This is probably a horrible hack, it sure looks like one at least
-			if (gamemode == retail_chex)
-				sprintf(buf,"1%c",buf[1]);
-
-            sprintf (buf + 3, "map %s\n", buf);
-            AddCommandString (buf + 3);
-            eatkey = true;
-        }
-
-        // 'mypos' for player position
-        else if (cht_CheckCheat(&cheat_mypos, (char)ev->data2))
-        {
-            AddCommandString ("toggle idmypos");
-            eatkey = true;
-        }
-
-        // 'idmus' change-music cheat
-        else if (cht_CheckCheat(&cheat_mus, (char)ev->data2))
-        {
-            char buf[16];
-
-            cht_GetParam(&cheat_mus, buf);
-            buf[2] = 0;
-
-            sprintf (buf + 3, "idmus %s\n", buf);
-            AddCommandString (buf + 3);
-            eatkey = true;
-        }
+		cheats = DoomCheats;
+		for (i = 0; i < COUNT_CHEATS(DoomCheats); i++, cheats++)
+		{
+			if (cht.AddKey(cheats, (byte)ev->data2, &eat))
+			{
+				if (cheats->DontCheck || cht.AreCheatsEnabled())
+				{
+					eat |= cheats->Handler(cheats);
+				}
+			}
+		}
     }
 
-    return eatkey;
+    return eat;
 }
 
+
+
+EXTERN_CVAR (chasedemo)
+
 // Console cheats
-BEGIN_COMMAND (god)
+BEGIN_COMMAND(god)
 {
-	if (CheckCheatmode () )
+	if (!cht.AreCheatsEnabled())
 		return;
 
-	cht_DoCheat(&consoleplayer(), CHT_GOD);
+	cht.DoCheat(&consoleplayer(), CHT_GOD);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_GOD);
 }
-END_COMMAND (god)
+END_COMMAND(god)
 
-BEGIN_COMMAND (notarget)
+BEGIN_COMMAND(notarget)
 {
-	if (CheckCheatmode ())
+	if (!cht.AreCheatsEnabled())
 		return;
 
-	cht_DoCheat(&consoleplayer(), CHT_NOTARGET);
+	cht.DoCheat(&consoleplayer(), CHT_NOTARGET);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_NOTARGET);
 }
-END_COMMAND (notarget)
+END_COMMAND(notarget)
 
-BEGIN_COMMAND (fly)
+BEGIN_COMMAND(fly)
 {
-	if (!consoleplayer().spectator && CheckCheatmode ())
+	if (!consoleplayer().spectator && cht.AreCheatsEnabled())
 		return;
 
-	cht_DoCheat(&consoleplayer(), CHT_FLY);
+	cht.DoCheat(&consoleplayer(), CHT_FLY);
 
 	if (!consoleplayer().spectator)
 	{
@@ -764,21 +631,19 @@ BEGIN_COMMAND (fly)
 		MSG_WriteByte(&net_buffer, CHT_FLY);
 	}
 }
-END_COMMAND (fly)
+END_COMMAND(fly)
 
-BEGIN_COMMAND (noclip)
+BEGIN_COMMAND(noclip)
 {
-	if (CheckCheatmode ())
+	if (!cht.AreCheatsEnabled())
 		return;
 
-	cht_DoCheat(&consoleplayer(), CHT_NOCLIP);
+	cht.DoCheat(&consoleplayer(), CHT_NOCLIP);
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, CHT_NOCLIP);
 }
-END_COMMAND (noclip)
-
-EXTERN_CVAR (chasedemo)
+END_COMMAND(noclip)
 
 BEGIN_COMMAND (chase)
 {
@@ -852,13 +717,13 @@ END_COMMAND (idmus)
 
 BEGIN_COMMAND (give)
 {
-	if (CheckCheatmode () || argc < 2)
+	if (!cht.AreCheatsEnabled() || argc < 2)
 		return;
 
 	std::string name = C_ArgCombine(argc - 1, (const char **)(argv + 1));
 	if (name.length())
 	{
-		cht_Give(&consoleplayer(), name.c_str());
+		cht.Give(&consoleplayer(), name.c_str());
 
 		MSG_WriteMarker(&net_buffer, clc_cheatgive);
 		MSG_WriteString(&net_buffer, name.c_str());
@@ -868,7 +733,7 @@ END_COMMAND (give)
 
 BEGIN_COMMAND (fov)
 {
-	if (CheckCheatmode () || !m_Instigator)
+	if (!cht.AreCheatsEnabled() || !m_Instigator)
 		return;
 
 	if (argc != 2)

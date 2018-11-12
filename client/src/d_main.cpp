@@ -580,7 +580,7 @@ void D_Init()
 	bool use_zone = !Args.CheckParm("-nozone");
 	Z_Init(use_zone);
 	if (first_time)
-		Printf(PRINT_HIGH, "Z_Init: Heapsize: %u megabytes\n", got_heapsize);
+		Printf("Z_Init: Heapsize: %u megabytes\n", got_heapsize);
 
 	// Load palette and set up colormaps
 	V_Init();
@@ -595,13 +595,12 @@ void D_Init()
 
 	// init the renderer
 	if (first_time)
-		Printf(PRINT_HIGH, "R_Init: Init DOOM refresh daemon.\n");
+		Printf("R_Init: Init DOOM refresh daemon.\n");
 	R_Init();
 
 //	V_LoadFonts();
 
 	C_InitConsoleBackground();
-
 	C_InitConCharsFont();
 
 	HU_Init();
@@ -613,20 +612,20 @@ void D_Init()
 
 	// init the menu subsystem
 	if (first_time)
-		Printf(PRINT_HIGH, "M_Init: Init miscellaneous info.\n");
+		Printf("M_Init: Init miscellaneous info.\n");
 	M_Init();
 
 	if (first_time)
-		Printf(PRINT_HIGH, "P_Init: Init Playloop state.\n");
+		Printf("P_Init: Init Playloop state.\n");
 	P_InitEffects();
 	P_Init();
 
 	// init sound and music
 	if (first_time)
 	{
-		Printf (PRINT_HIGH, "S_Init: Setting up sound.\n");
-		Printf (PRINT_HIGH, "S_Init: default sfx volume is %g\n", (float)snd_sfxvolume);
-		Printf (PRINT_HIGH, "S_Init: default music volume is %g\n", (float)snd_musicvolume);
+		Printf ("S_Init: Setting up sound.\n");
+		Printf ("S_Init: default sfx volume is %g\n", (float)snd_sfxvolume);
+		Printf ("S_Init: default music volume is %g\n", (float)snd_musicvolume);
 	}
 	S_Init(snd_sfxvolume, snd_musicvolume);
 
@@ -634,7 +633,7 @@ void D_Init()
 
 	// init the status bar
 	if (first_time)
-		Printf(PRINT_HIGH, "ST_Init: Init status bar.\n");
+		Printf("ST_Init: Init status bar.\n");
 	ST_Init();
 
 	first_time = false;

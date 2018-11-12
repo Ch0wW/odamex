@@ -271,12 +271,12 @@ mline_t thintriangle_guy[] = {
 
 
 
-static int 	cheating = 0;
+int 	AutoMapCheat = 0;
 static int 	grid = 0;
 
 static int 	leveljuststarted = 1; 	// kluge until AM_LevelInit() is called
 
-static bool	automapactive = false;
+bool	automapactive = false;
 
 // location of window on screen
 static int	f_x;
@@ -337,10 +337,6 @@ static mpoint_t markpoints[AM_NUMMARKPOINTS]; // where the points are
 static int markpointnum = 0; // next point to be assigned
 
 static bool followplayer = true; // specifies whether to follow the player around
-
-// [RH] Not static so that the DeHackEd code can reach it.
-extern byte cheat_amap_seq[5];
-cheatseq_t cheat_amap = { cheat_amap_seq, 0 };
 
 static BOOL stopped = true;
 
@@ -860,11 +856,6 @@ BOOL AM_Responder (event_t *ev)
 				rc = false;
 			}
 		}
-		if (sv_gametype == GM_COOP && cht_CheckCheat(&cheat_amap, (char)ev->data2))
-		{
-			rc = true;	// [RH] Eat last keypress of cheat sequence
-			cheating = (cheating+1) % 3;
-		}
 	}
 	else if (ev->type == ev_keyup)
 	{
@@ -1333,9 +1324,9 @@ void AM_drawWalls(void)
 			AM_rotatePoint (&l.b.x, &l.b.y);
 		}
 
-		if (cheating || (lines[i].flags & ML_MAPPED))
+		if (AutoMapCheat || (lines[i].flags & ML_MAPPED))
 		{
-			if ((lines[i].flags & ML_DONTDRAW) && !cheating)
+			if ((lines[i].flags & ML_DONTDRAW) && !AutoMapCheat)
 				continue;
             if (!lines[i].backsector &&
                 (((am_usecustomcolors || viewactive) &&
@@ -1364,7 +1355,7 @@ void AM_drawWalls(void)
 				}
 				else if (lines[i].flags & ML_SECRET)
 				{ // secret door
-					if (cheating)
+					if (AutoMapCheat)
 						AM_drawMline(&l, SecretWallColor);
 				    else
 						AM_drawMline(&l, WallColor);
@@ -1416,7 +1407,7 @@ void AM_drawWalls(void)
 				{
 					AM_drawMline(&l, CDWallColor); // ceiling level change
 				}
-				else if (cheating)
+				else if (AutoMapCheat)
 				{
 					AM_drawMline(&l, TSWallColor);
 				}
@@ -1524,7 +1515,7 @@ void AM_drawPlayers(void)
 		else
 			angle = conplayer.camera->angle;
 
-		if (cheating)
+		if (AutoMapCheat)
 			AM_drawLineCharacter
 			(cheat_player_arrow, NUMCHEATPLYRLINES, 0,
 			 angle, YourColor, conplayer.camera->x, conplayer.camera->y);
@@ -1691,7 +1682,7 @@ void AM_Drawer()
 
 	AM_drawWalls();
 	AM_drawPlayers();
-	if (cheating==2)
+	if (AutoMapCheat ==2)
 		AM_drawThings(ThingColor);
 
 	if (!(viewactive && am_overlay < 2))

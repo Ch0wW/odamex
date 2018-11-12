@@ -4036,7 +4036,7 @@ void SV_Cheat(player_t &player)
 		return;
 
 	int oCheats = player.cheats;
-	cht_DoCheat(&player, cheats);
+	cht.DoCheat(&player, cheats);
 
 	if (player.cheats != oCheats)
 	{
@@ -4058,7 +4058,7 @@ void SV_GiveCheat(player_t &player)
 	if (!sv_allowcheats)
 		return;
 
-	cht_Give(&player, wantcmd);
+	cht.Give(&player, wantcmd);
 }
 
 BOOL P_GiveWeapon(player_s*, weapontype_t, BOOL);

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+
 #include "m_cheat.h"
 #include "d_player.h"
 #include "doomstat.h"
@@ -33,81 +34,115 @@
 #include "d_items.h"
 #include "p_local.h"
 
-//
-// CHEAT SEQUENCE PACKAGE
-//
+#ifdef CLIENT_APP
+#include "cl_main.h"
+#endif
 
-static int				firsttime = 1;
-static unsigned char	cheat_xlate_table[256];
+CheatInfos cht;
+
+EXTERN_CVAR(sv_allowcheats)
+
+extern bool simulated_connection;
+extern void A_PainDie(AActor *);	// Required for CHT_MASSACRE
 
 void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
 void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...);
 
 //
-// Called in st_stuff module, which handles the input.
-// Returns a 1 if the cheat was successful, 0 if failed.
+// Key handler for cheats
 //
-int cht_CheckCheat (cheatseq_t *cht, char key)
+bool CheatInfos::AddKey(cheatseq_t *cheat, byte key, bool *eat)
 {
-	int i;
-	int rc = 0;
-
-	if (firsttime)
+	if (cheat->Pos == NULL)
 	{
-		firsttime = 0;
-		for (i = 0; i < 256; i++)
-			cheat_xlate_table[i] = (unsigned char)SCRAMBLE(i);
+		cheat->Pos = cheat->Sequence;
+		cheat->CurrentArg = 0;
 	}
-
-	if (!cht->p)
-		cht->p = cht->sequence; // initialize if first time
-
-	if (*cht->p == 0)
-		*(cht->p++) = key;
-	else if (cheat_xlate_table[(unsigned char)tolower(key)] == *cht->p)
-		cht->p++;
+	if (*cheat->Pos == 0)
+	{
+		*eat = true;
+		cheat->Args[cheat->CurrentArg++] = key;
+		cheat->Pos++;
+	}
+	else if (key == *cheat->Pos)
+	{
+		cheat->Pos++;
+	}
 	else
-		cht->p = cht->sequence;
-
-	if (*cht->p == 1)
-		cht->p++;
-	else if (*cht->p == 0xff) // end of sequence character
 	{
-		cht->p = cht->sequence;
-		rc = 1;
+		cheat->Pos = cheat->Sequence;
+		cheat->CurrentArg = 0;
 	}
-
-	return rc;
+	if (*cheat->Pos == 0xff)
+	{
+		cheat->Pos = cheat->Sequence;
+		cheat->CurrentArg = 0;
+		return true;
+	}
+	return false;
 }
 
-void cht_GetParam (cheatseq_t *cht, char *buffer)
+//
+// Checks whether cheats can be used or not.
+// And it's done correctly this time !
+//
+bool CheatInfos::AreCheatsEnabled(void)
 {
+	// [SL] 2012-04-04 - Don't allow cheat codes to be entered while playing
+	// back a netdemo
+	if (simulated_connection)
+		return false;
 
-	unsigned char *p, c;
+	// [Russell] - Allow vanilla style "no message" in singleplayer when cheats
+	// are disabled
+	if (sv_skill == sk_nightmare && !multiplayer)
+		return false;
 
-	p = cht->sequence;
-	while (*(p++) != 1);
-	
-	do
+	if ((multiplayer || !GAME.IsCooperation()) && !sv_allowcheats)
 	{
-		c = *p;
-		*(buffer++) = c;
-		*(p++) = 0;
+		Printf(PRINT_WARNING, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
+		return false;
 	}
-	while (c && *p!=0xff );
 
-	if (*p==0xff)
-		*buffer = 0;
-
+	return true;
 }
 
-extern void A_PainDie(AActor *);
+//
+// Sets clientside the new cheat flag
+// and also requests its new status serverside
+//
+bool SetGenericCheat(cheatseq_t *cheat)
+{
+	if (!cht.AreCheatsEnabled())
+		return true;
 
+	if (cheat->Args[0] == CHT_NOCLIP)
+	{
+		if (cheat->Args[1] == 0 && gamemode != shareware && gamemode != registered &&
+			gamemode != retail && gamemode != retail_bfg)
+			return true;
+		else if (cheat->Args[1] == 1 && gamemode != commercial && gamemode != commercial_bfg)
+			return true;
+	}
+
+	cht.DoCheat(&consoleplayer(), cheat->Args[0]);
+
+#ifdef CLIENT_APP
+	MSG_WriteMarker(&net_buffer, clc_cheat);
+	MSG_WriteByte(&net_buffer, cheat->Args[0]);
+#endif
+
+	return true;
+}
+
+//
 // [RH] Actually handle the cheat. The cheat code in st_stuff.c now just
 // writes some bytes to the network data stream, and the network code
 // later calls us.
-
-void cht_DoCheat (player_t *player, int cheat)
+//
+// Now, it just applies the state, as this code can be both called from the client & the server
+//
+void CheatInfos::DoCheat (player_t *player, int cheat)
 {
 	const char *msg = "";
 	char msgbuild[32];
@@ -124,9 +159,6 @@ void cht_DoCheat (player_t *player, int cheat)
 			else
 				msg = "Gravity weighs you down";
 			break;
-
-			Printf("CALLING");
-
 
 		// IDDQD also uses CHT_GOD, so don't break.
 		case CHT_IDDQD:
@@ -168,19 +200,19 @@ void cht_DoCheat (player_t *player, int cheat)
 			break;
 
 		case CHT_IDKFA:
-			cht_Give (player, "backpack");
-			cht_Give (player, "weapons");
-			cht_Give (player, "ammo");
-			cht_Give (player, "keys");
+			Give (player, "backpack");
+			Give (player, "weapons");
+			Give (player, "ammo");
+			Give (player, "keys");
 			player->armorpoints = deh.KFAArmor;
 			player->armortype = deh.KFAAC;
 			msg = GStrings(STSTR_KFAADDED);
 			break;
 
 		case CHT_IDFA:
-			cht_Give (player, "backpack");
-			cht_Give (player, "weapons");
-			cht_Give (player, "ammo");
+			Give (player, "backpack");
+			Give (player, "weapons");
+			Give (player, "ammo");
 			player->armorpoints = deh.FAArmor;
 			player->armortype = deh.FAAC;
 			msg = GStrings(STSTR_FAADDED);
@@ -253,7 +285,10 @@ void cht_DoCheat (player_t *player, int cheat)
 		Printf(PRINT_GAMEEVENT, "%s\n", msg);
 }
 
-void cht_Give (player_t *player, const char *name)
+//
+// Gives the requested item (or group of items) to *player
+//
+void CheatInfos::Give (player_t *player, const char *name)
 {
 	BOOL giveall;
 	int i;
@@ -264,8 +299,6 @@ void cht_Give (player_t *player, const char *name)
 
 	if (serverside)
 		SV_BroadcastPrintf(PRINT_GAMEEVENT, "%s activated a cheat: give %s\n", player->userinfo.GetName(), name);
-	if ((clientside && player == &consoleplayer()) || GAME.IsSinglePlayer())
-		Printf(PRINT_GAMEEVENT, "Give %s\n", name);
 
 	if (stricmp (name, "all") == 0)
 		giveall = true;

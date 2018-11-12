@@ -4041,7 +4041,7 @@ void CL_SimulatePlayers()
 				if (dist > 2 * FRACUNIT)
 				{
 					#ifdef _SNAPSHOT_DEBUG_
-					Printf(PRINT_HIGH, "Snapshot %i, Correcting extrapolation error of %i\n",
+					Printf(PRINT_WARNING, "Snapshot %i, Correcting extrapolation error of %i\n",
 							world_index, dist >> FRACBITS);
 					#endif	// _SNAPSHOT_DEBUG_
 

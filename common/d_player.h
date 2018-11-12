@@ -78,12 +78,12 @@ typedef enum
 	CF_NOCLIP			= 1 << 0,		// No clipping, walk through barriers.
 	CF_GODMODE			= 1 << 1,		// No damage, no health loss.
 	CF_NOMOMENTUM		= 1 << 2,		// Not really a cheat, just a debug aid.
-	CF_NOTARGET			= 1 << 3,		// [RH] Monsters don't target
+	CF_NOTARGET			= 1 << 3,		// [RH] Monsters don't target the player
 	CF_FLY				= 1 << 4,		// [RH] Flying player
 	CF_CHASECAM			= 1 << 5,		// [RH] Put camera behind player
 	CF_FROZEN			= 1 << 6,		// [RH] Don't let the player move
 	CF_REVERTPLEASE		= 1 << 7		// [RH] Stick camera in player's head if he moves
-} cheat_t;
+} cheatflags_t;
 
 //
 // Extended player object info: player_t
@@ -157,7 +157,7 @@ public:
 	int			ammo[NUMAMMO], maxammo[NUMAMMO];		// Ammunitions & Maximum amount you can carry.
 
 	int			attackdown, usedown;	// True if button down last tic.
-	int			cheats;					// Bit flags, for cheats and debug. See cheat_t (d_player.h) for more info.
+	int			cheats;					// Bit flags, for cheats and debug. See cheatflags_t (d_player.h) for more info.
 
 	// Refired shots are less accurate.
 	short		refire;
