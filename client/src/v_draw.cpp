@@ -30,6 +30,7 @@
 #include "i_video.h"
 #include "r_main.h"
 #include "m_swap.h"
+#include "v_font.h"
 
 #include "i_system.h"
 
@@ -97,6 +98,11 @@ shaderef_t V_Palette;
 /* The palletized column drawers */
 /*								 */
 /*********************************/
+
+void DCanvas::SetFont(FFont *font)
+{
+	Font = font;
+}
 
 // Normal patch drawers
 void DCanvas::DrawPatchP (const byte *source, byte *dest, int count, int pitch)

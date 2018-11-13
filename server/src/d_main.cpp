@@ -54,7 +54,6 @@
 #include "gstrings.h"
 #include "z_zone.h"
 #include "w_wad.h"
-#include "v_video.h"
 #include "m_argv.h"
 #include "m_fileio.h"
 #include "m_misc.h"

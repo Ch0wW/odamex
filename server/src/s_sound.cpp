@@ -33,7 +33,6 @@
 #include "p_local.h"
 #include "doomstat.h"
 #include "cmdlib.h"
-#include "v_video.h"
 #include "m_vectors.h"
 
 #include <algorithm>

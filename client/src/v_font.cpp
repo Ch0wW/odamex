@@ -31,7 +31,7 @@
 **---------------------------------------------------------------------------
 **
 */
-#ifdef NONE_OF_THIS_IS_WORKING
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -274,16 +274,17 @@ void RawDrawPatch(patch_t* patch, byte* out, byte* tlate)
 }
 
 static int STACK_ARGS compare(const void* arg1, const void* arg2)
-{/*
-	if (RPART(V_GetDefaultPalette()->basecolors[*((byte*)arg1)]) * 299 +
-		GPART(V_GetDefaultPalette()->basecolors[*((byte*)arg1)]) * 587 +
-		BPART(V_GetDefaultPalette()->basecolors[*((byte*)arg1)]) * 114 
+{
+	// Ch0wW: probably a GROSS hack, I've no idea what I'm doing
+	if ((V_GetDefaultPalette()->basecolors[*((byte*)arg1)].getr()) * 299 +
+		(V_GetDefaultPalette()->basecolors[*((byte*)arg1)].getg()) * 587 +
+		(V_GetDefaultPalette()->basecolors[*((byte*)arg1)].getb()) * 114
 		<
-		RPART(V_GetDefaultPalette()->basecolors[*((byte*)arg2)]) * 299 +
-		GPART(V_GetDefaultPalette()->basecolors[*((byte*)arg2)]) * 587 +
-		BPART(V_GetDefaultPalette()->basecolors[*((byte*)arg2)]) * 114)
+		(V_GetDefaultPalette()->basecolors[*((byte*)arg2)].getr()) * 299 +
+		(V_GetDefaultPalette()->basecolors[*((byte*)arg2)].getg()) * 587 +
+		(V_GetDefaultPalette()->basecolors[*((byte*)arg2)].getb()) * 114)
 		return -1;
-	else*/
+	else
 		return 1;
 }
 
@@ -311,9 +312,9 @@ int FFont::SimpleTranslation(byte* colorsused, byte* translation, byte* reverse,
 	{
 		translation[reverse[i]] = i;
 
-		(*luminosity)[i] = RPART(V_GetDefaultPalette()->basecolors[reverse[i]]) * 0.299 +
-			GPART(V_GetDefaultPalette()->basecolors[reverse[i]]) * 0.587 +
-			BPART(V_GetDefaultPalette()->basecolors[reverse[i]]) * 0.114;
+		(*luminosity)[i] = (V_GetDefaultPalette()->basecolors[reverse[i]].getr()) * 0.299 +
+			(V_GetDefaultPalette()->basecolors[reverse[i]].getg()) * 0.587 +
+			(V_GetDefaultPalette()->basecolors[reverse[i]].getb()) * 0.114;
 		if ((*luminosity)[i] > max)
 			max = (*luminosity)[i];
 		if ((*luminosity)[i] < min)
@@ -793,5 +794,3 @@ void FSingleLumpFont::BuildTranslations2()
 		}
 	}
 }
-
-#endif

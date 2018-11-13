@@ -31,7 +31,11 @@
 #include "c_effect.h"
 #include "s_sound.h"
 #include "doomstat.h"
+
+#ifdef CLIENT_APP
 #include "v_video.h"
+#endif
+
 #include "c_cvars.h"
 #include "m_vectors.h"
 #include "g_game.h"

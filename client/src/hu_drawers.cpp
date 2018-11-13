@@ -300,7 +300,7 @@ void DrawPatchScaled(const int x, const int y,
 }
 
 
-/*void AttachMessage(DHUDMessage *msg, DWORD id)
+/*
 {
 	DHUDMessage *old = NULL;
 
@@ -312,6 +312,7 @@ void DrawPatchScaled(const int x, const int y,
 	msg->Next = Messages;
 	msg->SBarID = id;
 	Messages = msg;
-}*/
+}
+*/
 
 }	// end of namespace hud

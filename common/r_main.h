@@ -30,7 +30,10 @@
 #include "r_data.h"
 #include "v_palette.h"
 #include "m_vectors.h"
+
+#ifdef CLIENT_APP
 #include "v_video.h"
+#endif
 
 // killough 10/98: special mask indicates sky flat comes from sidedef
 #define PL_SKYFLAT (0x80000000)

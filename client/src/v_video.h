@@ -29,11 +29,14 @@
 #include <string>
 
 #include "doomtype.h"
+
+#include "v_font.h"
 #include "v_palette.h"
 #include "doomdef.h"
 
 // Needed because we are refering to patches.
 #include "r_data.h"
+
 
 class IWindowSurface;
 
@@ -66,6 +69,8 @@ public:
 		EWrapper_Colored = 4,		// Fills the patch area with a solid color
 		EWrapper_ColoredLucent = 5	// Mixes a solid color in the patch area with the background
 	};
+
+	FFont *Font;
 
 	DCanvas(IWindowSurface* surface) :
 		mSurface(surface)
@@ -100,6 +105,9 @@ public:
 	void Clear(int left, int top, int right, int bottom, argb_t color) const;
 
 	// Text drawing functions
+
+	virtual void SetFont(FFont *font);
+
 	// Output a line of text using the console font
 	void PrintStr(int x, int y, const char *s, int default_color = -1, bool use_color_codes = true) const;
 

@@ -53,10 +53,15 @@
 #include "s_sound.h"
 #include "s_sndseq.h"
 #include "sc_man.h"
-#include "v_video.h"
 #include "w_wad.h"
 #include "w_ident.h"
 #include "z_zone.h"
+
+#ifdef CLIENT_APP
+#include "v_video.h"
+#endif
+
+argb_t V_GetColorFromString(const std::string& str);
 
 #define lioffset(x)		myoffsetof(level_pwad_info_t,x)
 #define cioffset(x)		myoffsetof(cluster_info_t,x)

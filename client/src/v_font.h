@@ -36,6 +36,7 @@
 
 #include "doomtype.h"
 #include "farchive.h"
+#include "v_text.h"
 
 struct patch_s;
 class DCanvas;
@@ -54,16 +55,25 @@ enum EColorRange
 	CR_ORANGE,
 	CR_WHITE,
 	CR_YELLOW,
+
 	CR_UNTRANSLATED,
+	CR_BLACK,
+	CR_LIGHTBLUE,
+	CR_CREAM,
+	CR_OLIVE,
+	CR_DARKGREEN,
+	CR_DARKRED,
+	CR_DARKBROWN,
+	CR_PURPLE,
+	CR_DARKGRAY,
+	CR_DARKGREY = CR_DARKGRAY,
+	CR_CYAN,
 	NUM_TEXT_COLORS
 };
 
 inline FArchive &operator<< (FArchive &arc, EColorRange &i)
 {
-	BYTE val = (BYTE)i;
-	arc << val;
-	i = (EColorRange)val;
-	return arc;
+	return arc << (BYTE)i;
 }
 
 class FFont

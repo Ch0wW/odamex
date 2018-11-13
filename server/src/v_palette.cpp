@@ -25,7 +25,6 @@
 #include <cstring>
 #include <math.h>
 
-#include "v_video.h"
 #include "m_alloc.h"
 #include "r_main.h"		// For lighting constants
 #include "w_wad.h"

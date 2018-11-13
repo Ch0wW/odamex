@@ -31,7 +31,6 @@
 #include "s_sound.h"
 #include "doomstat.h"
 #include "doomtype.h"
-#include "v_video.h"
 #include "c_cvars.h"
 #include "m_vectors.h"
 #include "p_mobj.h"

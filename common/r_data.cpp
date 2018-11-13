@@ -43,7 +43,10 @@
 #include "r_data.h"
 
 #include "v_palette.h"
+
+#ifdef CLIENT_APP
 #include "v_video.h"
+#endif
 
 #include <ctype.h>
 #include <cstddef>
@@ -867,6 +870,7 @@ void R_InitColormaps()
 	delete[] fakecmaps;
 	fakecmaps = new FakeCmap[numfakecmaps];
 
+
 	R_ForceDefaultColormap("COLORMAP");
 
 	if (numfakecmaps > 1)
@@ -892,6 +896,7 @@ void R_InitColormaps()
 				wads.GetLumpName(name, i);
 				fakecmaps[j].name = StdStringToUpper(name, 8);
 
+#ifdef CLIENT_APP
 				for (int k = 1; k < 256; k++)
 				{
 					r = (r + pal->basecolors[map[k]].getr()) >> 1;
@@ -905,9 +910,11 @@ void R_InitColormaps()
 				// Set up shademap for the colormap:
 				for (int k = 0; k < 256; ++k)
 					shademap[k] = alphablend1a(pal->basecolors[map[0]], color, j * (256 / numfakecmaps));
+#endif
 			}
 		}
 	}
+
 }
 
 //

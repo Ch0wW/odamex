@@ -30,7 +30,7 @@ DHUDMessage::DHUDMessage(const char *text, float x, float y, EColorRange textCol
 		}
 		else
 		{
-			CenterX = false;
+			CenterX = false; 
 		}
 	}
 	Top = y;
@@ -41,7 +41,7 @@ DHUDMessage::DHUDMessage(const char *text, float x, float y, EColorRange textCol
 	TextColor = textColor;
 	State = 0;
 	SourceText = copystring(text);
-	//Font = screen->Font;
+	Font = screen->Font;
 	ResetText(SourceText);
 }
 
@@ -86,12 +86,16 @@ void DHUDMessage::Serialize(FArchive &arc)
 	Super::Serialize(arc);
 	arc << Left << Top << CenterX << HoldTics
 		<< Tics << State << TextColor
-		<< SBarID << SourceText /*<< Font*/ << Next;
+		<< SBarID << SourceText << Font << Next;
 	if (arc.IsLoading())
 	{
 		Lines = NULL;
 		ResetText(SourceText);
 	}
+}
+
+void DHUDMessage::DrawSetup()
+{
 }
 
 void DHUDMessage::DoDraw(int linenum, int x, int y, int xscale, int yscale, bool clean)
@@ -108,7 +112,7 @@ void DHUDMessage::DoDraw(int linenum, int x, int y, int xscale, int yscale, bool
 
 void DHUDMessage::ResetText(const char *text)
 {
-	//screen->SetFont(Font);
+	screen->SetFont(Font);
 
 	Lines = V_BreakLines(I_GetSurfaceWidth() / V_TextScaleXAmount(), (byte *)text);
 
@@ -125,7 +129,7 @@ void DHUDMessage::ResetText(const char *text)
 		}
 	}
 
-	//screen->SetFont(SmallFont);
+	screen->SetFont(SmallFont);
 }
 
 void DHUDMessage::Draw(int bottom)
@@ -136,9 +140,8 @@ void DHUDMessage::Draw(int bottom)
 	int i;
 	bool clean;
 
-	//screen->SetFont(Font);
-
-	//DrawSetup();
+	screen->SetFont(Font);
+	DrawSetup();
 
 	if ((clean = hud_scaletext))
 	{
@@ -183,5 +186,5 @@ void DHUDMessage::Draw(int bottom)
 		y += ystep;
 	}
 
-	//screen->SetFont(SmallFont);
+	screen->SetFont(SmallFont);
 }

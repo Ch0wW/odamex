@@ -60,11 +60,9 @@
 #include "sv_main.h"
 #include "sv_maplist.h"
 #include "sv_vote.h"
-#include "v_video.h"
 #include "w_wad.h"
 #include "z_zone.h"
 #include "g_warmup.h"
-
 
 // FIXME: Remove this as soon as the JoinString is gone from G_ChangeMap()
 #include "cmdlib.h"
@@ -685,9 +683,6 @@ void G_DoResetLevel(bool full_reset)
 //
 // G_DoLoadLevel
 //
-extern gamestate_t 	wipegamestate;
-extern float BaseBlendA;
-
 void G_DoLoadLevel (int position)
 {
 	static int lastposition = 0;
@@ -708,13 +703,7 @@ void G_DoLoadLevel (int position)
 		firstmapinit = false;
 	}
 
-	if (wipegamestate == GS_LEVEL)
-		wipegamestate = GS_FORCEWIPE;
-
 	gamestate = GS_LEVEL;
-
-//	if (demoplayback || oldgs == GS_STARTUP)
-//		C_HideConsole ();
 
 	// Set the sky map.
 	// First thing, we have a dummy sky texture name,

@@ -33,36 +33,6 @@ struct brokenlines_s {
 };
 typedef struct brokenlines_s brokenlines_t;
 
-enum EColorRange
-{
-	CR_BRICK,
-	CR_TAN,
-	CR_GRAY,
-	CR_GREY = CR_GRAY,
-	CR_GREEN,
-	CR_BROWN,
-	CR_GOLD,
-	CR_RED,
-	CR_BLUE,
-	CR_ORANGE,
-	CR_WHITE,
-	CR_YELLOW,
-
-	CR_UNTRANSLATED,
-	CR_BLACK,
-	CR_LIGHTBLUE,
-	CR_CREAM,
-	CR_OLIVE,
-	CR_DARKGREEN,
-	CR_DARKRED,
-	CR_DARKBROWN,
-	CR_PURPLE,
-	CR_DARKGRAY,
-	CR_DARKGREY = CR_DARKGRAY,
-	CR_CYAN,
-	NUM_TEXT_COLORS
-};
-
 #define TEXTCOLOR_BRICK			"\\ca"
 #define TEXTCOLOR_TAN			"\\cb"
 #define TEXTCOLOR_GRAY			"\\cc"

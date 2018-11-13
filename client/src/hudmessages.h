@@ -4,7 +4,7 @@
 
 #include "dobject.h"
 #include "m_fixed.h"
-#include "../client/src/v_text.h"
+#include "v_font.h"
 
 class DHUDMessage : DObject
 {
@@ -18,11 +18,12 @@ public:
 
 	void Draw(int bottom);
 	virtual void ResetText(const char *text);
+	virtual void DrawSetup();
 	virtual void DoDraw(int linenum, int x, int y, int xscale, int yscale, bool clean);
 	virtual bool Tick();	// Returns true to indicate time for removal
 
 protected:
-	brokenlines_t * Lines;
+	brokenlines_t *Lines;
 	int Width, Height, NumLines;
 	float Left, Top;
 	bool CenterX;
@@ -30,7 +31,7 @@ protected:
 	int Tics;
 	int State;
 	EColorRange TextColor;
-	//FFont *Font;
+	FFont *Font;
 
 	DHUDMessage() : SourceText(NULL) {}
 

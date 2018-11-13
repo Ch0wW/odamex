@@ -37,7 +37,6 @@
 #include "r_local.h"
 #include "r_sky.h"
 #include "c_cvars.h"
-#include "v_video.h"
 #include "z_zone.h"
 
 #define DISTMAP			2

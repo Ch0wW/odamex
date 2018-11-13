@@ -34,7 +34,6 @@
 #include "d_netinf.h"
 #include "d_net.h"
 #include "v_palette.h"
-#include "v_video.h"
 #include "i_system.h"
 #include "r_draw.h"
 #include "r_state.h"

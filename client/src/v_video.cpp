@@ -63,6 +63,8 @@
 
 IMPLEMENT_CLASS (DCanvas, DObject)
 
+FFont *SmallFont, *BigFont, *ConFont;
+
 argb_t Col2RGB8[65][256];
 palindex_t RGB32k[32][32][32];
 
@@ -496,7 +498,9 @@ void V_Init()
 	if (!I_VideoInitialized())
 		I_FatalError("Failed to initialize display");
 
+	
 	V_InitPalette("PLAYPAL");
+	ConFont = new FSingleLumpFont("ConsoleFont", wads.GetNumForName("CONFONT"));
 
 	if (realcolormaps.colormap)
 		Z_Free(realcolormaps.colormap);

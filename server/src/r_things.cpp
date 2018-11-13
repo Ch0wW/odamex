@@ -43,8 +43,6 @@
 
 #include "doomstat.h"
 
-#include "v_video.h"
-
 #include "cmdlib.h"
 #include "s_sound.h"
 
