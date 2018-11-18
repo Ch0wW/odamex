@@ -38,7 +38,7 @@
 #include <math.h>
 
 #include "res_texture.h"
-#include "v_video.h"
+#include "../client/src/v_video.h"
 
 #ifdef USE_PNG
 	#define PNG_SKIP_SETJMP_CHECK

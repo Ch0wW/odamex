@@ -74,7 +74,7 @@ public:
 	void PlaySound(flag_t flag, flag_score_t event);
 	void SetMessage(flag_t flag, flag_score_t event);
 
-	void CaptureTheFlag::DrawHud(void);
+	void DrawHud(void);
 #endif
 
 // Set functions specific to server ONLY.
@@ -96,11 +96,11 @@ public:
 
 private:
 	bool isOwnFlag(player_t &player, flag_t flag) {
-		return player.userinfo.team == (flag_t)flag ? true : false;
+		return player.userinfo.team == (team_t)flag ? true : false;
 	}
 
 #ifdef CLIENT_APP
-	void CaptureTheFlag::MoveFlags(void);
+	void MoveFlags(void); 
 #endif
 
 #ifdef SERVER_APP
@@ -133,7 +133,7 @@ struct flagdata
 	int x, y, z;			// Flag position
 
 	int timeout;			// Flag Timout Counters
-	long pickup_time;
+	int pickup_time;
 
 	int sb_tick;			// Used for the blinking flag indicator on the statusbar
 };

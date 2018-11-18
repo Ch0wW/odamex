@@ -1951,7 +1951,7 @@ BEGIN_COMMAND(streamdemo)
 }
 END_COMMAND(streamdemo)
 
-char *DEMO_GetVersionFormat(byte b)
+std::string DEMO_GetVersionFormat(byte b)
 {
 	
 	if (b == DOOM_1_4_DEMO)
@@ -2032,7 +2032,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		demo_p[0] == DOOM_1_9p_DEMO ||
 		demo_p[0] == DOOM_1_9_1_DEMO)
 	{
-		Printf(PRINT_WARNING, "Playing DOOM v%s demo %s\n", DEMO_GetVersionFormat(demo_p[0]), defdemoname.c_str());
+		Printf(PRINT_WARNING, "Playing DOOM v%s demo %s\n", DEMO_GetVersionFormat(demo_p[0]).c_str(), defdemoname.c_str());
 
 		democlassic = true;
 		demostartgametic = gametic;

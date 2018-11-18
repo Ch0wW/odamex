@@ -507,9 +507,11 @@ CVAR(			hud_timer, "1", "Show the HUD timer",
 CVAR_RANGE(		hud_transparency, "0.5", "HUD transparency",
 				CVARTYPE_FLOAT, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 1.0f)
 
-CVAR(			hud_heldflag, "1", "Show the held flag border", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 2.0f)
+CVAR_RANGE(		hud_heldflag, "1", "Show the held flag border", 
+				CVARTYPE_BOOL, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 2.0f)
 
-CVAR(			hud_heldflag_flash, "1", "Enables flashes around the flag border", CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
+CVAR(			hud_heldflag_flash, "1", "Enables flashes around the flag border", 
+				CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
 CVAR_RANGE(		hud_hide_scoreboard, "0", "0: Always draw it | 1: Hide when spectating only | 2: Always hide it",
 				CVARTYPE_BYTE, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 2.0f)

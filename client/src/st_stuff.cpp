@@ -54,9 +54,7 @@
 
 
 static bool st_needrefresh = true;
-
 static bool st_stopped = true;
-
 
 // lump number for PLAYPAL
 static int		lu_palette;
@@ -73,6 +71,7 @@ void ST_initNew();
 void ST_unloadNew (void);
 void ST_newDraw (void);
 void ST_newDrawCTF (void);
+void C_DoCommand(const char *cmd);
 
 //
 // STATUS BAR DATA

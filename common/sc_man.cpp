@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <climits>
 
 #include "doomtype.h"
 #include "i_system.h"
