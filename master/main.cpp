@@ -21,39 +21,7 @@
 //
 //-----------------------------------------------------------------------------
 
-
-
-#if _MSC_VER == 1200
-// MSVC6, disable broken warnings about truncated stl lines
-#pragma warning(disable:4786)
-#include <iostream>
-#endif
-
-#include <string>
-#include <vector>
-#include <list>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <stdint.h>
-
-#ifdef UNIX
-#include <netinet/in.h>
-#include <unistd.h>
-#include <sys/time.h>
-#endif
-
-#ifdef _WIN32
-#include <winsock.h>
-#include <time.h>
-#define usleep(n) Sleep(n/1000)
-#endif
-
-#include "i_net.h"
-
-using namespace std;
+#include "main.h"
 
 #define MAX_SERVERS					1024
 #define MAX_SERVERS_PER_IP			64
@@ -63,29 +31,6 @@ using namespace std;
 #define LOGFILE "master_log.txt"
 
 buf_t message(MAX_UDP_PACKET);
-
-typedef struct server
-{
-	netadr_t addr;
-	int age;
-
-	// from server itself
-	string hostname;
-	int players, maxplayers;
-	string map;
-	vector<string> pwads;
-	int gametype, skill;
-	vector<string> playernames;
-	vector<int> playerfrags;
-	vector<int> playerpings;
-	vector<int> playerteams;
-
-	unsigned int key_sent;
-	bool pinged, verified;
-
-	server() : age(0), players(0), maxplayers(0), gametype(0), skill(0), key_sent(0), pinged(0), verified(0) { memset(&addr, 0, sizeof(addr)); }
-
-} SServer;
 
 list<SServer> servers;
 list<SServer>::iterator ping_itr = servers.begin(); // this iterator must be updated when servers is changed
@@ -103,11 +48,16 @@ bool ipReachedLimit(netadr_t addr)
 	return verifiedservers >= MAX_SERVERS_PER_IP;
 }
 
+// 
+// addServer
+// Tries to add the server to the list
+//
 void addServer(netadr_t addr)
 {
 	list<SServer>::iterator itr;
 	SServer temp;
 
+	// Check if the server already exists
 	for (itr = servers.begin(); itr != servers.end(); ++itr)
 	{
 		if (memcmp(&(*itr).addr.ip, &addr.ip, 4) == 0)
@@ -121,31 +71,42 @@ void addServer(netadr_t addr)
 		}
 	}
 
+	// Check if we haven't reached the maximum amount of servers
 	if (servers.size() < MAX_SERVERS)
 	{
+		// Have we exceeded the maximum amount of servers from this IP ?
 		if(ipReachedLimit(addr))
 			return;
 
+		
+
+		// Add the server to the memory
 		memcpy(&temp.addr, &addr, sizeof(addr));
 		temp.age = 0;
 		servers.push_back(temp);
-
 		printf("Added new server: %s, %d total\n", NET_AdrToString(temp.addr), (int)servers.size());
-		FILE *fp = fopen(LOGFILE, "a");
 
-		if(fp)
+		// Try to write to our logfile
+		FILE *fp = fopen(LOGFILE, "a");
+		if (fp)
 		{
 			fprintf(fp, "Server registered: %s, %d total\r\n", NET_AdrToString(temp.addr), (int)servers.size());
 			fclose(fp);
 		}
 		else
 			printf("Failed to write to logfile %s\n", LOGFILE);
+
 		return;
 	}
 
 	printf("Failed to add server: %s, no slots left\n", NET_AdrToString(addr));
 }
 
+
+// 
+// addServerInfo
+// Tries to add the server to the list
+//
 void addServerInfo(netadr_t addr)
 {
 	list<SServer>::iterator itr;
@@ -171,31 +132,36 @@ void addServerInfo(netadr_t addr)
 			continue;
 
 		// do not allow too many servers
+		// Ch0wW : Why would this be needed ? We did the check in addServer 
 		if(ipReachedLimit((*itr).addr))
 			continue;
 
-		printf("Server info, IP = %s\n", NET_AdrToString(addr));
+		printf("Receiving heartbeat from %s\n", NET_AdrToString(addr));
 
 		s.verified = true;
 		s.age = 0;
 
+		// Check basic informations from the server
 		s.hostname = net_message.ReadString();
 		s.players = net_message.ReadByte();
 		s.maxplayers = net_message.ReadByte();
 		s.map = net_message.ReadString();
 
+		// Check PWADs
 		int pwadcount = net_message.ReadByte();
 		if(pwadcount < 0)
 			pwadcount = 0;
 
-		s.pwads.resize(pwadcount);
+		s.PWADs.resize(pwadcount);
 
-		for(i = 0; i < s.pwads.size(); i++)
-			s.pwads[i] = net_message.ReadString();
+		for(i = 0; i < s.PWADs.size(); i++)
+			s.PWADs[i] = net_message.ReadString();
 
+		// Check the Gametype & Skill
 		s.gametype = net_message.ReadByte();
 		s.skill = net_message.ReadByte();
 
+		// Check the players and stats
 		byte playercount = net_message.ReadByte();
 
 		s.playernames.resize(playercount);
@@ -256,71 +222,11 @@ void ageServers(void)
 	}
 }
 
-void dumpServersToFile(const char *file = "./latest")
-{
-	static bool file_error = false;
-	FILE *fp = fopen(file, "w");
-
-	if(!fp)
-	{
-		if(!file_error)
-			printf("error opening file %s for writing\n", file);
-		file_error = true;
-		return;
-	}
-
-	file_error = false;
-
-	list<SServer>::iterator itr;
-
-	itr = servers.begin();
-
-	fprintf(fp, "\"Name\",\"Map\",\"Players/Max\",\"WADs\",\"Gametype\",\"Address:Port\"\n");
-
-	int i = 0;
-
-	while (itr != servers.end())
-	{
-		if(!(*itr).verified)
-		{
-			++itr;
-			continue;
-		}
-
-        string detectgametype;
-
-		switch ((*itr).gametype)
-		{
-		case 0:
-			detectgametype = "COOP"; break;
-		case 1:
-			detectgametype = (*itr).maxplayers == 2 ? "DUEL" : "DM"; break;
-		case 2:
-			detectgametype = "TEAM DM"; break;
-		case 3:
-			detectgametype = "CTF"; break;
-		default:
-			detectgametype = "UNKNOWN"; break;
-		}
-
-		string str_wads;
-		for(size_t j = 0; j < (*itr).pwads.size(); j++)
-		{
-			str_wads += (*itr).pwads[j];
-			str_wads += " ";
-		}
-		if(!str_wads.length())
-			str_wads = " ";
-
-		fprintf(fp, "\"%s\",\"%s\",\"%d/%d\",\"%s\",\"%s\",\"%s\"\n", (*itr).hostname.c_str(), (*itr).map.c_str(), (*itr).players, (*itr).maxplayers, str_wads.c_str(), detectgametype.c_str(), NET_AdrToString((*itr).addr, true));
-
-		i++;
-		++itr;
-	}
-
-    fclose(fp);
-}
-
+//
+// writeServerData
+// Sends all the data received from the Masterserver
+// To the launcher
+//
 void writeServerData(void)
 {
 	list<SServer>::iterator itr;
@@ -385,12 +291,86 @@ void pingServer(SServer &s)
 	s.pinged = true;
 }
 
-int main()
+
+void dumpServersToFile(const char *file = "./latest")
+{
+	static bool file_error = false;
+	FILE *fp = fopen(file, "w");
+
+	if (!fp)
+	{
+		if (!file_error)
+			printf("error opening file %s for writing\n", file);
+		file_error = true;	// Any use since it won't change?
+		return;
+	}
+
+	file_error = false;	// any use ?
+
+	list<SServer>::iterator itr;
+
+	itr = servers.begin();
+
+	fprintf(fp, "\"Name\",\"Map\",\"Players/Max\",\"WADs\",\"Gametype\",\"Address:Port\"\n");
+
+	int i = 0;
+
+	while (itr != servers.end())
+	{
+		if (!(*itr).verified)
+		{
+			++itr;
+			continue;
+		}
+
+		string detectgametype;
+
+		switch ((*itr).gametype)
+		{
+		case 0:
+			detectgametype = "COOP"; break;
+		case 1:
+			detectgametype = (*itr).maxplayers == 2 ? "DUEL" : "DM"; break;
+		case 2:
+			detectgametype = "TEAM DM"; break;
+		case 3:
+			detectgametype = "CTF"; break;
+		default:
+			detectgametype = "UNKNOWN"; break;
+		}
+
+		string str_wads;
+		for (size_t j = 0; j < (*itr).PWADs.size(); j++)
+		{
+			str_wads += (*itr).PWADs[j];
+			str_wads += " ";
+		}
+		if (!str_wads.length())
+			str_wads = " ";
+
+		fprintf(fp, "\"%s\",\"%s\",\"%d/%d\",\"%s\",\"%s\",\"%s\"\n", (*itr).hostname.c_str(), (*itr).map.c_str(), (*itr).players, (*itr).maxplayers, str_wads.c_str(), detectgametype.c_str(), NET_AdrToString((*itr).addr, true));
+
+		i++;
+		++itr;
+	}
+
+	fclose(fp);
+}
+
+//
+// MAIN FUNCTION
+// ToDo: Add launch arguments (--port / --strict)
+//
+int main(int argc, char *argv[])
 {
 	int challenge;
+
+	// ToDo: Check if custom port
 	localport = MASTERPORT;
+	
 	InitNetCommon();
 
+	// UNIX ONLY : Start Daemon
 	daemon_init();
 
 	printf("Odamex Master Started\n");
@@ -399,6 +379,7 @@ int main()
 	{
 		while (NET_GetPacket())
 		{
+			// Check the current packet, and apply it depending on the client requests
 			challenge = net_message.ReadLong();
 
 			switch (challenge)

@@ -62,7 +62,7 @@ int clipammo[NUMAMMO] = {10, 4, 20, 1};
 
 void AM_Stop(void);
 void SV_SpawnMobj(AActor *mobj);
-void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
+void STACK_ARGS SV_BroadcastPrintf(printlevel_t level, const char *fmt, ...);
 void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...);
 void ClientObituary(AActor *self, AActor *inflictor, AActor *attacker);
 void SV_UpdateFrags(player_t &player);

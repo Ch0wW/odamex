@@ -31,7 +31,7 @@
 // to switch to a specific map out of order, otherwise false.
 bool unnatural_level_progression;
 
-void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...) {}
+void STACK_ARGS SV_BroadcastPrintf(printlevel_t level, const char *fmt, ...) {}
 void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...) {}
 void SV_MidPrint(const char *msg, player_t *p, int msgtime) {}
 

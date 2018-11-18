@@ -45,7 +45,7 @@ EXTERN_CVAR(sv_allowcheats)
 extern bool simulated_connection;
 extern void A_PainDie(AActor *);	// Required for CHT_MASSACRE
 
-void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
+void STACK_ARGS SV_BroadcastPrintf(printlevel_t level, const char *fmt, ...);
 void STACK_ARGS SV_BroadcastPrintf(const char *fmt, ...);
 
 //
