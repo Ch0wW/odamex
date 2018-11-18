@@ -301,11 +301,11 @@ void CL_DownloadStart()
         memset(download.buf->ptr(), 0, file_len);
     }
     else
-        Printf(PRINT_HIGH, "Resuming download of %s...\n", download.filename.c_str());
+        Printf("Resuming download of %s...\n", download.filename.c_str());
 
 
 
-	Printf(PRINT_HIGH, "Downloading %s bytes...\n",
+	Printf("Downloading %s bytes...\n",
         FormatNBytes(file_len).c_str());
 
 	// Make initial 0% show

@@ -467,7 +467,7 @@ void SV_InitNetwork (void)
     if (v)
     {
        localport = atoi (v);
-       Printf (PRINT_HIGH, "using alternate port %i\n", localport);
+       Printf (PRINT_WARNING, "using alternate port %i\n", localport);
     }
 	else
 	   localport = SERVERPORT;
@@ -478,7 +478,7 @@ void SV_InitNetwork (void)
 	// determine my name & address
 	// NET_GetLocalAddress ();
 
-	Printf(PRINT_HIGH, "UDP Initialized\n");
+	Printf("UDP Initialized\n");
 
 	const char *w = Args.CheckValue ("-maxclients");
 	if (w)
@@ -652,7 +652,7 @@ void SV_Sound (AActor *mo, byte channel, const char *name, byte attenuation)
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -690,7 +690,7 @@ void SV_Sound (player_t &pl, AActor *mo, byte channel, const char *name, byte at
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -733,7 +733,7 @@ void UV_SoundAvoidPlayer (AActor *mo, byte channel, const char *name, byte atten
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -769,7 +769,7 @@ void SV_SoundTeam (byte channel, const char* name, byte attenuation, int team)
 
 	if ( sfx_id > 255 || sfx_id < 0 )
 	{
-		Printf( PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id );
+		Printf(PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id );
 		return;
 	}
 
@@ -801,7 +801,7 @@ void SV_Sound (fixed_t x, fixed_t y, byte channel, const char *name, byte attenu
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 

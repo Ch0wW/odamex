@@ -126,7 +126,7 @@ void SV_InitMasters(void)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "Masters will not be contacted because sv_usemasters is 0\n");
+			Printf(PRINT_WARNING, "Masters will not be contacted because sv_usemasters is 0\n");
 		}
 	}
 
@@ -136,6 +136,10 @@ void SV_InitMasters(void)
 
 //
 // SV_AddMaster
+// Converts first the hostname if any,
+// Then, checks if not already existing before adding to the list.
+//
+// Ch0wW : Does the Masterserver actually checks if the request is valid ?
 //
 bool SV_AddMaster(const char *masterip)
 {
@@ -175,11 +179,14 @@ bool SV_AddMaster(const char *masterip)
 
 //
 // SV_ArchiveMasters
+// Looks like this is unused ?
+//
+// Saves all the masters used from the current server session.
 //
 void SV_ArchiveMasters(FILE *fp)
 {
-	for(size_t i = 0; i < masters.size(); i++)
-		fprintf(fp, "addmaster %s\n", masters[i].masterip.c_str());
+	for(size_t index = 0; index < masters.size(); index++)
+		fprintf(fp, "addmaster %s\n", masters[index].masterip.c_str());
 }
 
 //
@@ -187,10 +194,12 @@ void SV_ArchiveMasters(FILE *fp)
 //
 void SV_ListMasters(void)
 {
-	Printf(PRINT_WARNING, "Use addmaster/delmaster commands to modify this list");
+	Printf("Current Masterservers: ");
 
 	for(size_t index = 0; index < masters.size(); index++)
-		Printf(PRINT_WARNING, "%s [%s]", masters[index].masterip.c_str(), masters[index].masteraddr.ToString());
+		Printf("#%d - %s [%s]", index, masters[index].masterip.c_str(), masters[index].masteraddr.ToString());
+
+	DPrintf("If you wish to modify this masterserver, use addmaster/delmaster commands.");
 }
 
 //

@@ -48,9 +48,6 @@
 
 static const int MAX_LINE_LENGTH = 8192;
 
-//static void C_TabComplete (void);
-//static BOOL TabbedLast;		// Last key pressed was tab
-
 extern int KeyRepeatDelay;
 
 int			ConRows, ConCols, PhysRows;
@@ -106,12 +103,6 @@ static struct NotifyText
 #define PRINTLEVELS 5
 
 BOOL C_HandleKey (event_t *ev, byte *buffer, int len);
-
-
-static void maybedrawnow (void)
-{
-}
-
 
 void C_ShutdownConsole()
 {
@@ -289,13 +280,11 @@ void C_InitTicker (const char *label, unsigned int max)
 	TickerMax = max;
 	TickerLabel = label;
 	TickerAt = 0;
-	maybedrawnow ();
 }
 
 void C_SetTicker (unsigned int at)
 {
 	TickerAt = at > TickerMax ? TickerMax : at;
-	maybedrawnow ();
 }
 
 BOOL C_HandleKey (event_t *ev, byte *buffer, int len)
@@ -337,7 +326,7 @@ BEGIN_COMMAND (echo)
 	if (argc > 1)
 	{
 		std::string text = C_ArgCombine(argc - 1, (const char **)(argv + 1));
-		Printf(PRINT_HIGH, "%s\n", text.c_str());
+		Printf("%s\n", text.c_str());
 	}
 }
 END_COMMAND (echo)
@@ -381,43 +370,6 @@ void C_RemoveTabCommand (const char *name)
 		if(!--i->second)
 			TabCommands().erase(i);
 }
-/*
-static void C_TabComplete (void)
-{
-	static unsigned int	TabStart;			// First char in CmdLine to use for tab completion
-	static unsigned int	TabSize;			// Size of tab string
-
-	if (!TabbedLast)
-	{
-		// Skip any spaces at beginning of command line
-		for (TabStart = 2; TabStart < CmdLine[0]; TabStart++)
-			if (CmdLine[TabStart] != ' ')
-				break;
-
-		TabSize = CmdLine[0] - TabStart + 2;
-		TabbedLast = true;
-	}
-
-	// Find next near match
-	std::string TabPos = std::string((char *)(CmdLine + TabStart), CmdLine[0] - TabStart + 2);
-	tabcommand_map_t::iterator i = TabCommands().lower_bound(TabPos);
-
-	// Does this near match fail to actually match what the user typed in?
-	if(i == TabCommands().end() || strnicmp((char *)(CmdLine + TabStart), i->first.c_str(), TabSize) != 0)
-	{
-		TabbedLast = false;
-		CmdLine[0] = CmdLine[1] = TabSize + TabStart - 2;
-		return;
-	}
-
-	// Found a valid replacement
-	strcpy ((char *)(CmdLine + TabStart), i->first.c_str());
-	CmdLine[0] = CmdLine[1] = strlen ((char *)(CmdLine + 2)) + 1;
-	CmdLine[CmdLine[0] + 1] = ' ';
-
-	makestartposgood ();
-}
-*/
 
 VERSION_CONTROL (c_console_cpp, "$Id$")
 
