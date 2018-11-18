@@ -58,6 +58,8 @@ FScriptParser sc;
 FScriptParser::FScriptParser()
 {
 	ScriptOpen = false;
+	AlreadyGot = false;
+	FreeScript = false;
 }
 
 // Destructor

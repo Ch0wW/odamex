@@ -79,10 +79,10 @@ protected:
 	char *ScriptPtr;
 	char *ScriptEndPtr;
 	char StringBuffer[MAX_STRING_SIZE];
-	BOOL ScriptOpen = false;
+	bool ScriptOpen;
 	int ScriptSize;
-	BOOL AlreadyGot = false;
-	BOOL FreeScript = false;
+	bool AlreadyGot;
+	bool FreeScript;
 	char *SavedScriptPtr;
 	int SavedScriptLine;
 };
