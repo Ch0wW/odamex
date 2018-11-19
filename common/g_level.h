@@ -134,7 +134,8 @@ struct level_locals_t {
 	char			nextmap[8];				// go here when sv_fraglimit is hit
 	char			secretmap[8];			// map to go to when used secret exit
 
-	int				round;					// Ch0wW : Rounds for LMS/TLMS
+	unsigned int	round;					// Ch0wW : Rounds for LMS/TLMS
+	unsigned int	roundtimeleft;			// Ch0wW : Timelimit for the round
 
 	DWORD			flags;
 
@@ -182,7 +183,10 @@ extern cluster_info_t ClusterInfos[];
 extern int ACS_WorldVars[NUM_WORLDVARS];
 extern int ACS_GlobalVars[NUM_GLOBALVARS];
 
+#ifdef CLIENT_APP
 extern BOOL savegamerestore;
+#endif
+
 extern BOOL HexenHack;		// Semi-Hexen-compatibility mode
 
 void G_InitNew (const char *mapname);

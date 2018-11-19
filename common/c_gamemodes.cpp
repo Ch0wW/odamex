@@ -4,6 +4,7 @@
 
 EXTERN_CVAR(sv_gametype)
 EXTERN_CVAR(sv_maxplayers)
+EXTERN_CVAR(sv_survivalmode)
 
 GIClass GAME;
 
@@ -88,6 +89,11 @@ bool GIClass::IsTeamLMS()
 	return (sv_gametype == GM_TEAMLMS);
 }
 
+bool GIClass::IsSurvival()
+{
+	return (sv_gametype == GM_COOP && sv_survivalmode);
+}
+
 /*==================================================
 GAMEMODE CHECKS
 ==================================================
@@ -119,7 +125,7 @@ bool GIClass::HasWarmup()
 
 bool GIClass::HasRounds()
 {
-	return (this->IsLMS() || this->IsTeamLMS() /*|| sv_gametype == GM_SURVIVAL*/);
+	return (this->IsLMS() || this->IsTeamLMS());
 }
 
 void GIClass::Set_Gamemode(int game)

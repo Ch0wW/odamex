@@ -104,6 +104,9 @@ byte			consoleplayer_id;			// player taking events and displaying
 byte			displayplayer_id;			// view being displayed
 int 			gametic;
 
+int				mapchange;				// Used in complement of level.inttimeleft to change the level
+
+
 enum demoversion_t
 {
 	LMP_DOOM_1_9,
@@ -261,7 +264,6 @@ BOOL G_Responder (event_t *ev)
 // Make ticcmd_ts for the players.
 //
 extern DCanvas *page;
-int mapchange;
 
 void G_Ticker (void)
 {
@@ -333,12 +335,10 @@ void G_Ticker (void)
 
 	case GS_INTERMISSION:
 	{
-		mapchange--; // denis - todo - check if all players are ready, proceed immediately
+		// denis - todo - check if all players are ready, proceed immediately
+		mapchange--; 
 		if (!mapchange)
-        {
 			G_ChangeMap ();
-            //intcd_oldtime = 0;
-        }
 	}
     break;
 

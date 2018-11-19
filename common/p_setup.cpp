@@ -1667,7 +1667,9 @@ void P_SetupLevel (char *lumpname, int position)
 		wminfo.maxfrags = 0;
 	wminfo.partime = 180;
 
+#ifdef CLIENT_APP
 	if (!savegamerestore)
+#endif
 	{
 		for (Players::iterator it = players.begin();it != players.end();++it)
 		{

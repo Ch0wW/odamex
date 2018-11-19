@@ -18,6 +18,7 @@ public:
 	bool IsDuel();
 	bool IsTeamDM();
 	bool IsCTF();
+	bool IsSurvival();
 	bool IsLMS();
 	bool IsTeamLMS();
 	bool IsTeamGame();

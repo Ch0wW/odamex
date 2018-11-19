@@ -100,7 +100,6 @@ FLZOMemFile	*reset_snapshot = NULL;
 BOOL firstmapinit = true; // Nes - Avoid drawing same init text during every rebirth in single-player servers.
 
 extern BOOL netdemo;
-BOOL savegamerestore;
 
 extern int mousex, mousey, joyxmove, joyymove, Impulse;
 extern BOOL sendpause, sendsave, sendcenterview;
@@ -326,18 +325,14 @@ void G_InitNew (const char *mapname)
 {
 	size_t i;
 
-	if (!savegamerestore)
-		G_ClearSnapshots ();
+	G_ClearSnapshots ();
 
 	// [RH] Mark all levels as not visited
-	if (!savegamerestore)
-	{
-		for (i = 0; i < wadlevelinfos.size(); i++)
-			wadlevelinfos[i].flags &= ~LEVEL_VISITED;
+	for (i = 0; i < wadlevelinfos.size(); i++)
+		wadlevelinfos[i].flags &= ~LEVEL_VISITED;
 
-		for (i = 0; LevelInfos[i].mapname[0]; i++)
-			LevelInfos[i].flags &= ~LEVEL_VISITED;
-	}
+	for (i = 0; LevelInfos[i].mapname[0]; i++)
+		LevelInfos[i].flags &= ~LEVEL_VISITED;
 
 	int old_gametype = sv_gametype.asInt();
 
@@ -414,33 +409,34 @@ void G_InitNew (const char *mapname)
 	// [SL] 2011-05-11 - Reset all reconciliation system data for unlagging
 	Unlag::getInstance().reset();
 
-	if (!savegamerestore)
+	M_ClearRandom ();
+	memset (ACS_WorldVars, 0, sizeof(ACS_WorldVars));
+	memset (ACS_GlobalVars, 0, sizeof(ACS_GlobalVars));
+	level.time = 0;
+	level.timeleft = 0;
+	level.inttimeleft = 0;
+
+	// Ch0wW : Survival/LMS mode
+	level.round = 0;
+	level.roundtimeleft = 0;
+
+	// force players to be initialized upon first level load
+	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
-		M_ClearRandom ();
-		memset (ACS_WorldVars, 0, sizeof(ACS_WorldVars));
-		memset (ACS_GlobalVars, 0, sizeof(ACS_GlobalVars));
-		level.time = 0;
-		level.timeleft = 0;
-		level.inttimeleft = 0;
+		// [SL] 2011-05-11 - Register the players in the reconciliation
+		// system for unlagging
+		Unlag::getInstance().registerPlayer(it->id);
 
-		// force players to be initialized upon first level load
-		for (Players::iterator it = players.begin();it != players.end();++it)
-		{
-			// [SL] 2011-05-11 - Register the players in the reconciliation
-			// system for unlagging
-			Unlag::getInstance().registerPlayer(it->id);
+		if(!(it->ingame()))
+			continue;
 
-			if(!(it->ingame()))
-				continue;
+		// denis - dead players should have their stuff looted, otherwise they'd take their ammo into their afterlife!
+		if (it->playerstate == PST_DEAD)
+			G_PlayerReborn(*it);
 
-			// denis - dead players should have their stuff looted, otherwise they'd take their ammo into their afterlife!
-			if (it->playerstate == PST_DEAD)
-				G_PlayerReborn(*it);
+		it->playerstate = PST_ENTER; // [BC]
 
-			it->playerstate = PST_ENTER; // [BC]
-
-			it->joinafterspectatortime = -(TICRATE * 5);
-		}
+		it->joinafterspectatortime = -(TICRATE * 5);
 	}
 
 	// [SL] 2012-12-08 - Multiplayer is always true for servers
@@ -849,7 +845,7 @@ void G_DoLoadLevel (int position)
 
 	level.starttime = I_MSTime() * TICRATE / 1000;
 	// [RH] Restore the state of the level.
-	G_UnSnapshotLevel (!savegamerestore);
+	G_UnSnapshotLevel (false);
 	// [RH] Do script actions that were triggered on another map.
 	P_DoDeferedScripts ();
 	// [AM] Save the state of the level on the first tic.

@@ -64,6 +64,7 @@
 #include "sv_vote.h"
 #include "sv_maplist.h"
 #include "g_warmup.h"
+#include "g_survival.h"
 #include "sv_banlist.h"
 #include "d_main.h"
 
@@ -391,11 +392,11 @@ void SV_InvalidateClient(player_t &player, const std::string& reason)
 {
 	if (&(player.client) == NULL)
 	{
-		Printf(PRINT_HIGH, "Player with NULL client fails security check (%s), client cannot be safely dropped.\n");
+		Printf(PRINT_WARNING, "Player with NULL client fails security check (%s), client cannot be safely dropped.\n");
 		return;
 	}
 
-	Printf(PRINT_HIGH, "%s fails security check (%s), dropping client.\n", player.client.address.ToString(), reason.c_str());
+	Printf(PRINT_WARNING, "%s fails security check (%s), dropping client.\n", player.client.address.ToString(), reason.c_str());
 	SV_DropClient(player);
 }
 
@@ -1616,11 +1617,14 @@ void SV_ClientFullUpdate(player_t &pl)
 				return;
 	}
 
+	// Send the current Survival state only on allowed gamemodes
+	if 	(GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS()) {
+		SV_SendSurvivalStatus(pl, surv.GetStatus(), /*SV_GetCountDown()*/10*TICRATE);	// Ch0wW: Fix it
+	}
 	// Send the current warmup state only on specific conditions
-	if (sv_warmup && GAME.HasWarmup() )
+	else if (sv_warmup && GAME.HasWarmup()) {
 		SV_SendWarmupState(pl, warmup.get_status(), warmup.get_countdown());
-	//else if (GAME.IsLMS() || GAME.IsTeamLMS() || GAME.IsSurvival())
-	//	SV_SendSurvivalStatus(pl, SV_GetStatus(), SV_GetCountDown());
+	}
 
 	// update frags/points/.tate./ready
 	for (Players::iterator it = players.begin();it != players.end();++it)
