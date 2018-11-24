@@ -97,8 +97,7 @@ void CTF_ParseEvent ()
 {
 	flag_score_t event = (flag_score_t)MSG_ReadByte();
 
-	if( !CTF.
-		isEventValid(event) ) {
+	if( !CTF.isEventValid(event) ) {
 		CTF.ParseFullUpdate();	// Make a full refresh if we don't have any valid value
 		return;
 	}

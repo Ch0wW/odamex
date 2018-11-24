@@ -63,6 +63,7 @@
 #include "w_wad.h"
 #include "z_zone.h"
 #include "g_warmup.h"
+#include "g_survival.h"
 
 // FIXME: Remove this as soon as the JoinString is gone from G_ChangeMap()
 #include "cmdlib.h"
@@ -81,6 +82,8 @@ EXTERN_CVAR (sv_loopepisode)
 EXTERN_CVAR (sv_intermissionlimit)
 EXTERN_CVAR (sv_warmup)
 EXTERN_CVAR (sv_timelimit)
+
+EXTERN_CVAR(sv_maxlives)
 
 extern int mapchange;
 extern int shotclock;
@@ -630,6 +633,7 @@ void G_DoResetLevel(bool full_reset)
 			it->killcount = 0;
 			it->points = 0;
 			it->fragspree = 0;
+			it->lives = sv_maxlives;
 			it->fragcombo = 0;
 			it->lastfrag = level.time;
 			it->joinafterspectatortime = level.time;
@@ -735,6 +739,7 @@ void G_DoLoadLevel (int position)
 		it->deathcount = 0; // [Toke - Scores - deaths]
 		it->killcount = 0; // [deathz0r] Coop kills
 		it->fragspree = 0;
+		it->lives = sv_maxlives;
 		it->lastfrag = level.time;
 		it->fragcombo = 0;
 		it->points = 0;
@@ -852,6 +857,8 @@ void G_DoLoadLevel (int position)
 	G_DoSaveResetState();
 	// [AM] Handle warmup init.
 	warmup.reset();
+	// Ch0wW : Handle Survival modes initialization.
+	surv.Reset();
 	//	C_FlushDisplay ();
 }
 

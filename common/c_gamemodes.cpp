@@ -5,6 +5,7 @@
 EXTERN_CVAR(sv_gametype)
 EXTERN_CVAR(sv_maxplayers)
 EXTERN_CVAR(sv_survivalmode)
+EXTERN_CVAR(sv_maxlives)
 
 GIClass GAME;
 
@@ -12,44 +13,44 @@ GIClass::GIClass() {}
 
 const char *GIClass::GetFullName() const
 {
-	if (sv_gametype == 0)
+	if (GAME.IsCooperation())
 		return "COOPERATIVE";
-	else if (sv_gametype == 1)
+	else if (GAME.IsSurvival())
+		return "SURVIVAL";
+	else if (GAME.IsDeathmatch())
 		return "DEATHMATCH";
-	else if (sv_gametype == 1 && sv_maxplayers == 2)
+	else if (GAME.IsDuel())
 		return "DUEL";
-	else if (sv_gametype == 2)
+	else if (GAME.IsTeamDM())
 		return "TEAM DEATHMATCH";
-	else if (sv_gametype == 3)
+	else if (GAME.IsCTF())
 		return "CAPTURE THE FLAG";
-	else if (sv_gametype == 4)
+	else if (GAME.IsLMS())
 		return "LAST MAN STANDING";
-	else if (sv_gametype = 5)
+	else if (GAME.IsTeamLMS())
 		return "TEAM LAST MAN STANDING";
-	/*else if (sv_gametype == 6)
-		return "SURVIVAL";*/
 
 	return "UNKNOWN";
 }
 
 const char *GIClass::GetShortName() const
 {
-	if (sv_gametype == 0)
+	if (GAME.IsCooperation())
 		return "COOP";
-	else if (sv_gametype == 1)
+	else if (GAME.IsSurvival())
+		return "SURV";
+	else if (GAME.IsDeathmatch())
 		return "DM";
-	else if (sv_gametype == 1 && sv_maxplayers == 2)
+	else if (GAME.IsDuel())
 		return "DUEL";
-	else if (sv_gametype == 2)
+	else if (GAME.IsTeamDM())
 		return "TDM";
-	else if (sv_gametype == 3)
+	else if (GAME.IsCTF())
 		return "CTF";
-	else if (sv_gametype == 4)
+	else if (GAME.IsLMS())
 		return "LMS";
-	else if (sv_gametype = 5)
+	else if (GAME.IsTeamLMS())
 		return "TLMS";
-	/*else if (sv_gametype == 6)
-		return "SURV";*/
 
 	return "UNKNOWN";
 }
@@ -91,7 +92,7 @@ bool GIClass::IsTeamLMS()
 
 bool GIClass::IsSurvival()
 {
-	return (sv_gametype == GM_COOP && sv_survivalmode);
+	return (sv_gametype == GM_COOP && sv_maxlives);
 }
 
 /*==================================================

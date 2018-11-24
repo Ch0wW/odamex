@@ -88,7 +88,7 @@ enum svc_t
 	svc_sector,
 	svc_print,
 	svc_mobjinfo,
-	svc_updatefrags,		// [byte] [short]
+	svc_updatescores,		// [byte] [short] -- Ch0wW: Renamed for a better retranscription
 	svc_teampoints,
 	svc_activateline,
 	svc_movingsector,

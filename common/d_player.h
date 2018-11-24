@@ -147,6 +147,7 @@ public:
 	int			deathcount;
 	int			killcount, itemcount, secretcount;		// for intermission
 
+	int				lives;								// Ch0wW : Lives support for LMS/Survival
 	int				fragspree, fragcombo;				// Ch0wW : Sprees & combos
 	unsigned long	lastfrag;							// Ch0wW : Last Frag to track down if the frag is valid for combos.
 

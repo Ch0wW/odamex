@@ -990,7 +990,7 @@ void InitNetMessageFormats()
 	MSG(svc_sector,             "x"),
 	MSG(svc_print,              "x"),
 	MSG(svc_mobjinfo,           "x"),
-	MSG(svc_updatefrags,        "x"),
+	MSG(svc_updatescores,        "x"),
 	MSG(svc_teampoints,         "x"),
 	MSG(svc_activateline,       "x"),
 	MSG(svc_movingsector,       "x"),

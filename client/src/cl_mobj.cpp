@@ -101,6 +101,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	player.refire = 0;
 	player.damagecount = 0;
 	player.bonuscount = 0;
+	player.lives = 0;
 	player.fragspree = 0;
 	player.fragcombo = 0;
 	player.lastfrag = level.time;

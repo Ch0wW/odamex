@@ -395,6 +395,10 @@ void CaptureTheFlag::SendEvent(flag_t f, flag_score_t event, player_t &who)
 //
 void CaptureTheFlag::SendFullUpdate(player_t &player)
 {
+	// Don't send out infos if not on CTF.
+	if (!GAME.IsCTF())
+		return;
+
 	client_t *cl = &player.client;
 
 	MSG_WriteMarker(&cl->reliablebuf, svc_ctfevent);

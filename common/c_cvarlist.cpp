@@ -182,6 +182,14 @@ CVAR(				sv_coopunassignedvoodoodolls, "1", "",
 CVAR(				sv_coopunassignedvoodoodollsfornplayers, "255", "", 
 					CVARTYPE_WORD, CVAR_SERVERINFO | CVAR_LATCH)
 
+//===================================
+//
+CVAR_RANGE(			sv_maxlives, "0", "Maximum lives allowed for LMS/Survival.",
+					CVARTYPE_BYTE, CVAR_SERVERARCHIVE | CVAR_SERVERINFO | CVAR_LATCH | CVAR_NOENABLEDISABLE,
+					0.0f, 99.0f)
+
+
+
 // Compatibility options
 // ---------------------------------
 

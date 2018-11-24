@@ -935,8 +935,7 @@ void G_Ticker (void)
 	if (demorecording)
 		G_WriteDemoTiccmd(); // read in all player commands
 
-	if(netdemo.isPlaying())
-	{
+	if(netdemo.isPlaying()) {
 		netdemo.readMessages(&net_message);
 	}
 

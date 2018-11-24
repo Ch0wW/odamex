@@ -69,6 +69,7 @@
 #include "g_warmup.h"
 #include "v_text.h"
 #include "hu_stuff.h"
+#include "g_survival.h"
 
 #include "hudmessages.h"
 
@@ -1465,7 +1466,7 @@ void CL_SetupUserInfo(void)
 //
 // CL_UpdateFrags
 //
-void CL_UpdateFrags(void)
+void CL_UpdateScores(void)
 {
 	player_t &p = CL_FindPlayer(MSG_ReadByte());
 
@@ -1479,6 +1480,12 @@ void CL_UpdateFrags(void)
 	if (!GAME.IsCooperation()) {
 		p.points = MSG_ReadShort();
 		p.fragspree = MSG_ReadShort();
+	}
+
+	// Ch0wW : Lives support for LMS/Survival
+	if (GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS())
+	{
+		p.lives = MSG_ReadShort();
 	}
 }
 
@@ -3599,7 +3606,7 @@ void CL_InitCommands(void)
 	cmds[svc_resetmap]			= &CL_ResetMap;
 	cmds[svc_playerinfo]		= &CL_PlayerInfo;
 	cmds[svc_consoleplayer]		= &CL_ConsolePlayer;
-	cmds[svc_updatefrags]		= &CL_UpdateFrags;
+	cmds[svc_updatescores]		= &CL_UpdateScores;
 	cmds[svc_moveplayer]		= &CL_UpdatePlayer;
 	cmds[svc_updatelocalplayer]	= &CL_UpdateLocalPlayer;
 	cmds[svc_userinfo]			= &CL_SetupUserInfo;
@@ -3643,7 +3650,7 @@ void CL_InitCommands(void)
 	cmds[svc_mobjtranslation]	= &CL_MobjTranslation;
 	cmds[svc_timeleft]			= &CL_UpdateTimeLeft;
 	cmds[svc_inttimeleft]		= &CL_UpdateIntTimeLeft;
-
+	
 	cmds[svc_startsound]		= &CL_Sound;
 	cmds[svc_soundorigin]		= &CL_SoundOrigin;
 	cmds[svc_mobjstate]			= &CL_SetMobjState;
@@ -3654,7 +3661,7 @@ void CL_InitCommands(void)
 	cmds[svc_forceteam]			= &CL_ForceSetTeam;
 
 	cmds[svc_ctfevent]			= &CTF_ParseEvent;
-	//cmds[svc_gameevent]			= &CL_ParseGameEvent;
+	cmds[svc_survivalevent]		= &SURV_ParseEvent;
 
 	cmds[svc_serversettings]	= &CL_GetServerSettings;
 	cmds[svc_disconnect]		= &CL_EndGame;

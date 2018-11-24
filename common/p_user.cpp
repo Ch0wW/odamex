@@ -855,6 +855,8 @@ void player_s::Serialize (FArchive &arc)
 			<< armortype
 			<< backpack
 			<< fragcount
+			<< lives
+			<< fragcombo
 			<< readyweapon
 			<< pendingweapon
 			<< attackdown
@@ -905,6 +907,8 @@ void player_s::Serialize (FArchive &arc)
 			>> armortype
 			>> backpack
 			>> fragcount
+			>> lives
+			>> fragcombo
 			>> readyweapon
 			>> pendingweapon
 			>> attackdown
@@ -974,6 +978,7 @@ player_s::player_s()
 	killcount = 0;
 	fragspree = 0;
 	fragcombo = 0;
+	lives = 0;
 	lastfrag = level.time;
 	pendingweapon = wp_nochange;
 	readyweapon = wp_nochange;
@@ -1060,6 +1065,7 @@ player_s &player_s::operator =(const player_s &other)
 	fragcount = other.fragcount;
 	deathcount = other.deathcount;
 	killcount = other.killcount;
+	lives = other.lives;
 	fragspree = 0;
 
 	pendingweapon = other.pendingweapon;

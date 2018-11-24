@@ -113,6 +113,7 @@ EXTERN_CVAR(sv_ticbuffer)
 EXTERN_CVAR(sv_warmup)
 EXTERN_CVAR(sv_warmup_overtime_enable)
 EXTERN_CVAR(sv_warmup_overtime)
+EXTERN_CVAR(sv_maxlives)
 
 void SexMessage (const char *from, char *to, int gender,
 	const char *victim, const char *killer);
@@ -222,19 +223,13 @@ EXTERN_CVAR (sv_friendlyfire)
 // Private server settings
 CVAR_FUNC_IMPL (sv_password)
 {
-	if ( strlen(var.cstring()) )
-		Printf(PRINT_HIGH, "Connect password set.");
-	else
-		Printf(PRINT_HIGH, "Connect password cleared.");
+	Printf(PRINT_HIGH, strlen(var.cstring()) ? "Connect password set." : "Connect password cleared.");
 }
 
 // Private server settings
 CVAR_FUNC_IMPL(sv_joinpassword)
 {
-	if (strlen(var.cstring()))
-		Printf(PRINT_HIGH, "Join password set.");
-	else
-		Printf(PRINT_HIGH, "Join password cleared.");
+	Printf(PRINT_HIGH, strlen(var.cstring()) ? "Join password set." : "Join password cleared.");
 }
 
 CVAR_FUNC_IMPL (rcon_password) // Remote console password.
@@ -827,7 +822,7 @@ void SV_UpdateFrags(player_t &player)
 	{
 		client_t *cl = &(it->client);
 
-		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
+		MSG_WriteMarker(&cl->reliablebuf, svc_updatescores);
 		MSG_WriteByte(&cl->reliablebuf, player.id);
 		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? player.killcount : player.fragcount);
 		MSG_WriteShort(&cl->reliablebuf, player.deathcount);
@@ -836,6 +831,8 @@ void SV_UpdateFrags(player_t &player)
 			MSG_WriteShort(&cl->reliablebuf, player.points);
 			MSG_WriteShort(&cl->reliablebuf, player.fragspree);
 		}
+		if (GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS())
+			MSG_WriteShort(&cl->reliablebuf, player.lives);
 	}
 }
 
@@ -1619,18 +1616,19 @@ void SV_ClientFullUpdate(player_t &pl)
 
 	// Send the current Survival state only on allowed gamemodes
 	if 	(GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS()) {
-		SV_SendSurvivalStatus(pl, surv.GetStatus(), /*SV_GetCountDown()*/10*TICRATE);	// Ch0wW: Fix it
+		SV_SendSurvivalStatus(pl, surv.GetStatus(), surv.GetTimer());
 	}
 	// Send the current warmup state only on specific conditions
 	else if (sv_warmup && GAME.HasWarmup()) {
 		SV_SendWarmupState(pl, warmup.get_status(), warmup.get_countdown());
 	}
-
-	// update frags/points/.tate./ready
+	
+	// Receive all the informations from every other client
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
+		// Get the scores
 		{
-			MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
+			MSG_WriteMarker(&cl->reliablebuf, svc_updatescores);
 			MSG_WriteByte(&cl->reliablebuf, it->id);
 			MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
 			MSG_WriteShort(&cl->reliablebuf, it->deathcount);
@@ -1639,13 +1637,17 @@ void SV_ClientFullUpdate(player_t &pl)
 				MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP though
 				MSG_WriteShort(&cl->reliablebuf, it->fragspree);
 			}
+			if (GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS())
+				MSG_WriteShort(&cl->reliablebuf, it->lives);
 		}
 
+		// Get the spectator status
 		{
-			// Set the spectator status
+			
 			MSG_WriteMarker(&cl->reliablebuf, svc_spectate);
 			MSG_WriteByte(&cl->reliablebuf, it->id);
 			MSG_WriteByte(&cl->reliablebuf, it->spectator);
+			//MSG_WriteByte(&cl->reliablebuf, it->dead_spectator); // Ch0wW : LMS support - Check if player is dead for this round
 		}
 
 		// Only send Ready status if the server has the conditions to do so
@@ -1656,7 +1658,8 @@ void SV_ClientFullUpdate(player_t &pl)
 			MSG_WriteByte(&cl->reliablebuf, it->ready);
 		}
 		
-		if (it->cheats)	// Don't waste netbytes if the player hasn't any cheat enabled.
+		// Don't waste netbytes if the player hasn't any cheat enabled.
+		if (it->cheats)
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_setplayercheat);
 			MSG_WriteByte(&cl->reliablebuf, it->id);
@@ -1674,9 +1677,8 @@ void SV_ClientFullUpdate(player_t &pl)
 
 	SV_UpdateHiddenMobj();
 
-	// update CTF Flags
-	if (GAME.IsCTF())
-		CTF.SendFullUpdate(pl);
+	// Send out CTF informations
+	CTF.SendFullUpdate(pl);
 
 	// update sectors
 	SV_UpdateSectors(cl);
@@ -3719,6 +3721,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent /*, char *team
 			player.killcount = 0;
 			player.fragspree = 0;
 			player.fragcombo = 0;
+			player.lives = sv_maxlives;
 			player.lastfrag = level.time;
 			SV_UpdateFrags(player);
 
@@ -4608,7 +4611,9 @@ void SV_GameTics (void)
 			warmup.Ticker();
 			SV_WinCheck();
 			SV_TimelimitCheck();
-			Vote_Runtic();
+			Vote_Runtic();	
+			surv.Ticker();
+			surv.CheckGameConditions();
 		break;
 		case GS_INTERMISSION:
 			SV_IntermissionTimeCheck();
