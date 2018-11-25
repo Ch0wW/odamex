@@ -40,6 +40,8 @@ public:
 
 	Survival() : status(LMS_WARMUP), iTimer(0) {}
 
+	char *GetStringEvent(lms_states status);
+
 	void Ticker();								// Ticker
 
 	void SetStatus(lms_states newstatus);		// Set the current status
@@ -57,7 +59,7 @@ public:
 	void BroadcastNewStatus(lms_states newstatus, unsigned int timer);
 
 	// -- GAME CONDITIONS --
-	void CheckGameConditions();					// Check if players are alive
+	void Check_GameConditions();					// Check if players are alive
 #endif
 
 	//===============
@@ -72,6 +74,10 @@ public:
 private:
 	lms_states status;		// Status of the game
 	int	iTimer;				// Internal timer for warmup, round begin, round (if LMS), and round end.
+
+#ifdef SERVER_APP
+	bool Check_GameEnd_Survival();
+#endif
 
 #ifdef CLIENT_APP
 	short iSeconds;			// Seconds left for the internal timer

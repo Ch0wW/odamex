@@ -162,6 +162,10 @@ void P_GiveDeaths(player_t* player, int num)
 	if (!warmup.checkscorechange())
 		return;
 	player->deathcount += num;
+
+	// Ch0wW: lose a life if in gamemode
+	if (GAME.IsSurvival() || GAME.IsLMS() ||GAME.IsTeamLMS())
+		player->lives--;
 }
 
 // Give a specific number of points to a player's team

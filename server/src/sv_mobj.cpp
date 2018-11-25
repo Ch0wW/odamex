@@ -78,6 +78,8 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 
 	if (player.playerstate == PST_REBORN || player.playerstate == PST_ENTER)
 		G_PlayerReborn(player);
+	if (GAME.HasLives() && !player.lives)
+		SV_SetPlayerSpec(player, false, false);	// Ch0wW: change it
 
 	AActor* mobj;
 	mobj = new AActor(MT_PLAYER, mthing->x << FRACBITS, mthing->y << FRACBITS, ONFLOORZ);

@@ -124,9 +124,9 @@ bool GIClass::HasWarmup()
 	return (this->IsDuel() || this->IsCTF() || this->IsTeamDM());
 }
 
-bool GIClass::HasRounds()
+bool GIClass::HasLives()
 {
-	return (this->IsLMS() || this->IsTeamLMS());
+	return (this->IsSurvival() || this->IsLMS() || this->IsTeamLMS());
 }
 
 void GIClass::Set_Gamemode(int game)

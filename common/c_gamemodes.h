@@ -25,7 +25,8 @@ public:
 	bool IsTeamGame(byte gamebyte);
 
 	bool HasWarmup();					// Ch0wW : if the gamemode can use warmups
-	bool HasRounds();					// Ch0wW: if the gamemode uses rounds (LMS/TLMS/Surv)
+	bool HasLives();					// Ch0wW: if the gamemode uses rounds (LMS/TLMS/Surv)
+
 
 	void Set_Gamemode(int game);
 };

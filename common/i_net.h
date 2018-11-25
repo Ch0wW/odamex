@@ -111,7 +111,6 @@ enum svc_t
 	svc_updatedeaths,		// [byte] [short]
 	svc_ctfevent,			// [Toke - CTF] - [int]
 	svc_survivalevent,		// Ch0wW - Game Events Handler for LMS / Survival 
-	svc_lmsinfo,			// Ch0wW - Round for LMS
 	svc_serversettings,		// [Toke] - informs clients of server settings
 	svc_spectate,			// [Nes] - [byte:state], [short:playernum]
 	svc_connectclient,

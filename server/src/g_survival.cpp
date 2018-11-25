@@ -43,7 +43,6 @@ CVAR_RANGE(	sv_lms_roundtime, "0", "Time (in seconds) of a LMS round. (30 to 180
 
 Survival surv;
 
-
 //
 // SV_SendSurvivalStatus
 // Sends the new Survival Status to a specific client
@@ -56,6 +55,38 @@ void SV_SendSurvivalStatus(player_t &player, Survival::lms_states newstatus, uns
 
 	// Systematically send the timer linked to the new state if valid.
 	MSG_WriteShort(&cl->reliablebuf, timer);
+}
+
+
+/*		LMS_DISABLED,
+		LMS_WARMUP,					// LMS Warming up (aka not enough players)
+		LMS_WARMUPCOUNTDOWN,		// Survival Countdown | LMS Warmup Countdown 
+
+		LMS_ROUNDCOUNTDOWN,			// Round countdown (LMS only)
+		LMS_ROUNDSTARTED,			// Survival : Game has started | LMS: Round started
+		LMS_ROUNDOVER,				// Round is over
+		*/
+char *Survival::GetStringEvent(lms_states status)
+{
+	char *text;
+	switch (status)
+	{
+	case LMS_DISABLED:
+		text = "LMS_DISABLED"; break;
+	case LMS_WARMUP:
+		text = "LMS_WARMUP"; break;
+	case LMS_WARMUPCOUNTDOWN:
+		text = "LMS_WARMUPCOUNTDOWN"; break;
+	case LMS_ROUNDCOUNTDOWN:
+		text = "LMS_ROUNDCOUNTDOWN"; break;
+	case LMS_ROUNDSTARTED:
+		text = "LMS_ROUNDSTARTED"; break;
+	case LMS_ROUNDOVER:
+		text = "LMS_ROUNDOVER"; break;
+	default:
+		text = "UNKNOWN"; break;
+	}
+	return text;
 }
 
 //
@@ -98,7 +129,7 @@ void Survival::Ticker()
 		SetStatus(LMS_WARMUPCOUNTDOWN);
 
 	// If there aren't any more active players, go back to warm up mode [tm512 2014/04/08]
-	if (status >= LMS_WARMUP && P_NumPlayersInGame() == 0)
+	if (status > LMS_WARMUP && P_NumPlayersInGame() == 0)
 		SetStatus(LMS_WARMUP);
 
 	if (!HasInternalTimer())
@@ -121,9 +152,31 @@ void Survival::Ticker()
 	// v
 	//--------------------------------------
 	if (GAME.IsLMS() || GAME.IsTeamLMS())
-		SetStatus(LMS_ROUNDCOUNTDOWN);
+	{
+		if (status == LMS_WARMUPCOUNTDOWN)
+			SetStatus(LMS_ROUNDCOUNTDOWN);
+		else if (status == LMS_ROUNDCOUNTDOWN)
+			SetStatus(LMS_ROUNDSTARTED);
+		else if (status == LMS_ROUNDOVER)
+		{
+			G_DeferedReset();				// Reset map, not stats
+			SetStatus(LMS_ROUNDCOUNTDOWN);
+		}
+	}
 	else if (GAME.IsSurvival())
-		SetStatus(LMS_ROUNDSTARTED);
+	{
+		if (status == LMS_WARMUPCOUNTDOWN)
+		{
+			G_DeferedFullReset();
+			SetStatus(LMS_ROUNDSTARTED);
+		}
+		else if (status == LMS_ROUNDOVER)
+		{
+			G_DeferedFullReset();			// Full reset map + stats
+			SetStatus(LMS_WARMUP);
+		}
+	}
+		
 	else
 		SetStatus(LMS_DISABLED);
 
@@ -135,11 +188,6 @@ void Survival::Ticker()
 	//--------------------------------------
 	// ^
 	// Ch0wW: THIS PART IS ENTIRELY BAD ! FIX IT ACCORDING TO THE NEXT STATE OF THE GAMEMODE
-
-
-	G_DeferedFullReset();
-	SV_BroadcastPrintf(PRINT_GAMEEVENT, "HELLO. THE CURRENT STATUS IS: %d\n", (int)GetStatus());
-
 }
 
 //
@@ -165,6 +213,8 @@ void Survival::SetStatus(lms_states newstatus)
 {
 	status = newstatus;
 
+	SV_BroadcastPrintf(PRINT_GAMEEVENT, "[LMS] THE CURRENT STATUS IS: %s\n", GetStringEvent(status));
+
 	// Add the correct time according to the gamemode.
 	if (this->HasInternalTimer())
 	{
@@ -184,8 +234,7 @@ void Survival::SetStatus(lms_states newstatus)
 					timingadd = sv_lms_roundtime;
 				break;
 			case LMS_ROUNDOVER:
-				if (GAME.IsLMS() || GAME.IsTeamLMS())
-					timingadd = LMS_POSTROUND_WAIT;
+				timingadd = LMS_POSTROUND_WAIT;
 		}
 		iTimer = level.time + (timingadd * TICRATE);
 		BroadcastNewStatus(newstatus, timingadd);
@@ -210,7 +259,7 @@ Survival::lms_states Survival::GetStatus()
 void Survival::Reset()
 {
 	// Make sure our status is working
-	if (GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS() )
+	if ( GAME.HasLives() )
 		SetStatus(Survival::LMS_WARMUP);
 	else
 		SetStatus(Survival::LMS_DISABLED);
@@ -230,12 +279,35 @@ bool Survival::CanFireWeapon()
 	return (status == Survival::LMS_ROUNDCOUNTDOWN || status == Survival::LMS_WARMUPCOUNTDOWN || status == Survival::LMS_ROUNDOVER);
 }
 
-void Survival::CheckGameConditions()
+void Survival::Check_GameConditions()
 {
 	// Only allow those gamemodes.
-	if (!GAME.IsSurvival() && !GAME.IsLMS() && !GAME.IsTeamLMS())
+	if (!GAME.HasLives())
 		return;
 
+	// Game hasn't been started, no win conditions yet ! 
+	if (status == LMS_WARMUP)
+		return;
+
+	// Round has already been over, and checks done, so skip them !
+	if (status == LMS_ROUNDOVER)
+		return;
+
+	// If Survival, 
+	if (GAME.IsSurvival() && Check_GameEnd_Survival())
+	{
+		SetStatus(LMS_ROUNDOVER);
+	}
+
+	if (GAME.IsLMS())
+	{
+
+	}
+
+	if (GAME.IsTeamLMS())
+	{
+
+	}
 	// ToDo:
 	/* if (GAME.IsSurvival())
 	{
@@ -257,5 +329,14 @@ void Survival::CheckGameConditions()
 	*/
 
 	// Round is still OK, so continue.
-	return;
-}	
+}
+
+bool Survival::Check_GameEnd_Survival()
+{
+	// Check if players have 
+	for (Players::const_iterator it = players.begin(); it != players.end(); ++it)
+		if (it->ingame() && !it->spectator && it->lives)
+			return false;
+
+	return true;	// Game has no alive players anymore. boo!
+}

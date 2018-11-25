@@ -1637,7 +1637,7 @@ void SV_ClientFullUpdate(player_t &pl)
 				MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP though
 				MSG_WriteShort(&cl->reliablebuf, it->fragspree);
 			}
-			if (GAME.IsSurvival() || GAME.IsLMS() || GAME.IsTeamLMS())
+			if (GAME.HasLives())
 				MSG_WriteShort(&cl->reliablebuf, it->lives);
 		}
 
@@ -2075,6 +2075,10 @@ void SV_ConnectClient()
 	player->killcount = 0;
 	player->points = 0;
 	player->cheats = 0;
+
+	// Set the lives for Survival/LMS.
+	if (GAME.HasLives())
+		player->lives = sv_maxlives;
 
 	if (!step_mode)
 	{
@@ -3705,6 +3709,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent /*, char *team
 			if (player.mo)
 				P_KillMobj(NULL, player.mo, NULL, true);
 
+
 			player.playerstate = PST_REBORN;
 
 			if (!silent)
@@ -4613,7 +4618,7 @@ void SV_GameTics (void)
 			SV_TimelimitCheck();
 			Vote_Runtic();	
 			surv.Ticker();
-			surv.CheckGameConditions();
+			surv.Check_GameConditions();
 		break;
 		case GS_INTERMISSION:
 			SV_IntermissionTimeCheck();
