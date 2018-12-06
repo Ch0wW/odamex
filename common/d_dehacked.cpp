@@ -1006,50 +1006,9 @@ static int PatchSound (int soundNum)
 	int result;
 
 	DPrintf ("Sound %d (no longer supported)\n", soundNum);
-/*
-	sfxinfo_t *info, dummy;
-	int offset = 0;
-	if (soundNum >= 1 && soundNum <= NUMSFX) {
-		info = &S_sfx[soundNum];
-	} else {
-		info = &dummy;
-		DPrintf ("Sound %d out of range.\n");
-	}
-*/
+
 	while ((result = GetLine ()) == 1) {
-		/*
-		if (!stricmp  ("Offset", Line1))
-			offset = atoi (Line2);
-		else CHECKKEY ("Zero/One",			info->singularity)
-		else CHECKKEY ("Value",				info->priority)
-		else CHECKKEY ("Zero 1",			info->link)
-		else CHECKKEY ("Neg. One 1",		info->pitch)
-		else CHECKKEY ("Neg. One 2",		info->volume)
-		else CHECKKEY ("Zero 2",			info->data)
-		else CHECKKEY ("Zero 3",			info->usefulness)
-		else CHECKKEY ("Zero 4",			info->lumpnum)
-		else DPrintf (unknown_str, Line1, "Sound", soundNum);
-		*/
 	}
-/*
-	if (offset) {
-		// Calculate offset from start of sound names
-		offset -= toff[dversion] + 21076;
-
-		if (offset <= 64)			// pistol .. bfg
-			offset >>= 3;
-		else if (offset <= 260)		// sawup .. oof
-			offset = (offset + 4) >> 3;
-		else						// telept .. skeatk
-			offset = (offset + 8) >> 3;
-
-		if (offset >= 0 && offset < NUMSFX) {
-			S_sfx[soundNum].name = OrgSfxNames[offset + 1];
-		} else {
-			DPrintf ("Sound name %d out of range.\n", offset + 1);
-		}
-	}
-*/
 	return result;
 }
 
@@ -1379,7 +1338,7 @@ static int PatchText (int oldSize)
 
 	if (*temp == 0)
 	{
-		Printf (PRINT_HIGH,"Text chunk is missing size of new string.\n");
+		Printf (PRINT_WARNING, "Text chunk is missing size of new string.\n");
 		return 2;
 	}
 	newSize = atoi (temp);
@@ -1389,7 +1348,7 @@ static int PatchText (int oldSize)
 
 	if (!oldStr || !newStr)
 	{
-		Printf (PRINT_HIGH,"Out of memory.\n");
+		Printf (PRINT_ERROR, "Out of memory.\n");
 		goto donewithtext;
 	}
 
@@ -1400,13 +1359,13 @@ static int PatchText (int oldSize)
 	{
 		delete[] newStr;
 		delete[] oldStr;
-		Printf (PRINT_HIGH,"Unexpected end-of-file.\n");
+		Printf (PRINT_ERROR, "Unexpected end-of-file.\n");
 		return 0;
 	}
 
 	if (includenotext)
 	{
-		Printf (PRINT_HIGH,"Skipping text chunk in included patch.\n");
+		Printf (PRINT_ERROR, "Skipping text chunk in included patch.\n");
 		goto donewithtext;
 	}
 
@@ -1507,7 +1466,7 @@ static int PatchStrings (int dummy)
 
 		if (i == -1)
 		{
-			Printf (PRINT_HIGH,"Unknown string: %s\n", Line1);
+			Printf (PRINT_ERROR, "Unknown string: %s\n", Line1);
 		}
 		else
 		{
@@ -1669,7 +1628,7 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 		}
 		if (!cont || dversion == -1 || pversion == -1) {
 			delete[] PatchFile;
-			Printf (PRINT_HIGH, "\"%s\" is not a DeHackEd patch file\n", file.c_str());
+			Printf (PRINT_WARNING, "\"%s\" is not a DeHackEd patch file\n", file.c_str());
 			return false;
 		}
 	} else {
@@ -1710,9 +1669,9 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 
 	delete[] PatchFile;
 	if (autoloading)
-		Printf (PRINT_HIGH, "DeHackEd patch lump installed\n");
+		Printf ("DeHackEd patch lump installed\n");
 	else
-		Printf (PRINT_HIGH, "DeHackEd patch installed:\n  %s\n", file.c_str());
+		Printf ("DeHackEd patch installed:\n  %s\n", file.c_str());
 
     return true;
 }

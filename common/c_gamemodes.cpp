@@ -13,7 +13,7 @@ GIClass::GIClass() {}
 
 const char *GIClass::GetFullName() const
 {
-	if (GAME.IsCooperation())
+	if (GAME.IsCoop())
 		return "COOPERATIVE";
 	else if (GAME.IsSurvival())
 		return "SURVIVAL";
@@ -35,7 +35,7 @@ const char *GIClass::GetFullName() const
 
 const char *GIClass::GetShortName() const
 {
-	if (GAME.IsCooperation())
+	if (GAME.IsCoop())
 		return "COOP";
 	else if (GAME.IsSurvival())
 		return "SURV";
@@ -60,9 +60,14 @@ bool GIClass::IsSinglePlayer()
 	return (multiplayer == false);
 }
 
-bool GIClass::IsCooperation()
+bool GIClass::HasCooperation()
 {
-	return (sv_gametype == GM_COOP);
+	return (IsCoop() || IsSurvival());
+}
+
+bool GIClass::IsCoop()
+{
+	return (sv_gametype == GM_COOP && !sv_maxlives);
 }
 
 bool GIClass::IsDeathmatch()

@@ -130,7 +130,7 @@ BOOL PIT_StompThing (AActor *thing)
 	// In Coop, telefrag shouldn't even happen.  Thanks Amateur Spammer!
 	// Ch0wW: Apparently, Amateur Spammer's sv_unblock player is good, but it's better to enable Telefrags only when TD is enabled, 
 	// or in non-cooperation gamemodes.
-	if (GAME.IsCooperation() && !sv_friendlyfire && (tmthing->player && thing->player))
+	if (GAME.HasCooperation() && !sv_friendlyfire && (tmthing->player && thing->player))
 		return true;
 
 	// don't clip against self

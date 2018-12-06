@@ -1956,7 +1956,7 @@ BOOL CheckIfExitIsGood (AActor *self)
 
 	// [Toke - dmflags] Old location of DF_NO_EXIT
 
-	if (!GAME.IsCooperation() && self)
+	if (!GAME.HasCooperation() && self)
 	{
         if (!sv_allowexit)
         {

@@ -290,7 +290,7 @@ BOOL P_GiveWeapon(player_t *player, weapontype_t weapon, BOOL dropped)
 		player->bonuscount = BONUSADD;
 		player->weaponowned[weapon] = true;
 
-		if (!GAME.IsCooperation())
+		if (!GAME.HasCooperation())
 			P_GiveAmmo(player, weaponinfo[weapon].ammotype, 5);
 		else
 			P_GiveAmmo(player, weaponinfo[weapon].ammotype, 2);
@@ -1160,7 +1160,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 			SV_UpdateFrags(*sPlayer);
 		}
 		// [deathz0r] Stats for co-op scoreboard
-		if (GAME.IsCooperation() &&
+		if (GAME.HasCooperation() &&
             ((target->flags & MF_COUNTKILL) || (target->type == MT_SKULL)))
 		{
 			P_GiveKills(sPlayer, 1);
@@ -1403,7 +1403,7 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 		if (!sv_friendlyfire && source && splayer && target != source &&
 			 mod != MOD_TELEFRAG)
 		{
-			if (GAME.IsCooperation() ||
+			if (GAME.HasCooperation() ||
 			   (GAME.IsTeamGame()	 &&	tplayer->userinfo.team == splayer->userinfo.team))
 			{
 				damage = 0;

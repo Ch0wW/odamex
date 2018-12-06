@@ -161,7 +161,7 @@ public:
 	int			cheats;					// Bit flags, for cheats and debug. See cheatflags_t (d_player.h) for more info.
 
 	// Refired shots are less accurate.
-	short		refire;
+	bool		refire;
 
 	// For screen flashing (red or bright).
 	int			damagecount, bonuscount;

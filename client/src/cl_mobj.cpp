@@ -98,7 +98,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	player.fov = 90.0f;
 	player.mo = player.camera = mobj->ptr();
 	player.playerstate = PST_LIVE;
-	player.refire = 0;
+	player.refire = false;
 	player.damagecount = 0;
 	player.bonuscount = 0;
 	player.lives = 0;

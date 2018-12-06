@@ -283,11 +283,14 @@ void G_Ticker (void)
 		case ga_loadlevel:
 			G_DoLoadLevel (-1);
 			break;
+		case ga_resetspectatorlevel:
+			G_DoResetLevel(RESTART_ALLSPECTATORS);
+			break;
 		case ga_fullresetlevel:
-			G_DoResetLevel(true);
+			G_DoResetLevel(RESTART_FULLRESET);
 			break;
 		case ga_resetlevel:
-			G_DoResetLevel(false);
+			G_DoResetLevel(RESTART_NORMAL);
 			break;
 		case ga_newgame:
 			G_DoNewGame ();
@@ -704,7 +707,7 @@ void G_DeathMatchSpawnPlayer (player_t &player)
 	int selections;
 	mapthing2_t *spot;
 
-	if (GAME.IsCooperation())	// Don't even think about COOP Spawns in Deathmatch !
+	if (GAME.HasCooperation())	// Don't even think about COOP Spawns in Deathmatch !
 		return;
 
 	if( GAME.IsTeamGame() )
@@ -763,7 +766,7 @@ void G_DoReborn (player_t &player)
 	}
 
 	// spawn at random spot if in death match
-	if (sv_gametype != GM_COOP)
+	if (!GAME.HasCooperation())
 	{
 		G_DeathMatchSpawnPlayer (player);
 		return;

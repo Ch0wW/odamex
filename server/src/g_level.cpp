@@ -73,7 +73,6 @@
 
 extern int nextupdate;
 
-
 EXTERN_CVAR (sv_endmapscript)
 EXTERN_CVAR (sv_startmapscript)
 EXTERN_CVAR (sv_curmap)
@@ -124,6 +123,11 @@ void G_DeferedInitNew (char *mapname)
 
 	// sv_nextmap cvar may be overridden by a script
 	sv_nextmap.ForceSet(d_mapname);
+}
+
+void G_DeferedFullResetWithSpectators()
+{
+	gameaction = ga_resetspectatorlevel;
 }
 
 void G_DeferedFullReset()
@@ -453,10 +457,6 @@ void G_InitNew (const char *mapname)
 
 	strncpy (level.mapname, mapname, 8);
 	G_DoLoadLevel (0);
-
-	// denis - hack to fix ctfmode, as it is only known after the map is processed!
-	//if(old_ctfmode != ctfmode)
-	//	SV_ServerSettingChange();
 }
 
 //
@@ -470,7 +470,7 @@ void G_ExitLevel (int position, int drawscores)
 	if (drawscores)
         SV_DrawScores();
 	
-	int intlimit = (sv_intermissionlimit < 1 || GAME.IsCooperation() ? DEFINTSECS : sv_intermissionlimit);
+	int intlimit = (sv_intermissionlimit < 1 || GAME.HasCooperation() ? DEFINTSECS : sv_intermissionlimit);
 
 	gamestate = GS_INTERMISSION;
 	shotclock = 0;
@@ -492,7 +492,7 @@ void G_SecretExitLevel (int position, int drawscores)
     if (drawscores)
         SV_DrawScores();
         
-	int intlimit = (sv_intermissionlimit < 1 || GAME.IsCooperation() ? DEFINTSECS : sv_intermissionlimit);
+	int intlimit = (sv_intermissionlimit < 1 || GAME.HasCooperation() ? DEFINTSECS : sv_intermissionlimit);
 
 	gamestate = GS_INTERMISSION;
 	shotclock = 0;
@@ -538,21 +538,22 @@ void G_DoSaveResetState()
 	arc << level.time;
 }
 
-// [AM] - Reset the state of the level.  Second parameter is true if you want
+// [AM] - Reset the state of the level.  Check maprestart_t if you want
 //        to zero-out gamestate as well (i.e. resetting scores, RNG, etc.).
-void G_DoResetLevel(bool full_reset)
+void G_DoResetLevel(maprestart_t restartlevel)
 {
 	gameaction = ga_nothing;
+
+	// No saved state to reload to
 	if (reset_snapshot == NULL)
 	{
-		// No saved state to reload to
 		DPrintf("G_DoResetLevel: No saved state to reload.");
 		return;
 	}
 
 	// Clear CTF state.
 	Players::iterator it;
-	if (sv_gametype == GM_CTF)
+	if (GAME.IsCTF())
 	{
 		for (size_t i = 0;i < NUMFLAGS;i++)
 		{
@@ -615,8 +616,9 @@ void G_DoResetLevel(bool full_reset)
 	// Clear the item respawn queue, otherwise all those actors we just
 	// destroyed and replaced with the serialized items will start respawning.
 	iquehead = iquetail = 0;
+
 	// Potentially clear out gamestate as well.
-	if (full_reset)
+	if (restartlevel >= RESTART_FULLRESET)
 	{
 		// Set time to the initial tic
 		level.time = level_time;
@@ -641,6 +643,10 @@ void G_DoResetLevel(bool full_reset)
 			// [AM] Only touch ready state if warmup mode is enabled.
 			if (sv_warmup)
 				it->ready = false;
+
+			// Ch0wW: Force everyone as spectator 
+			if (restartlevel == RESTART_ALLSPECTATORS)
+				it->spectator = true;
 		}
 		// For predictable first spawns.
 		M_ClearRandom();
@@ -671,7 +677,7 @@ void G_DoResetLevel(bool full_reset)
 		it->mo->Destroy();
 
 		// Set the respawning machinery in motion
-		it->playerstate = full_reset ? PST_ENTER : PST_REBORN;
+		it->playerstate = (restartlevel >= RESTART_FULLRESET) ? PST_ENTER : PST_REBORN;
 
 		// Do this here, otherwise players won't be reborn until next tic.
 		// [AM] Also, forgetting to do this will result in ticcmds that rely on

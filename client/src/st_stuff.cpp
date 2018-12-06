@@ -664,7 +664,7 @@ BEGIN_COMMAND (chase)
 	else
 	{
 		// Chase is a local cheat that may only work on SP and Coop
-		if (GAME.IsCooperation() || GAME.IsSinglePlayer())
+		if (GAME.HasCooperation() || GAME.IsSinglePlayer())
 		{
 			consoleplayer().cheats ^= CF_CHASECAM;
 			if (consoleplayer().cheats & CF_CHASECAM)
@@ -994,7 +994,7 @@ void ST_updateWidgets(void)
 	ST_updateFaceWidget();
 
 	// used by w_arms[] widgets
-	st_armson = st_statusbaron && GAME.IsCooperation();
+	st_armson = st_statusbaron && GAME.HasCooperation();
 
 	// used by w_frags widget
 	st_fragson = sv_gametype != GM_COOP && st_statusbaron;
@@ -1022,7 +1022,7 @@ void ST_Ticker()
 void ST_drawWidgets(bool force_refresh)
 {
 	// used by w_arms[] widgets
-	st_armson = st_statusbaron && GAME.IsCooperation();
+	st_armson = st_statusbaron && GAME.HasCooperation();
 
 	// used by w_frags widget
 	st_fragson = sv_gametype != GM_COOP && st_statusbaron;
@@ -1076,7 +1076,7 @@ static void ST_refreshBackground()
 	{
 		stbar_canvas->DrawPatch(flagsbg, ST_FLAGSBGX, ST_FLAGSBGY);
 	}
-	else if (GAME.IsCooperation())
+	else if (GAME.HasCooperation())
 	{
 		stbar_canvas->DrawPatch(armsbg, ST_ARMSBGX, ST_ARMSBGY);
 	}

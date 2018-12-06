@@ -197,7 +197,7 @@ argb_t CL_GetPlayerColor(player_t *player)
 	// apply r_teamcolor & r_enemycolor overrides
 	if (!consoleplayer().spectator)
 	{
-		if (GAME.IsCooperation())
+		if (GAME.HasCooperation())
 		{
 			if (r_forceteamcolor && player->id != consoleplayer_id)
 				color = argb_t(teamcolor[0], teamcolor[1], teamcolor[2], teamcolor[3]);
@@ -732,19 +732,22 @@ END_COMMAND (step)
 
 BEGIN_COMMAND (connect)
 {
+	connectpasshash = "";
+
 	if (argc == 1)
 	{
-	    Printf(PRINT_HIGH, "Usage: connect ip[:port] [password]\n");
-	    Printf(PRINT_HIGH, "\n");
-	    Printf(PRINT_HIGH, "Connect to a server, with optional port number");
-	    Printf(PRINT_HIGH, " and/or password\n");
-	    Printf(PRINT_HIGH, "eg: connect 127.0.0.1\n");
-	    Printf(PRINT_HIGH, "eg: connect 192.168.0.1:12345 secretpass\n");
+	    Printf(PRINT_WARNING, "Usage: connect ip[:port] [password]\n");
+	    Printf(PRINT_WARNING, "\n");
+	    Printf(PRINT_WARNING, "Connect to a server, with optional port number");
+	    Printf(PRINT_WARNING, " and/or password\n");
+	    Printf(PRINT_WARNING, "eg: connect 127.0.0.1\n");
+	    Printf(PRINT_WARNING, "eg: connect 192.168.0.1:12345 secretpass\n");
 
 	    return;
 	}
 
 	C_FullConsole();
+	simulated_connection = false; 
 	gamestate = GS_CONNECTING;
 
 	CL_QuitNetGame();
@@ -757,10 +760,6 @@ BEGIN_COMMAND (connect)
         if(argc > 2)
         {
             connectpasshash = MD5SUM(argv[2]);
-        }
-        else
-        {
-            connectpasshash = "";
         }
 
 		if(NET_StringToAdr (target.c_str(), &serveraddr))
@@ -1048,7 +1047,7 @@ END_COMMAND(changeteams)
 
 BEGIN_COMMAND(kill)
 {
-	if (sv_allowcheats || GAME.IsCooperation() || warmup.get_status() == warmup.WARMUP)
+	if (sv_allowcheats || GAME.HasCooperation() || warmup.get_status() == warmup.WARMUP)
 		MSG_WriteMarker(&net_buffer, clc_kill);
 	else
 		Printf(PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
@@ -1470,14 +1469,14 @@ void CL_UpdateScores(void)
 {
 	player_t &p = CL_FindPlayer(MSG_ReadByte());
 
-	if(GAME.IsCooperation())
+	if(GAME.HasCooperation())
 		p.killcount = MSG_ReadShort();
 	else
 		p.fragcount = MSG_ReadShort();
 
 	p.deathcount = MSG_ReadShort();
 
-	if (!GAME.IsCooperation()) {
+	if (!GAME.HasCooperation()) {
 		p.points = MSG_ReadShort();
 		p.fragspree = MSG_ReadShort();
 	}
@@ -2130,7 +2129,7 @@ void CL_UpdatePlayerState(void)
 	for (int i = 0; i < NUMPSPRITES; i++)
 		P_SetPsprite(&player, i, stnum[i]);
 
-	if (GAME.IsCooperation()) {
+	if (GAME.HasCooperation()) {
 		for (int i = 0; i < NUMCARDS; i++)
 			player.cards[i] = MSG_ReadByte();
 	}
@@ -2426,7 +2425,7 @@ void CL_SpawnPlayer()
 	p->mo = p->camera = mobj->ptr();
 	p->fov = 90.0f;
 	p->playerstate = PST_LIVE;
-	p->refire = 0;
+	p->refire = false;
 	p->damagecount = 0;
 	p->bonuscount = 0;
 	p->extralight = 0;

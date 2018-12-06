@@ -173,6 +173,12 @@ struct cluster_info_t {
 	int				flags;
 };
 
+typedef enum {
+	RESTART_NORMAL,			// Restart round (stats kept)
+	RESTART_FULLRESET,		// Restart level (all reset)
+	RESTART_ALLSPECTATORS	// Restart level (all reset, forced as spectator)
+} maprestart_t;
+
 // Only one cluster flag right now
 #define CLUSTER_HUB		0x00000001
 
@@ -200,6 +206,7 @@ void G_RestartMap (void);
 void G_DeferedInitNew (char *mapname);
 
 // Map reset functions
+void G_DeferedFullResetWithSpectators();
 void G_DeferedFullReset();
 void G_DeferedReset();
 
@@ -207,7 +214,10 @@ void G_ExitLevel (int position, int drawscores);
 void G_SecretExitLevel (int position, int drawscores);
 
 void G_DoLoadLevel (int position);
-void G_DoResetLevel (bool full_reset);
+
+#ifdef SERVER_APP
+void G_DoResetLevel (maprestart_t restartlevel);
+#endif
 
 void G_InitLevelLocals (void);
 

@@ -529,12 +529,12 @@ void A_ReFire(AActor* mo)
 		 && player->pendingweapon == wp_nochange
 		 && player->health)
 	{
-		player->refire++;
+		player->refire = true;
 		P_FireWeapon(player);
 	}
 	else
 	{
-		player->refire = 0;
+		player->refire = false;
 		P_CheckAmmo(player);
 	}
 }
@@ -717,8 +717,6 @@ void A_Saw(AActor* mo)
 	player->mo->flags |= MF_JUSTATTACKED;
 }
 
-
-
 //
 // A_FireMissile
 //
@@ -736,7 +734,6 @@ void A_FireMissile(AActor* mo)
 //
 // A_FireBFG
 //
-
 void A_FireBFG(AActor* mo)
 {
     player_t *player = mo->player;
@@ -792,10 +789,11 @@ void A_FireRailgun(AActor* mo)
 				  ps_flash,
 				  (statenum_t)(weaponinfo[player->readyweapon].flashstate+(P_Random (player->mo)&1)));
 
-	if (sv_gametype > 0)
-		damage = 100;
-	else
+	// Set slightly higher damage for PvE gamemodes.
+	if (GAME.HasCooperation())
 		damage = 150;
+	else
+		damage = 100;
 
 	// [SL] 2012-04-18 - Move players and sectors back to their positions when
 	// this player hit the fire button clientside.
@@ -831,7 +829,6 @@ void A_RailWait(AActor* mo)
 // Sets a slope so a near miss is at aproximately
 // the height of the intended target
 //
-
 fixed_t P_BulletSlope(AActor* mo)
 {
 	fixed_t pitchslope = finetangent[FINEANGLES/4 - (mo->pitch>>ANGLETOFINESHIFT)];
@@ -955,7 +952,6 @@ void A_FirePistol(AActor* mo)
 	P_FireHitscan (player, 1, accuracy);
 }
 
-
 //
 // A_FireShotgun
 //
@@ -974,8 +970,6 @@ void A_FireShotgun(AActor* mo)
 
 	P_FireHitscan (player, 7, SPREAD_NORMAL);
 }
-
-
 
 //
 // A_FireShotgun2

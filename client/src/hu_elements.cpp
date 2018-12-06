@@ -103,7 +103,7 @@ std::vector<player_t *> sortedPlayers(void) {
 		sortedplayers.push_back(&*it);
 	}
 
-	if (GAME.IsCooperation()) {
+	if (GAME.HasCooperation()) {
 		std::sort(sortedplayers.begin(), sortedplayers.end(), cmpKills);
 	} else {
 		std::sort(sortedplayers.begin(), sortedplayers.end(), cmpFrags);

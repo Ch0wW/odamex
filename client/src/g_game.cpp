@@ -866,9 +866,8 @@ void G_Ticker (void)
 		case ga_loadlevel:
 			G_DoLoadLevel (-1);
 			break;
+		case ga_resetspectatorlevel:
 		case ga_fullresetlevel:
-			gameaction = ga_nothing;
-			break;
 		case ga_resetlevel:
 			gameaction = ga_nothing;
 			break;
@@ -1354,7 +1353,7 @@ void G_DeathMatchSpawnPlayer (player_t &player)
 	int selections;
 	mapthing2_t *spot;
 
-	if(!serverside || GAME.IsCooperation())
+	if(!serverside || GAME.HasCooperation())
 		return;
 
 	//if (!ctfmode)

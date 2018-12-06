@@ -70,7 +70,7 @@ bool NetDemo::canAutoRecord()
 			|| (GAME.IsDuel() && cl_autorecord_duel)
 			|| (GAME.IsTeamDM() && cl_autorecord_tdm)
 			|| (GAME.IsCTF() && cl_autorecord_ctf)
-			|| (GAME.IsCooperation() && cl_autorecord_coop)
+			|| (GAME.IsCoop() && cl_autorecord_coop)
 		)
 			return true;
 	}
@@ -1109,7 +1109,7 @@ void NetDemo::writeLauncherSequence(buf_t *netbuffer)
 			MSG_WriteShort(netbuffer, it->killcount);
 			MSG_WriteShort(netbuffer, it->deathcount);
 
-			if (!GAME.IsCooperation())
+			if (!GAME.HasCooperation())
 				MSG_WriteShort(netbuffer, it->fragspree);
 			
 			int timeingame = (time(NULL) - it->JoinTime) / 60;

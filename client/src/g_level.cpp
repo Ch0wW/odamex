@@ -367,7 +367,7 @@ void G_DoCompleted (void)
 	strncpy (wminfo.lname0, level.info->pname, 8);
 	strncpy (wminfo.current, level.mapname, 8);
 
-	if (!GAME.IsCooperation() && !(level.flags & LEVEL_CHANGEMAPCHEAT)) {
+	if (!GAME.HasCooperation() && !(level.flags & LEVEL_CHANGEMAPCHEAT)) {
 		strncpy (wminfo.next, level.mapname, 8);
 		strncpy (wminfo.lname1, level.info->pname, 8);
 	} else {

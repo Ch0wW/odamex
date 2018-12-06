@@ -107,7 +107,7 @@ short Warmup::get_countdown()
 // Reset warmup to "factory defaults".
 void Warmup::reset()
 {
-	if (sv_warmup && !GAME.IsCooperation() && !GAME.isFFA()) 
+	if (sv_warmup && !GAME.HasCooperation() && !GAME.isFFA())
 		this->set_status(Warmup::WARMUP);
 	else
 		this->set_status(Warmup::DISABLED);

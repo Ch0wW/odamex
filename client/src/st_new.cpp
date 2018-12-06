@@ -181,7 +181,7 @@ void ST_initNew (void)
 	widestnum = widest;
 	numheight = tallnum[0]->height();
 
-	if (multiplayer && (GAME.IsCooperation() || demoplayback) && level.time)
+	if (multiplayer && (GAME.HasCooperation() || demoplayback) && level.time)
 		NameUp = level.time + 2*TICRATE;
 
 	line_leftempty = wads.CachePatch ("ODABARLE", PU_STATIC);

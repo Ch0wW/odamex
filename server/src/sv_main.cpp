@@ -824,9 +824,9 @@ void SV_UpdateFrags(player_t &player)
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_updatescores);
 		MSG_WriteByte(&cl->reliablebuf, player.id);
-		MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? player.killcount : player.fragcount);
+		MSG_WriteShort(&cl->reliablebuf, GAME.HasCooperation() ? player.killcount : player.fragcount);
 		MSG_WriteShort(&cl->reliablebuf, player.deathcount);
-		if (!GAME.IsCooperation())
+		if (!GAME.HasCooperation())
 		{
 			MSG_WriteShort(&cl->reliablebuf, player.points);
 			MSG_WriteShort(&cl->reliablebuf, player.fragspree);
@@ -1199,7 +1199,7 @@ bool SV_IsTeammate(player_t &a, player_t &b)
 		else
 			return false;
 	}
-	else if (GAME.IsCooperation())
+	else if (GAME.HasCooperation())
 		return true;
 
 	else return false;
@@ -1630,9 +1630,9 @@ void SV_ClientFullUpdate(player_t &pl)
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_updatescores);
 			MSG_WriteByte(&cl->reliablebuf, it->id);
-			MSG_WriteShort(&cl->reliablebuf, GAME.IsCooperation() ? it->killcount : it->fragcount);
+			MSG_WriteShort(&cl->reliablebuf, GAME.HasCooperation() ? it->killcount : it->fragcount);
 			MSG_WriteShort(&cl->reliablebuf, it->deathcount);
-			if (!GAME.IsCooperation())
+			if (!GAME.HasCooperation())
 			{
 				MSG_WriteShort(&cl->reliablebuf, it->points);	// Ch0wW : May be interesting for competitive COOP though
 				MSG_WriteShort(&cl->reliablebuf, it->fragspree);
@@ -3291,7 +3291,7 @@ void SV_SendPlayerStateUpdate(client_t *client, player_t *player)
 			MSG_WriteByte(buf, 0xFF);
 	}
 
-	if (GAME.IsCooperation()) {
+	if (GAME.HasCooperation()) {
 		for (int i = 0; i < NUMCARDS; i++)
 			MSG_WriteByte(buf, player->cards[i]);
 	}
@@ -4299,7 +4299,7 @@ void SV_ParseCommands(player_t &player)
 		case clc_kill:
 			if(player.mo &&
                (level.time > (player.RespawnTime + TICRATE*10)) &&
-               (sv_allowcheats || GAME.IsCooperation() || warmup.get_status() == warmup.WARMUP))
+               (sv_allowcheats || GAME.HasCooperation() || warmup.get_status() == warmup.WARMUP))
             {
 				SV_Suicide (player);
             }

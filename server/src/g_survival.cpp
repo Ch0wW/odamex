@@ -172,7 +172,7 @@ void Survival::Ticker()
 		}
 		else if (status == LMS_ROUNDOVER)
 		{
-			G_DeferedFullReset();			// Full reset map + stats
+			G_DeferedFullResetWithSpectators();			// Full reset map + stats
 			SetStatus(LMS_WARMUP);
 		}
 	}

@@ -2430,7 +2430,7 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 		playerstarts.push_back(*mthing);
 		player_t &p = idplayer(playernum+1);
 
-		if (clientside && GAME.IsCooperation() && (validplayer(p) && p.ingame()))
+		if (clientside && GAME.HasCooperation() && (validplayer(p) && p.ingame()))
 		{
 			P_SpawnPlayer (p, mthing);
 			return;
@@ -2450,7 +2450,7 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 		if (!(mthing->flags & MTF_DEATHMATCH))
 			return;
 	}
-	else if (GAME.IsCooperation())
+	else if (GAME.HasCooperation())
 	{
 		if (!(mthing->flags & MTF_COOPERATIVE))
 			return;

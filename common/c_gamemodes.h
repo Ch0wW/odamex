@@ -12,7 +12,7 @@ public:
 	const char *GetShortName() const;	
 
 	bool IsSinglePlayer();
-	bool IsCooperation();
+	bool IsCoop();
 	bool IsDeathmatch();
 	bool isFFA();
 	bool IsDuel();
@@ -24,6 +24,7 @@ public:
 	bool IsTeamGame();
 	bool IsTeamGame(byte gamebyte);
 
+	bool HasCooperation();				// Ch0wW : Check if we're in a PvE gamemode
 	bool HasWarmup();					// Ch0wW : if the gamemode can use warmups
 	bool HasLives();					// Ch0wW: if the gamemode uses rounds (LMS/TLMS/Surv)
 

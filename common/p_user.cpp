@@ -613,7 +613,7 @@ bool P_AreTeammates(player_t &a, player_t &b)
 	if (a.id == b.id)
 		return false;
 
-	return GAME.IsCooperation() || ((a.userinfo.team == b.userinfo.team) && GAME.IsTeamGame());
+	return GAME.HasCooperation() || ((a.userinfo.team == b.userinfo.team) && GAME.IsTeamGame());
 }
 
 //
@@ -992,7 +992,7 @@ player_s::player_s()
 	attackdown = 0;
 	usedown = 0;
 	cheats = 0;
-	refire = 0;
+	refire = false;
 	damagecount = 0;
 	bonuscount = 0;
 	attacker = AActor::AActorPtr();

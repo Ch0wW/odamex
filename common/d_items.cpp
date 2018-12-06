@@ -42,8 +42,8 @@
 //
 weaponinfo_t	weaponinfo[NUMWEAPONS] =
 {
+	// Fist
 	{
-		// fist
 		am_noammo,
 		S_PUNCHUP,
 		S_PUNCHDOWN,
@@ -53,9 +53,10 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		(mobjtype_t)0,
 		0,
 		0
-		},	
+	},
+
+	// Pistol
 	{
-		// pistol
 		am_clip,
 		S_PISTOLUP,
 		S_PISTOLDOWN,
@@ -66,8 +67,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		1,
 		1
 	},	
+
+	// Shotgun
 	{
-		// shotgun
 		am_shell,
 		S_SGUNUP,
 		S_SGUNDOWN,
@@ -78,8 +80,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		1,
 		1
 	},
+
+	// Chaingun
 	{
-		// chaingun
 		am_clip,
 		S_CHAINUP,
 		S_CHAINDOWN,
@@ -90,8 +93,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		1,
 		1
 	},
+
+	// Rocket Launcher
 	{
-		// missile launcher
 		am_misl,
 		S_MISSILEUP,
 		S_MISSILEDOWN,
@@ -102,8 +106,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		1,
 		1
 	},
+
+	// Plasma Rifle
 	{
-		// plasma rifle
 		am_cell,
 		S_PLASMAUP,
 		S_PLASMADOWN,
@@ -114,8 +119,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		1,
 		1
 	},
+
+	// BFG9000
 	{
-		// bfg 9000
 		am_cell,
 		S_BFGUP,
 		S_BFGDOWN,
@@ -126,8 +132,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		40,
 		40
 	},
+
+	// Chainsaw
 	{
-		// chainsaw
 		am_noammo,
 		S_SAWUP,
 		S_SAWDOWN,
@@ -138,8 +145,9 @@ weaponinfo_t	weaponinfo[NUMWEAPONS] =
 		0,
 		0
 	},
+
+	// Super Shotgun
 	{
-		// super shotgun
 		am_shell,
 		S_DSGUNUP,
 		S_DSGUNDOWN,

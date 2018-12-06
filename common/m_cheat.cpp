@@ -98,7 +98,7 @@ bool CheatInfos::AreCheatsEnabled(void)
 	if (sv_skill == sk_nightmare && !multiplayer)
 		return false;
 
-	if ((multiplayer || !GAME.IsCooperation()) && !sv_allowcheats)
+	if ((multiplayer || !GAME.HasCooperation()) && !sv_allowcheats)
 	{
 		Printf(PRINT_WARNING, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
 		return false;
