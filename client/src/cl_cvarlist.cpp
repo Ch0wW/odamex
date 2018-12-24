@@ -644,7 +644,7 @@ CVAR(			r_showendoom, "0", "Display the ENDDOOM text after quitting",
 CVAR(			r_loadicon, "1", "Display the disk icon when loading data from disk",
 				CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)
 
-CVAR_RANGE(		r_painintensity, "1", "Intensity of red pain effect",
+CVAR_RANGE(		r_painintensity, "0.5", "Intensity of red pain effect",
 				CVARTYPE_FLOAT, CVAR_CLIENTARCHIVE | CVAR_NOENABLEDISABLE, 0.0f, 1.0f)
 
 CVAR(			r_viewsize, "0", "Set to the current video resolution",
