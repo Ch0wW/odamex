@@ -500,7 +500,7 @@ void V_Init()
 
 	
 	V_InitPalette("PLAYPAL");
-	ConFont = new FSingleLumpFont("ConsoleFont", wads.GetNumForName("CONFONT"));
+	//ConFont = new FSingleLumpFont("ConsoleFont", wads.GetNumForName("CONFONT"));
 
 	if (realcolormaps.colormap)
 		Z_Free(realcolormaps.colormap);

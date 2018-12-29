@@ -364,7 +364,7 @@ BEGIN_COMMAND (unbind)
 		if ( (i = GetKeyFromName (argv[1])) )
 			Bindings[i] = "";
 		else
-			Printf (PRINT_HIGH, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
+			Printf (PRINT_WARNING, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
 	}
 }
 END_COMMAND (unbind)
@@ -376,20 +376,20 @@ BEGIN_COMMAND (bind)
 	if (argc > 1) {
 		i = GetKeyFromName (argv[1]);
 		if (!i) {
-			Printf (PRINT_HIGH, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
+			Printf (PRINT_WARNING, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
 			return;
 		}
 		if (argc == 2) {
-			Printf (PRINT_HIGH, "%s = %s\n", argv[1], C_QuoteString(Bindings[i]).c_str());
+			Printf ("%s = %s\n", argv[1], C_QuoteString(Bindings[i]).c_str());
 		} else {
 			Bindings[i] = argv[2];
 		}
 	} else {
-		Printf (PRINT_HIGH, "Current key bindings:\n");
+		Printf ("Current key bindings:\n");
 
 		for (i = 0; i < NUM_KEYS; i++) {
 			if (Bindings[i].length())
-				Printf (PRINT_HIGH, "%s %s\n", KeyName(i), C_QuoteString(Bindings[i]).c_str());
+				Printf ("%s %s\n", KeyName(i), C_QuoteString(Bindings[i]).c_str());
 		}
 	}
 }
@@ -404,7 +404,7 @@ BEGIN_COMMAND (undoublebind)
 		if ( (i = GetKeyFromName (argv[1])) )
 			DoubleBindings[i] = "";
 		else
-			Printf (PRINT_HIGH, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
+			Printf (PRINT_WARNING, "Unknown key %s\n", C_QuoteString(argv[1]).c_str());
 	}
 }
 END_COMMAND (undoublebind)
@@ -712,6 +712,33 @@ void C_ChangeBinding (const char *str, int newone)
 const char *C_GetBinding (int key)
 {
 	return Bindings[key].c_str();
+}
+
+std::string C_GetStringFromKey(char *cmd)
+{
+	int first = -1;
+	int second = -1;
+
+	C_GetKeysForCommand(cmd, &first, &second);
+
+	if (first == 0 && second == 0)
+		return "<UNKNOWN>";
+
+	if (first > 0 || second > 0)
+	{
+		if (first > 0 && second > 0)
+		{
+				std::string test = C_NameKeys(first, second);
+				return test;
+
+		}
+		else if (second == 0)
+		{
+			return KeyName(first);
+		}
+	}
+
+	return "<UNKNOWN>";
 }
 
 VERSION_CONTROL (c_bind_cpp, "$Id$")

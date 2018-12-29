@@ -43,6 +43,10 @@ void C_ChangeBinding (const char *str, int newone);
 // Returns string bound to given key (NULL if none)
 const char *C_GetBinding (int key);
 
+// Returns string bound to given cmd (<UNKNOWN> if none)
+std::string C_GetStringFromKey(char *cmd);
+
+
 void C_ReleaseKeys();
 
 #endif //__C_BINDINGS_H__
