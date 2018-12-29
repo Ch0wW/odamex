@@ -721,24 +721,21 @@ std::string C_GetStringFromKey(char *cmd)
 
 	C_GetKeysForCommand(cmd, &first, &second);
 
-	if (first == 0 && second == 0)
+	if (!first && !second)
 		return "<UNKNOWN>";
 
-	if (first > 0 || second > 0)
-	{
-		if (first > 0 && second > 0)
-		{
-				std::string test = C_NameKeys(first, second);
-				return test;
+	std::string out;
 
-		}
-		else if (second == 0)
-		{
-			return KeyName(first);
-		}
+	if (first)
+	{
+		out += KeyName(first);
+		if (second)out += " or ";
 	}
 
-	return "<UNKNOWN>";
+	if (second)
+		out += KeyName(second);
+
+	return out;
 }
 
 VERSION_CONTROL (c_bind_cpp, "$Id$")

@@ -220,7 +220,7 @@ std::string Warmup(int& color)
 			{
 				char var[64];
 				sprintf(var, "Warmup: Press %s to ready up", C_GetStringFromKey("ready").c_str());
-				return std::string(var);
+				return var;
 			}
 			else
 				return "Warmup: This player is not ready";
