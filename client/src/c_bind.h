@@ -36,7 +36,7 @@ void C_ArchiveBindings (FILE *f);
 
 // Stuff used by the customize controls menu
 int  C_GetKeysForCommand (const char *cmd, int *first, int *second);
-std::string C_NameKeys (int first, int second);
+std::string C_NameKeys (int first, int second, std::string def="???");
 void C_UnbindACommand (const char *str);
 void C_ChangeBinding (const char *str, int newone);
 
@@ -44,7 +44,7 @@ void C_ChangeBinding (const char *str, int newone);
 const char *C_GetBinding (int key);
 
 // Returns string bound to given cmd (<UNKNOWN> if none)
-std::string C_GetStringFromKey(char *cmd);
+std::string C_GetKeyStringsFromCommand(char *cmd);
 
 
 void C_ReleaseKeys();

@@ -652,10 +652,10 @@ int C_GetKeysForCommand (const char *cmd, int *first, int *second)
 	return c;
 }
 
-std::string C_NameKeys (int first, int second)
+std::string C_NameKeys (int first, int second, std::string def)
 {
 	if(!first && !second)
-		return "???";
+		return def;
 
 	std::string out;
 
@@ -714,28 +714,14 @@ const char *C_GetBinding (int key)
 	return Bindings[key].c_str();
 }
 
-std::string C_GetStringFromKey(char *cmd)
+std::string C_GetKeyStringsFromCommand(char *cmd)
 {
 	int first = -1;
 	int second = -1;
 
 	C_GetKeysForCommand(cmd, &first, &second);
 
-	if (!first && !second)
-		return "<UNKNOWN>";
-
-	std::string out;
-
-	if (first)
-	{
-		out += KeyName(first);
-		if (second)out += " or ";
-	}
-
-	if (second)
-		out += KeyName(second);
-
-	return out;
+	return C_NameKeys(first, second, "<UNKNOWN>");
 }
 
 VERSION_CONTROL (c_bind_cpp, "$Id$")
