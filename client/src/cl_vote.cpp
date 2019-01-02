@@ -90,7 +90,7 @@ bool VoteState::get(vote_state_t &vote_state) {
 //////// CALLBACKS & ERRBACKS ////////
 
 void CMD_MapVoteErrback(const std::string &error) {
-	Printf(PRINT_HIGH, "callvote failed: %s\n", error.c_str());
+	Printf(PRINT_ERROR, "callvote failed: %s\n", error.c_str());
 }
 
 void CMD_MapVoteCallback(const query_result_t &result) {
@@ -115,7 +115,7 @@ void CMD_MapVoteCallback(const query_result_t &result) {
 }
 
 void CMD_RandmapVoteErrback(const std::string &error) {
-	Printf(PRINT_HIGH, "callvote failed: %s\n", error.c_str());
+	Printf(PRINT_ERROR, "callvote failed: %s\n", error.c_str());
 }
 
 void CMD_RandmapVoteCallback(const query_result_t &result) {
@@ -142,7 +142,7 @@ void CMD_RandmapVoteCallback(const query_result_t &result) {
 BEGIN_COMMAND(callvote) {
 	// Dumb question, but are we even connected to a server?
 	if (!connected) {
-		Printf(PRINT_HIGH, "callvote failed: You are not connected to a server.\n");
+		Printf(PRINT_ERROR, "callvote failed: You are not connected to a server.\n");
 		return;
 	}
 
@@ -166,7 +166,7 @@ BEGIN_COMMAND(callvote) {
 
 		if (votecmd == VOTE_NONE) {
 			// We passed an argument but it wasn't a valid vote type.
-			Printf(PRINT_HIGH, "callvote failed: Invalid vote \"%s\".\n", votecmd_s.c_str());
+			Printf(PRINT_WARNING, "callvote failed: Invalid vote \"%s\".\n", votecmd_s.c_str());
 			return;
 		}
 	}
@@ -199,7 +199,7 @@ BEGIN_COMMAND(callvote) {
 	case VOTE_MAP:
 		// If we have no arguments, ask for more.
 		if (arguments.empty()) {
-			Printf(PRINT_HIGH, "callvote failed: \"map\" callvote needs a maplist index or unambiguous map name.\n");
+			Printf(PRINT_WARNING, "callvote failed: \"map\" callvote needs a maplist index or unambiguous map name.\n");
 			return;
 		}
 
@@ -236,7 +236,7 @@ BEGIN_COMMAND(callvote) {
  */
 BEGIN_COMMAND(vote_yes) {
 	if (!connected) {
-		Printf(PRINT_HIGH, "vote failed: You are not connected to a server.\n");
+		Printf(PRINT_ERROR, "vote failed: You are not connected to a server.\n");
 		return;
 	}
 
@@ -249,7 +249,7 @@ BEGIN_COMMAND(vote_yes) {
  */
 BEGIN_COMMAND(vote_no) {
 	if (!connected) {
-		Printf(PRINT_HIGH, "vote failed: You are not connected to a server.\n");
+		Printf(PRINT_ERROR, "vote failed: You are not connected to a server.\n");
 		return;
 	}
 

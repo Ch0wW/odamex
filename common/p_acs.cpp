@@ -217,7 +217,7 @@ static void DoGiveInv(player_t* player, const char* type, int amount)
 	}
 
 	// Unknown item.
-	Printf(PRINT_HIGH, "I don't know what %s is\n", type);
+	Printf(PRINT_WARNING, "I don't know what %s is\n", type);
 }
 
 static void GiveInventory(AActor* activator, const char* type, int amount)
@@ -1461,7 +1461,7 @@ int DLevelScript::DoSpawnSpot(int type, int spot, int tid, int angle)
 
 void DLevelScript::DoFadeTo (int r, int g, int b, int a, fixed_t time)
 {
-    Printf(PRINT_HIGH,"DoFadeRange now... \n");
+    DPrintf("DoFadeRange now... \n");
 	DoFadeRange (0, 0, 0, -1, r, g, b, a, time);
 }
 

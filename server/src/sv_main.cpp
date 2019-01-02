@@ -4684,18 +4684,18 @@ BEGIN_COMMAND (playerinfo)
 	else if (player->userinfo.team == TEAM_RED)
 		sprintf(team, "RED");
 
-	Printf(PRINT_HIGH, "---------------[player info]----------- \n");
-	Printf(PRINT_HIGH, " IP Address       - %s \n",		ip);
-	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.netname.c_str());
-	Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
-	Printf(PRINT_HIGH, " userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
-	Printf(PRINT_HIGH, " userinfo.unlag   - %d \n",		player->userinfo.unlag);
-	Printf(PRINT_HIGH, " userinfo.color   - %s \n",		color);
-	Printf(PRINT_HIGH, " userinfo.gender  - %d \n",		player->userinfo.gender);
-	Printf(PRINT_HIGH, " time             - %d \n",		player->GameTime);
-	Printf(PRINT_HIGH, " spectator        - %d \n",		player->spectator);
-	Printf(PRINT_HIGH, " downloader       - %d \n",		player->playerstate == PST_DOWNLOAD);
-	Printf(PRINT_HIGH, "--------------------------------------- \n");
+	Printf("---------------[player info]----------- \n");
+	Printf(" IP Address       - %s \n",		ip);
+	Printf(" userinfo.netname - %s \n",		player->userinfo.netname.c_str());
+	Printf(" userinfo.team    - %s \n",		team);
+	Printf(" userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
+	Printf(" userinfo.unlag   - %d \n",		player->userinfo.unlag);
+	Printf(" userinfo.color   - %s \n",		color);
+	Printf(" userinfo.gender  - %d \n",		player->userinfo.gender);
+	Printf(" time             - %d \n",		player->GameTime);
+	Printf(" spectator        - %d \n",		player->spectator);
+	Printf(" downloader       - %d \n",		player->playerstate == PST_DOWNLOAD);
+	Printf("--------------------------------------- \n");
 }
 END_COMMAND (playerinfo)
 
@@ -4705,14 +4705,14 @@ BEGIN_COMMAND (playerlist)
 
 	for (Players::reverse_iterator it = players.rbegin();it != players.rend();++it)
 	{
-		Printf(PRINT_HIGH, "(%02d): %s - %s - frags:%d ping:%d\n",
+		Printf("(%02d): %s - %s - frags:%d ping:%d\n",
 		       it->id, it->userinfo.netname.c_str(), NET_AdrToString(it->client.address), it->fragcount, it->ping);
 		anybody = true;
 	}
 
 	if (!anybody)
 	{
-		Printf(PRINT_HIGH, "There are no players on the server\n");
+		Printf(PRINT_WARNING, "There are no players on the server\n");
 		return;
 	}
 }

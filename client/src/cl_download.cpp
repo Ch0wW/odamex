@@ -146,17 +146,17 @@ void IntDownloadComplete(void)
 {
     std::string actual_md5 = MD5SUM(download.buf->ptr(), download.buf->maxsize());
 
-	Printf(PRINT_HIGH, "\nDownload complete, got %u bytes\n", download.buf->maxsize());
-	Printf(PRINT_HIGH, "%s\n %s\n", download.filename.c_str(), actual_md5.c_str());
+	Printf("\nDownload complete, got %u bytes\n", download.buf->maxsize());
+	Printf("%s\n %s\n", download.filename.c_str(), actual_md5.c_str());
 
 	if(download.md5 == "")
 	{
-		Printf(PRINT_HIGH, "Server gave no checksum, assuming valid\n", (int)download.buf->maxsize());
+		Printf(PRINT_WARNING, "Server gave no checksum, assuming valid\n", (int)download.buf->maxsize());
 	}
 	else if(actual_md5 != download.md5)
 	{
-		Printf(PRINT_HIGH, " %s on server\n", download.md5.c_str());
-		Printf(PRINT_HIGH, "Download failed: bad checksum\n");
+		Printf(PRINT_ERROR, " %s on server\n", download.md5.c_str());
+		Printf(PRINT_ERROR, "Download failed: bad checksum\n");
 
 		download.clear();
         CL_QuitNetGame();
@@ -215,7 +215,7 @@ void IntDownloadComplete(void)
         return;
     }
 
-    Printf(PRINT_HIGH, "Saved download as \"%s\"\n", filename.c_str());
+    Printf("Saved download as \"%s\"\n", filename.c_str());
 
 	download.clear();
     CL_QuitNetGame();
@@ -249,7 +249,7 @@ void CL_RequestDownload(std::string filename, std::string filehash)
 
 		NET_SendPacket(net_buffer, serveraddr);
 
-		Printf(PRINT_HIGH, "Requesting download...\n");
+		Printf("Requesting download...\n");
 
 		// check for completion
 		// [Russell] - We go over the boundary, because sometimes the download will
@@ -275,14 +275,14 @@ void CL_DownloadStart()
 
 	if(gamestate != GS_DOWNLOAD)
 	{
-		Printf(PRINT_HIGH, "Server initiated download failed\n");
+		Printf(PRINT_ERROR, "Server initiated download failed\n");
 		return;
 	}
 
 	// don't go for more than 100 megs
 	if(file_len > 100*1024*1024)
 	{
-		Printf(PRINT_HIGH, "Download is over 100MiB, aborting!\n");
+		Printf(PRINT_ERROR, "Download is over 100MiB, aborting!\n");
 		CL_QuitNetGame();
 		return;
 	}
@@ -301,12 +301,11 @@ void CL_DownloadStart()
         memset(download.buf->ptr(), 0, file_len);
     }
     else
-        Printf(PRINT_HIGH, "Resuming download of %s...\n", download.filename.c_str());
+        Printf("Resuming download of %s...\n", download.filename.c_str());
 
 
 
-	Printf(PRINT_HIGH, "Downloading %s bytes...\n",
-        FormatNBytes(file_len).c_str());
+	Printf("Downloading %s bytes...\n", FormatNBytes(file_len).c_str());
 
 	// Make initial 0% show
 	SetDownloadPercentage(0);
@@ -362,7 +361,7 @@ void CL_DownloadTicker()
 
     if (download.retrycount >= 5)
     {
-        Printf(PRINT_HIGH, "Server hasn't responded to download re-requests, aborting\n");
+        Printf(PRINT_ERROR, "Server hasn't responded to download re-requests, aborting\n");
 
         download.retrycount = 0;
         download.timeout = 0;
@@ -390,7 +389,7 @@ void CL_Download()
 	if (download.buf == NULL)
 	{
 		// We must have not received the svc_wadinfo message
-		Printf(PRINT_HIGH, "Unable to start download, aborting\n");
+		Printf(PRINT_ERROR, "Unable to start download, aborting\n");
 		download.clear();
 		CL_QuitNetGame();
 		return;
@@ -399,7 +398,7 @@ void CL_Download()
 	// check ranges
 	if(offset + len > download.buf->maxsize() || len > left || p == NULL)
 	{
-		Printf(PRINT_HIGH, "Bad download packet (%d, %d) encountered (%d), aborting\n", (int)offset, (int)left, (int)download.buf->size());
+		Printf(PRINT_ERROR, "Bad download packet (%d, %d) encountered (%d), aborting\n", (int)offset, (int)left, (int)download.buf->size());
 
 		download.clear();
 		CL_QuitNetGame();

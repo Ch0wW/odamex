@@ -532,9 +532,9 @@ void Z_DumpHeap(int lowtag, int hightag)
 	Z_FreeMemory();
     memblock_t*	block;
 	
-    Printf(PRINT_HIGH, "zone size: %i  location: %p\n", mainzone->size, mainzone);
-	Printf(PRINT_HIGH, "used: %i  free: %i\n", pfree+lsize, efree);
-    Printf(PRINT_HIGH, "tag range: %i to %i\n", lowtag, hightag);
+    Printf("zone size: %i  location: %p\n", mainzone->size, mainzone);
+	Printf("used: %i  free: %i\n", pfree+lsize, efree);
+    Printf("tag range: %i to %i\n", lowtag, hightag);
 	
     for (block = mainzone->blocklist.next ; ; block = block->next)
     {
@@ -565,20 +565,20 @@ void Z_DumpHeap(int lowtag, int hightag)
 			sprintf(tag, "UNKNOWN");
 
 		if (block->tag >= lowtag && block->tag <= hightag)
-			Printf(PRINT_HIGH, "block:%p    size:%9i    user:%-9s    tag:%-s\n",
+			Printf("block:%p    size:%9i    user:%-9s    tag:%-s\n",
 				block, block->size, user, tag);
 		
 		if (block->next == &mainzone->blocklist)
 			break;		// all blocks have been hit
 	
 		if ((byte*)block + block->size != (byte*)block->next)
-			Printf(PRINT_HIGH, "ERROR: block size does not touch the next block\n");
+			Printf(PRINT_ERROR, "ERROR: block size does not touch the next block\n");
 
 		if (block->next->prev != block)
-			Printf(PRINT_HIGH, "ERROR: next block doesn't have proper back link\n");
+			Printf(PRINT_ERROR, "ERROR: next block doesn't have proper back link\n");
 
 		if (block->tag == PU_FREE && block->next->tag == PU_FREE)
-			Printf(PRINT_HIGH, "ERROR: two consecutive free blocks\n");
+			Printf(PRINT_ERROR, "ERROR: two consecutive free blocks\n");
     }
 }
 
@@ -602,8 +602,7 @@ BEGIN_COMMAND (mem)
 {
 	Z_FreeMemory();
 
-	Printf(PRINT_HIGH,
-			"%u blocks:\n"
+	Printf(	"%u blocks:\n"
 			"% 5u used      (%u, %u)\n"
 			" % 5u purgable (%u, %u)\n"
 			" % 5u locked   (%u, %u)\n"

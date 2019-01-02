@@ -234,7 +234,7 @@ void C_DoCommand (const char *cmd)
 						com->Run();
 					}
 					else
-						Printf(PRINT_HIGH, "set command not found\n");
+						Printf(PRINT_WARNING, "set command not found\n");
 				}
 				else
 				{
@@ -420,7 +420,7 @@ BEGIN_COMMAND (exec)
 		if(line.substr(0, 6) == "#endif")
 		{
 			if(tag_stack.empty())
-				Printf(PRINT_HIGH, "Ignoring stray #endif\n");
+				Printf(PRINT_WARNING, "Ignoring stray #endif\n");
 			else
 				tag_stack.pop_back();
 
@@ -452,7 +452,7 @@ BEGIN_COMMAND (if)
 
 	if (!var)
 	{
-		Printf(PRINT_HIGH, "if: no cvar named %s\n", argv[1]);
+		Printf(PRINT_WARNING, "if: no cvar named %s\n", argv[1]);
 		return;
 	}
 
@@ -468,8 +468,8 @@ BEGIN_COMMAND (if)
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "if: no operator %s\n", argv[2]);
-		Printf(PRINT_HIGH, "if: operators are eq, ne\n");
+		Printf(PRINT_WARNING, "if: no operator %s\n", argv[2]);
+		Printf(PRINT_WARNING, "if: operators are eq, ne\n");
 		return;
 	}
 
@@ -669,7 +669,7 @@ void DConsoleAlias::Run()
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "warning: ignored recursive alias");
+		Printf(PRINT_WARNING, "warning: ignored recursive alias");
 	}
 }
 
@@ -805,13 +805,13 @@ BEGIN_COMMAND (alias)
 			}
 			else
 			{
-				Printf(PRINT_HIGH, "%s: is a command, can not become an alias\n", argv[1]);
+				Printf(PRINT_ERROR, "%s: is a command, can not become an alias\n", argv[1]);
 				return;
 			}
 		}
 		else if(argc == 2)
 		{
-			Printf(PRINT_HIGH, "%s: not an alias\n", argv[1]);
+			Printf(PRINT_WARNING, "%s: not an alias\n", argv[1]);
 			return;
 		}
 

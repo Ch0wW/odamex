@@ -294,7 +294,7 @@ public:
 	void dump() const
 	{
 		for (IdentifierTable::const_iterator it = mIdentifiers.begin(); it != mIdentifiers.end(); ++it)
-			Printf(PRINT_HIGH, "%s %s %s\n", it->mGroupName.c_str(), it->mFilename.c_str(), it->mMd5Sum.c_str());
+			Printf("%s %s %s\n", it->mGroupName.c_str(), it->mFilename.c_str(), it->mMd5Sum.c_str());
 	}
 
 private:

@@ -72,7 +72,7 @@ const char *FStat::getname()
 void FStat::dumpstat()
 {
 	for(size_t i = 0; i < stats.size(); i++)
-		Printf(PRINT_HIGH, "%s\n", stats[i]->getname());
+		Printf("%s\n", stats[i]->getname());
 }
 
 void FStat::dumpstat(std::string which)

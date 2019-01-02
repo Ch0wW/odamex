@@ -1144,7 +1144,7 @@ ISDL20Window::ISDL20Window(uint16_t width, uint16_t height, uint8_t bpp, bool fu
 {
 	setRendererDriver();
 	const char* driver_name = getRendererDriver();
-	Printf(PRINT_HIGH, "V_Init: rendering mode \"%s\"\n", driver_name);
+	Printf("V_Init: rendering mode \"%s\"\n", driver_name);
 
 	uint32_t window_flags = SDL_WINDOW_SHOWN;
 

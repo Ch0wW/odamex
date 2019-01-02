@@ -559,7 +559,7 @@ bool ST_Responder (event_t *ev)
             if (CheckCheatmode ())
                 return false;
 
-            Printf(PRINT_HIGH, "Ammo (No keys) Added\n");
+            Printf(PRINT_LOCALEVENT, "Ammo (No keys) Added\n");
 
             plyr->armorpoints = deh.FAArmor;
             plyr->armortype = deh.FAAC;
@@ -584,7 +584,7 @@ bool ST_Responder (event_t *ev)
             if (CheckCheatmode ())
                 return false;
 
-            Printf(PRINT_HIGH, "Very Happy Ammo Added\n");
+            Printf(PRINT_LOCALEVENT, "Very Happy Ammo Added\n");
 
             plyr->armorpoints = deh.KFAArmor;
             plyr->armortype = deh.KFAAC;
@@ -737,9 +737,9 @@ BEGIN_COMMAND (god)
 	consoleplayer().cheats ^= CF_GODMODE;
 
     if (consoleplayer().cheats & CF_GODMODE)
-        Printf(PRINT_HIGH, "Degreelessness mode on\n");
+        Printf(PRINT_LOCALEVENT, "Degreelessness mode on\n");
     else
-        Printf(PRINT_HIGH, "Degreelessness mode off\n");
+        Printf(PRINT_LOCALEVENT, "Degreelessness mode off\n");
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
@@ -754,9 +754,9 @@ BEGIN_COMMAND (notarget)
 	consoleplayer().cheats ^= CF_NOTARGET;
 
     if (consoleplayer().cheats & CF_NOTARGET)
-        Printf(PRINT_HIGH, "Notarget on\n");
+        Printf(PRINT_LOCALEVENT, "Notarget on\n");
     else
-        Printf(PRINT_HIGH, "Notarget off\n");
+        Printf(PRINT_LOCALEVENT, "Notarget off\n");
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
@@ -771,9 +771,9 @@ BEGIN_COMMAND (fly)
 	consoleplayer().cheats ^= CF_FLY;
 
     if (consoleplayer().cheats & CF_FLY)
-        Printf(PRINT_HIGH, "Fly mode on\n");
+        Printf(PRINT_LOCALEVENT, "Fly mode on\n");
     else
-        Printf(PRINT_HIGH, "Fly mode off\n");
+        Printf(PRINT_LOCALEVENT, "Fly mode off\n");
 
 	if (!consoleplayer().spectator)
 	{
@@ -791,9 +791,9 @@ BEGIN_COMMAND (noclip)
 	consoleplayer().cheats ^= CF_NOCLIP;
 
     if (consoleplayer().cheats & CF_NOCLIP)
-        Printf(PRINT_HIGH, "No clipping mode on\n");
+        Printf(PRINT_LOCALEVENT, "No clipping mode on\n");
     else
-        Printf(PRINT_HIGH, "No clipping mode off\n");
+        Printf(PRINT_LOCALEVENT, "No clipping mode off\n");
 
 	MSG_WriteMarker(&net_buffer, clc_cheat);
 	MSG_WriteByte(&net_buffer, consoleplayer().cheats);
@@ -893,7 +893,7 @@ BEGIN_COMMAND (fov)
 		return;
 
 	if (argc != 2)
-		Printf(PRINT_HIGH, "fov is %g\n", m_Instigator->player->fov);
+		Printf("fov is %g\n", m_Instigator->player->fov);
 	else
 	{
 		m_Instigator->player->fov = clamp((float)atof(argv[1]), 45.0f, 135.0f);

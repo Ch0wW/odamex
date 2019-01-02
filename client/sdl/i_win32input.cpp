@@ -504,7 +504,7 @@ void IRawWin32MouseInputDevice::debug() const
 			cur_window, mWindow, hwndTarget);
 
 	WNDPROC wndproc = (WNDPROC)GetWindowLongPtr(cur_window, GWLP_WNDPROC);
-	Printf(PRINT_HIGH, "IRawWin32MouseInputDevice: windowProcWrapper Address: 0x%x, Current Window WNDPROC Address: 0x%x\n",
+	Printf(PRINT_ERROR, "IRawWin32MouseInputDevice: windowProcWrapper Address: 0x%x, Current Window WNDPROC Address: 0x%x\n",
 			IRawWin32MouseInputDevice::windowProcWrapper, wndproc);
 			
     #endif

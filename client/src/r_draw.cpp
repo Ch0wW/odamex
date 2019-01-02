@@ -605,7 +605,7 @@ static forceinline void R_FillSpanGeneric(PIXEL_T* dest, const drawspan_t& draws
 	if (drawspan.x2 < drawspan.x1 || drawspan.x1 < 0 || drawspan.x2 >= viewwidth ||
 		drawspan.y >= viewheight || drawspan.y < 0)
 	{
-		Printf(PRINT_HIGH, "R_FillSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
+		Printf("R_FillSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
 		return;
 	}
 #endif
@@ -638,7 +638,7 @@ static forceinline void R_DrawLevelSpanGeneric(PIXEL_T* dest, const drawspan_t& 
 	if (drawspan.x2 < drawspan.x1 || drawspan.x1 < 0 || drawspan.x2 >= viewwidth ||
 		drawspan.y >= viewheight || drawspan.y < 0)
 	{
-		Printf(PRINT_HIGH, "R_DrawLevelSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
+		Printf("R_DrawLevelSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
 		return;
 	}
 #endif
@@ -691,7 +691,7 @@ static forceinline void R_DrawSlopedSpanGeneric(PIXEL_T* dest, const drawspan_t&
 	if (drawspan.x2 < drawspan.x1 || drawspan.x1 < 0 || drawspan.x2 >= viewwidth ||
 		drawspan.y >= viewheight || drawspan.y < 0)
 	{
-		Printf(PRINT_HIGH, "R_DrawSlopedSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
+		Printf("R_DrawSlopedSpan: %i to %i at %i", drawspan.x1, drawspan.x2, drawspan.y);
 		return;
 	}
 #endif
@@ -1485,7 +1485,7 @@ static std::string get_optimization_name_list(const bool includeNone)
 
 static void print_optimizations()
 {
-	Printf(PRINT_HIGH, "r_optimize detected \"%s\"\n", get_optimization_name_list(false).c_str());
+	Printf("r_optimize detected \"%s\"\n", get_optimization_name_list(false).c_str());
 }
 
 static bool detect_optimizations()
@@ -1550,7 +1550,7 @@ CVAR_FUNC_IMPL(r_optimize)
 		optimize_kind = optimizations_available.back();
 	else
 	{
-		Printf(PRINT_HIGH, "Invalid value for r_optimize. Availible options are \"%s, detect\"\n",
+		Printf("Invalid value for r_optimize. Availible options are \"%s, detect\"\n",
 				get_optimization_name_list(true).c_str());
 
 		// Restore the original setting:
@@ -1563,7 +1563,7 @@ CVAR_FUNC_IMPL(r_optimize)
 	{
 		// update the cvar string
 		// this will trigger the callback to run a second time
-		Printf(PRINT_HIGH, "r_optimize set to \"%s\" based on availability\n", optimize_name);
+		Printf("r_optimize set to \"%s\" based on availability\n", optimize_name);
 		var.Set(optimize_name);
 	}
 	else

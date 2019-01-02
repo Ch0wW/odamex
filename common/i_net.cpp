@@ -149,7 +149,7 @@ void init_upnp (void)
 	memset(&urls, 0, sizeof(struct UPNPUrls));
 	memset(&data, 0, sizeof(struct IGDdatas));
 
-	Printf(PRINT_HIGH, "UPnP: Discovering router (max 1 unit supported)\n");
+	Printf("UPnP: Discovering router (max 1 unit supported)\n");
 
 #if MINIUPNPC_API_VERSION < 14
 	devlist = upnpDiscover(sv_upnp_discovertimeout.asInt(), NULL, NULL, 0, 0, &res);
@@ -160,7 +160,7 @@ void init_upnp (void)
 
 	if (!devlist || res != UPNPDISCOVER_SUCCESS)
     {
-		Printf(PRINT_HIGH, "UPnP: Router not found or timed out, error %d\n",
+		Printf(PRINT_ERROR, "UPnP: Router not found or timed out, error %d\n",
             res);
 
         is_upnp_ok = false;
@@ -180,7 +180,7 @@ void init_upnp (void)
     if (!dev)
         dev = devlist; /* defaulting to first device */
 
-    //Printf(PRINT_HIGH, "UPnP device :\n"
+    //Printf( "UPnP device :\n"
       //      " desc: %s\n st: %s\n",
         //    dev->descURL, dev->st);
 
@@ -205,14 +205,14 @@ void init_upnp (void)
 
     if (r != 0)
     {
-        Printf(PRINT_HIGH,
+        Printf(PRINT_WARNING,
             "UPnP: Router found but unable to get external IP address\n");
 
         is_upnp_ok = false;
     }
     else
     {
-        Printf(PRINT_HIGH, "UPnP: Router found, external IP address is: %s\n",
+        Printf("UPnP: Router found, external IP address is: %s\n",
             IPAddress);
 
         // Store ip address just in case admin wants it
@@ -250,13 +250,13 @@ void upnp_add_redir (const char * addr, int port)
 
 	if (r != 0)
 	{
-		Printf(PRINT_HIGH, "UPnP: AddPortMapping failed: %d\n", r);
+		Printf(PRINT_ERROR, "UPnP: AddPortMapping failed: %d\n", r);
 
         is_upnp_ok = false;
 	}
     else
     {
-        Printf(PRINT_HIGH, "UPnP: Port mapping added to router: %s",
+        Printf("UPnP: Port mapping added to router: %s",
             sv_upnp_description.cstring());
 
         is_upnp_ok = true;
@@ -280,7 +280,7 @@ void upnp_rem_redir (int port)
 
 	if (r != 0)
     {
-        Printf(PRINT_HIGH, "UPnP: DeletePortMapping failed: %d\n", r);
+        Printf(PRINT_ERROR, "UPnP: DeletePortMapping failed: %d\n", r);
         is_upnp_ok = false;
     }
     else
@@ -341,20 +341,20 @@ void BindToLocalPort (SOCKET s, u_short wanted)
     {
         sv_upnp_internalip.Set(ip.c_str());
 
-        Printf(PRINT_HIGH, "UPnP: Internal IP address is: %s\n", ip.c_str());
+        Printf("UPnP: Internal IP address is: %s\n", ip.c_str());
 
         upnp_add_redir(ip.c_str(), next - 1);
     }
     else
     {
-        Printf(PRINT_HIGH, "UPnP: Could not get first internal IP address, "
+        Printf(PRINT_ERROR, "UPnP: Could not get first internal IP address, "
             "UPnP will not function\n");
 
         is_upnp_ok = false;
     }
 #endif
 
-	Printf(PRINT_HIGH, "Bound to local port %d\n", next - 1);
+	Printf("Bound to local port %d\n", next - 1);
 }
 
 
@@ -550,12 +550,12 @@ std::string NET_GetLocalAddress (void)
         addr.s_addr = *(u_long *)ent->h_addr_list[0];
 
 		std::string ipstr = inet_ntoa(addr);
-		Printf(PRINT_HIGH, "Bound to IP: %s\n", ipstr.c_str());
+		Printf("Bound to IP: %s\n", ipstr.c_str());
 		return ipstr;
     }
 	else
 	{
-		Printf(PRINT_HIGH, "Could not look up host IP address from hostname\n");
+		Printf(PRINT_ERROR, "Could not look up host IP address from hostname\n");
 		return "";
 	}
 }
@@ -771,7 +771,7 @@ bool MSG_DecompressMinilzo ()
 
 	if(r != LZO_E_OK)
 	{
-		Printf(PRINT_HIGH, "Error: minilzo packet decompression failed with error %X\n", r);
+		Printf(PRINT_ERROR, "Error: minilzo packet decompression failed with error %X\n", r);
 		return false;
 	}
 
@@ -1094,11 +1094,11 @@ bool NetWaitOrTimeout(size_t ms)
 	#ifdef _WIN32
 		// handle SOCKET_ERROR
 		if(ret == SOCKET_ERROR)
-			Printf(PRINT_HIGH, "select returned SOCKET_ERROR: %d\n", WSAGetLastError());
+			Printf(PRINT_ERROR, "select returned SOCKET_ERROR: %d\n", WSAGetLastError());
 	#else
 		// handle -1
 		if(ret == -1 && ret != EINTR)
-			Printf(PRINT_HIGH, "select returned -1: %s\n", strerror(errno));
+			Printf(PRINT_ERROR, "select returned -1: %s\n", strerror(errno));
 	#endif
 
 	return false;

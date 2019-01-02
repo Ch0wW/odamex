@@ -441,7 +441,7 @@ void CMD_MaplistCallback(const query_result_t &result) {
 		} else if (it->first == next_index) {
 			flag = '+';
 		}
-		Printf(PRINT_HIGH, "%c%d. %s %s\n", flag, it->first + 1,
+		Printf("%c%d. %s %s\n", flag, it->first + 1,
 			   JoinStrings(it->second->wads, " ").c_str(),
 			   it->second->map.c_str());
 	}
@@ -449,7 +449,7 @@ void CMD_MaplistCallback(const query_result_t &result) {
 
 // Clientside maplist query errback.
 void CMD_MaplistErrback(const std::string &error) {
-	Printf(PRINT_HIGH, "%s\n", error.c_str());
+	Printf(PRINT_ERROR, "%s\n", error.c_str());
 }
 
 // Clientside maplist query.

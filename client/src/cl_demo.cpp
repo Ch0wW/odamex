@@ -139,7 +139,7 @@ void NetDemo::cleanUp()
 void NetDemo::error(const std::string &message)
 {
 	cleanUp();
-	Printf(PRINT_HIGH, "%s\n", message.c_str());
+	Printf(PRINT_ERROR, "%s\n", message.c_str());
 }
 
 /**
@@ -156,7 +156,7 @@ void NetDemo::fatalError(const std::string &message)
 	gameaction = ga_nothing;
 	gamestate = GS_FULLCONSOLE;
 
-	Printf(PRINT_HIGH, "%s\n", message.c_str());
+	Printf(PRINT_ERROR, "%s\n", message.c_str());
 }
 
 //
@@ -436,7 +436,7 @@ bool NetDemo::startRecording(const std::string &filename)
 
 	state = NetDemo::st_recording;
 	header.starting_gametic = gametic;
-	Printf(PRINT_HIGH, "Recording netdemo %s.\n", filename.c_str());
+	Printf("Recording netdemo %s.\n", filename.c_str());
 
 	if (connected)
 	{
@@ -545,7 +545,7 @@ bool NetDemo::startPlaying(const std::string &filename)
 	fseek(demofp, NetDemo::HEADER_SIZE, SEEK_SET);
 	state = NetDemo::st_playing;
 
-	Printf(PRINT_HIGH, "Playing netdemo %s.\n", filename.c_str());
+	Printf("Playing netdemo %s.\n", filename.c_str());
 	
 	return true;
 }
@@ -644,7 +644,7 @@ bool NetDemo::stopRecording()
 	fclose(demofp);
 	demofp = NULL;
 
-	Printf(PRINT_HIGH, "Demo recording has stopped.\n");
+	Printf("Demo recording has stopped.\n");
 	reset();
 	return true;
 }
@@ -668,7 +668,7 @@ bool NetDemo::stopPlaying()
 		demofp = NULL;
 	}
 	
-	Printf(PRINT_HIGH, "Demo has ended.\n");
+	Printf("Demo has ended.\n");
 	reset();
     gameaction = ga_fullconsole;
     gamestate = GS_FULLCONSOLE;

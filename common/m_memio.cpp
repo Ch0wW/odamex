@@ -205,7 +205,7 @@ int mem_fseek(MEMFILE *stream, signed long position, mem_rel_t whence)
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "mem_fseek: Error seeking to %i\n", newpos);
+		Printf(PRINT_ERROR, "mem_fseek: Error seeking to %i\n", newpos);
 		return -1;
 	}
 }

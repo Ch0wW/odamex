@@ -670,7 +670,7 @@ BEGIN_COMMAND (set)
 		{
 			// if new value is different from current value and latched value
 			if (strcmp(var->cstring(), argv[2]) && strcmp(var->latched(), argv[2]) && gamestate == GS_LEVEL)
-				Printf(PRINT_HIGH, "%s will be changed for next game.\n", argv[1]);
+				Printf(PRINT_WARNING, "%s will be changed for next game.\n", argv[1]);
 		}
 
 		var->Set(argv[2]);
@@ -700,16 +700,16 @@ BEGIN_COMMAND (get)
 
 		// [Russell] - Don't make the user feel inadequate, tell
 		// them its either enabled, disabled or its other value
-		Printf(PRINT_HIGH, "\"%s\" is %s%s.\n",
+		Printf("\"%s\" is %s%s.\n",
 				var->name(), C_GetValueString(var).c_str(), control.c_str());
 
 		if (var->flags() & CVAR_LATCH && var->flags() & CVAR_MODIFIED)
-			Printf(PRINT_HIGH, "\"%s\" will be changed to %s.\n",
+			Printf(PRINT_WARNING, "\"%s\" will be changed to %s.\n",
 					var->name(), C_GetLatchedValueString(var).c_str());
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "\"%s\" is unset.\n", argv[1]);
+		Printf(PRINT_WARNING, "\"%s\" is unset.\n", argv[1]);
 	}
 }
 END_COMMAND (get)

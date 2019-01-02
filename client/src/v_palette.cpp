@@ -502,7 +502,7 @@ static std::string V_GetColorStringByName(const std::string& name)
 
 	if (!(rgbNames = (char*)W_CacheLumpName("X11R6RGB", PU_CACHE)))
 	{
-		Printf(PRINT_HIGH, "X11R6RGB lump not found\n");
+		Printf(PRINT_ERROR, "X11R6RGB lump not found\n");
 		return "";
 	}
 

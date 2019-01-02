@@ -707,7 +707,7 @@ void I_InitHardware()
 		assert(video_subsystem != NULL);
 
 		const IVideoMode* native_mode = I_GetVideoCapabilities()->getNativeMode();
-		Printf(PRINT_HIGH, "I_InitHardware: native resolution: %s\n", I_GetVideoModeString(native_mode).c_str());
+		Printf("I_InitHardware: native resolution: %s\n", I_GetVideoModeString(native_mode).c_str());
 	}
 }
 

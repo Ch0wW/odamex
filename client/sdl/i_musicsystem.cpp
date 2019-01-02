@@ -162,7 +162,7 @@ void MusicSystem::setVolume(float volume)
 SdlMixerMusicSystem::SdlMixerMusicSystem() :
 	mIsInitialized(false), mRegisteredSong()
 {
-	Printf(PRINT_HIGH, "I_InitMusic: Music playback enabled using SDL_Mixer.\n");
+	Printf(PRINT_ERROR, "I_InitMusic: Music playback enabled using SDL_Mixer.\n");
 	mIsInitialized = true;
 }
 
@@ -194,7 +194,7 @@ void SdlMixerMusicSystem::startSong(byte* data, size_t length, bool loop)
 
 	if (Mix_PlayMusic(mRegisteredSong.Track, loop ? -1 : 1) == -1)
 	{
-		Printf(PRINT_HIGH, "Mix_PlayMusic: %s\n", Mix_GetError());
+		Printf(PRINT_ERROR, "Mix_PlayMusic: %s\n", Mix_GetError());
 		return;
 	}
 
@@ -305,7 +305,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 		if (result == 0)
 			mRegisteredSong.Data = SDL_RWFromMem(mem_fgetbuf(midi), mem_fsize(midi));
 		else
-			Printf(PRINT_HIGH, "MUS is not valid\n");
+			Printf(PRINT_ERROR, "MUS is not valid\n");
 
 		mem_fclose(mus);
 		mem_fclose(midi);		
@@ -317,7 +317,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 
 	if (!mRegisteredSong.Data)
 	{
-		Printf(PRINT_HIGH, "SDL_RWFromMem: %s\n", SDL_GetError());
+		Printf(PRINT_ERROR, "SDL_RWFromMem: %s\n", SDL_GetError());
 		return;
 	}
 
@@ -327,7 +327,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 	FILE *fp = fopen(TEMP_MIDI, "wb+");
 	if (!fp)
 	{
-		Printf(PRINT_HIGH, "Could not open temporary music file %s, not playing track\n", TEMP_MIDI);
+		Printf(PRINT_ERROR, "Could not open temporary music file %s, not playing track\n", TEMP_MIDI);
 		return;
 	}
     
@@ -354,7 +354,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 
 	if (!mRegisteredSong.Track)
 	{
-		Printf(PRINT_HIGH, "Mix_LoadMUSW: %s\n", Mix_GetError());
+		Printf(PRINT_ERROR, "Mix_LoadMUSW: %s\n", Mix_GetError());
 		return;
 	}
 
@@ -369,7 +369,7 @@ void SdlMixerMusicSystem::_RegisterSong(byte* data, size_t length)
 	
 	if (!mRegisteredSong.Track)
 	{
-		Printf(PRINT_HIGH, "Mix_LoadMUS_RW: %s\n", Mix_GetError());
+		Printf(PRINT_ERROR, "Mix_LoadMUS_RW: %s\n", Mix_GetError());
 		return;
 	}
 
@@ -412,19 +412,19 @@ AuMusicSystem::AuMusicSystem() :
 
 	if (AUGraphConnectNodeInput(mGraph, mSynth, 0, mOutput, 0) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphConnectNodeInput failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphConnectNodeInput failed\n");
 		return;
 	}
 
 	if (AUGraphOpen(mGraph) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphOpen failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphOpen failed\n");
 		return;
 	}
 
 	if (AUGraphInitialize(mGraph) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphInitialize failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphInitialize failed\n");
 		return;
 	}
 
@@ -434,17 +434,17 @@ AuMusicSystem::AuMusicSystem() :
 	if (AUGraphNodeInfo(mGraph, mOutput, NULL, &mUnit) != noErr)
 	#endif
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AUGraphGetNodeInfo failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AUGraphGetNodeInfo failed\n");
 		return;
 	}
 
 	if (NewMusicPlayer(&mPlayer) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: Music player creation failed using AudioToolbox\n");
+		Printf(PRINT_ERROR, "I_InitMusic: Music player creation failed using AudioToolbox\n");
 		return;
 	}
 
-	Printf(PRINT_HIGH, "I_InitMusic: Music playback enabled using AudioToolbox\n");
+	Printf("I_InitMusic: Music playback enabled using AudioToolbox\n");
 	mIsInitialized = true;
 	return;
 }
@@ -472,26 +472,26 @@ void AuMusicSystem::startSong(byte* data, size_t length, bool loop)
 	
 	if (MusicSequenceSetAUGraph(mSequence, mGraph) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: MusicSequenceSetAUGraph failed\n");
+		Printf(PRINT_ERROR, "I_PlaySong: MusicSequenceSetAUGraph failed\n");
 		return;
 	}
 
 	if (MusicPlayerSetSequence(mPlayer, mSequence) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: MusicPlayerSetSequence failed\n");
+		Printf(PRINT_ERROR, "I_PlaySong: MusicPlayerSetSequence failed\n");
 		return;
 	}
 
 	if (MusicPlayerPreroll(mPlayer) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: MusicPlayerPreroll failed\n");
+		Printf(PRINT_ERROR, "I_PlaySong: MusicPlayerPreroll failed\n");
 		return;
 	}
 
 	UInt32 outNumberOfTracks = 0;
 	if (MusicSequenceGetTrackCount(mSequence, &outNumberOfTracks) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: MusicSequenceGetTrackCount failed\n");
+		Printf(PRINT_ERROR, "I_PlaySong: MusicSequenceGetTrackCount failed\n");
 		return;
 	}
 
@@ -501,7 +501,7 @@ void AuMusicSystem::startSong(byte* data, size_t length, bool loop)
 
 		if (MusicSequenceGetIndTrack(mSequence, i, &track) != noErr)
 		{
-			Printf(PRINT_HIGH, "I_PlaySong: MusicSequenceGetIndTrack failed\n");
+			Printf(PRINT_ERROR, "I_PlaySong: MusicSequenceGetIndTrack failed\n");
 			return;
 		}
 
@@ -515,7 +515,7 @@ void AuMusicSystem::startSong(byte* data, size_t length, bool loop)
 
 		if (MusicTrackGetProperty(track, kSequenceTrackProperty_LoopInfo, &LoopInfo, &inLength) != noErr)
 		{
-			Printf(PRINT_HIGH, "I_PlaySong: MusicTrackGetProperty failed\n");
+			Printf(PRINT_ERROR, "I_PlaySong: MusicTrackGetProperty failed\n");
 			return;
 		}
 
@@ -523,7 +523,7 @@ void AuMusicSystem::startSong(byte* data, size_t length, bool loop)
 
 		if (MusicTrackGetProperty(track, kSequenceTrackProperty_TrackLength, &LoopInfo.time, &inLength) != noErr)
 		{
-			Printf(PRINT_HIGH, "I_PlaySong: MusicTrackGetProperty failed\n");
+			Printf(PRINT_ERROR, "I_PlaySong: MusicTrackGetProperty failed\n");
 			return;
 		}
 
@@ -531,14 +531,14 @@ void AuMusicSystem::startSong(byte* data, size_t length, bool loop)
 
 		if (MusicTrackSetProperty(track, kSequenceTrackProperty_LoopInfo, &LoopInfo, sizeof(LoopInfo)) != noErr)
 		{
-			Printf(PRINT_HIGH, "I_PlaySong: MusicTrackSetProperty failed\n");
+			Printf(PRINT_ERROR, "I_PlaySong: MusicTrackSetProperty failed\n");
 			return;
 		}
 	}
 
 	if (MusicPlayerStart(mPlayer) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: MusicPlayerStart failed\n");
+		Printf(PRINT_ERROR, "I_PlaySong: MusicPlayerStart failed\n");
 		return;
 	}
 	
@@ -594,7 +594,7 @@ void AuMusicSystem::setVolume(float volume)
 	
 	if (AudioUnitSetParameter(mUnit, kAudioUnitParameterUnit_LinearGain, kAudioUnitScope_Output, 0, getVolume(), 0) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: AudioUnitSetParameter failed\n");
+		Printf(PRINT_ERROR, "I_InitMusic: AudioUnitSetParameter failed\n");
 		return;
 	}
 }
@@ -637,20 +637,20 @@ void AuMusicSystem::_RegisterSong(byte* data, size_t length)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "MUS is not valid\n");
+			Printf(PRINPRINT_ERRORT_HIGH, "MUS is not valid\n");
 			regdata = NULL;
 			reglength = 0;
 		}
 	}
 	else if (!S_MusicIsMidi(data, length))
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: AudioUnit does not support this music format\n");
+		Printf(PRINT_ERROR, "I_PlaySong: AudioUnit does not support this music format\n");
 		return;
 	}
 	
 	if (NewMusicSequence(&mSequence) != noErr)
 	{
-		Printf(PRINT_HIGH, "I_PlaySong: Unable to create AudioUnit sequence\n");
+		Printf(PRINT_ERROR, "I_PlaySong: Unable to create AudioUnit sequence\n");
 		return;
 	}
 
@@ -723,14 +723,14 @@ static MidiSong* I_RegisterMidiSong(byte *data, size_t length)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "I_RegisterMidiSong: MUS is not valid\n");
+			Printf(PRINT_ERROR, "I_RegisterMidiSong: MUS is not valid\n");
 			regdata = NULL;
 			reglength = 0;
 		}
 	}
 	else if (!S_MusicIsMidi(data, length))
 	{
-		Printf(PRINT_HIGH, "I_RegisterMidiSong: Only midi music formats are supported with the selected music system.\n");
+		Printf(PRINT_ERROR, "I_RegisterMidiSong: Only midi music formats are supported with the selected music system.\n");
 		return NULL;
 	}
 	
@@ -998,7 +998,7 @@ PortMidiMusicSystem::PortMidiMusicSystem() :
 	
 	if (Pm_Initialize() != pmNoError)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: PortMidi initialization failed.\n");
+		Printf(PRINT_ERROR, "I_InitMusic: PortMidi initialization failed.\n");
 		return;
 	}
 
@@ -1016,26 +1016,26 @@ PortMidiMusicSystem::PortMidiMusicSystem() :
 		if (!prefdevicename.empty() && iequals(prefdevicename, curdevicename))
 			mOutputDevice = i;
 
-		Printf(PRINT_HIGH, "%d: %s, %s\n", i, info->interf, info->name);
+		Printf("%d: %s, %s\n", i, info->interf, info->name);
     }
     
     if (mOutputDevice == pmNoDevice)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: No PortMidi output devices available.\n");
+		Printf(PRINT_ERROR, "I_InitMusic: No PortMidi output devices available.\n");
 		Pm_Terminate ();
 		return;
 	}
 	
 	if (Pm_OpenOutput(&mStream,	mOutputDevice, NULL, output_buffer_size, I_PortMidiTime, NULL, cLatency) != pmNoError)
 	{
-		Printf(PRINT_HIGH, "I_InitMusic: Failure opening PortMidi output device %d.\n", mOutputDevice);
+		Printf(PRINT_ERROR, "I_InitMusic: Failure opening PortMidi output device %d.\n", mOutputDevice);
 		return;
 	} 
                   
 	if (!mStream)
 		return;
 		
-	Printf(PRINT_HIGH, "I_InitMusic: Music playback enabled using PortMidi.\n");
+	Printf("I_InitMusic: Music playback enabled using PortMidi.\n");
 	mIsInitialized = true;
 }
 

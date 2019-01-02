@@ -616,7 +616,7 @@ BEGIN_COMMAND (say_to)
 		player_t &player = nameplayer(argv[1]);
 		if (!validplayer(player))
 		{
-			Printf(PRINT_HIGH, "%s isn't the name of anybody on the server.\n", argv[1]);
+			Printf(PRINT_WARNING, "%s isn't the name of anybody on the server.\n", argv[1]);
 			return;
 		}
 
@@ -1677,7 +1677,7 @@ void HU_ConsoleScores(player_t *player)
 					if (itplayer == player)
 						Printf_Bold(str);
 					else
-						Printf(PRINT_HIGH, str);
+						Printf(str);
 				}
 			}
 		}
@@ -1732,7 +1732,7 @@ void HU_ConsoleScores(player_t *player)
 					if (itplayer == player)
 						Printf_Bold(str);
 					else
-						Printf(PRINT_HIGH, str);
+						Printf(str);
 				}
 			}
 		}
@@ -1776,7 +1776,7 @@ void HU_ConsoleScores(player_t *player)
 			if (itplayer == player)
 				Printf_Bold(str);
 			else
-				Printf(PRINT_HIGH, str);
+				Printf(str);
 		}
 
 	}
@@ -1804,7 +1804,7 @@ void HU_ConsoleScores(player_t *player)
 			if (itplayer == player)
 				Printf_Bold(str);
 			else
-				Printf(PRINT_HIGH, str);
+				Printf(str);
 		}
 	}
 
@@ -1822,11 +1822,11 @@ void HU_ConsoleScores(player_t *player)
 			if (itplayer == player)
 				Printf_Bold(str);
 			else
-				Printf(PRINT_HIGH, str);
+				Printf(str);
 		}
 	}
 
-	Printf(PRINT_HIGH, "\n");
+	Printf("\n");
 
 	C_ToggleConsole();
 }
@@ -1836,7 +1836,7 @@ BEGIN_COMMAND (displayscores)
 	if (multiplayer)
 	    HU_ConsoleScores(&consoleplayer());
 	else
-		Printf(PRINT_HIGH, "This command is only used for multiplayer games.");
+		Printf(PRINT_WARNING, "This command is only used for multiplayer games.");
 }
 END_COMMAND (displayscores)
 

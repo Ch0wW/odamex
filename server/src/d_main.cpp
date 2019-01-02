@@ -255,14 +255,14 @@ void D_Init()
 	bool use_zone = !Args.CheckParm("-nozone");
 	Z_Init(use_zone);
 	if (first_time)
-		Printf(PRINT_HIGH, "Z_Init: Heapsize: %u megabytes\n", got_heapsize);
+		Printf("Z_Init: Heapsize: %u megabytes\n", got_heapsize);
 
 	// Load palette and set up colormaps
 	V_InitPalette("PLAYPAL");
 	R_InitColormaps();
 
 //	if (first_time)
-//		Printf(PRINT_HIGH, "Res_InitTextureManager: Init image resource management.\n");
+//		Printf("Res_InitTextureManager: Init image resource management.\n");
 //	Res_InitTextureManager();
 
 	// [RH] Initialize localizable strings.
@@ -272,7 +272,7 @@ void D_Init()
 
 	// init the renderer
 	if (first_time)
-		Printf(PRINT_HIGH, "R_Init: Init DOOM refresh daemon.\n");
+		Printf("R_Init: Init DOOM refresh daemon.\n");
 	R_Init();
 
 	G_SetLevelStrings();
@@ -281,7 +281,7 @@ void D_Init()
 	S_ParseSndInfo();
 
 	if (first_time)
-		Printf(PRINT_HIGH, "P_Init: Init Playloop state.\n");
+		Printf("P_Init: Init Playloop state.\n");
 //	P_InitEffects();
 	P_Init();
 
@@ -389,25 +389,25 @@ void D_DoomMain()
 
 	D_LoadResourceFiles(newwadfiles, newpatchfiles);
 
-	Printf(PRINT_HIGH, "I_Init: Init hardware.\n");
+	Printf("I_Init: Init hardware.\n");
 	I_Init();
 
 	// [SL] Call init routines that need to be reinitialized every time WAD changes
 	D_Init();
 	atterm(D_Shutdown);
 
-	Printf(PRINT_HIGH, "SV_InitNetwork: Checking network game status.\n");
+	Printf("SV_InitNetwork: Checking network game status.\n");
 	SV_InitNetwork();
 
 	// Base systems have been inited; enable cvar callbacks
 	cvar_t::EnableCallbacks();
 
 	// [RH] User-configurable startup strings. Because BOOM does.
-	if (GStrings(STARTUP1)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP1));
-	if (GStrings(STARTUP2)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP2));
-	if (GStrings(STARTUP3)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP3));
-	if (GStrings(STARTUP4)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP4));
-	if (GStrings(STARTUP5)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP5));
+	if (GStrings(STARTUP1)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP1));
+	if (GStrings(STARTUP2)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP2));
+	if (GStrings(STARTUP3)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP3));
+	if (GStrings(STARTUP4)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP4));
+	if (GStrings(STARTUP5)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP5));
 
 	// developer mode
 	devparm = Args.CheckParm("-devparm");
@@ -438,13 +438,13 @@ void D_DoomMain()
 	if (p && p < Args.NumArgs() - 1)
 	{
 		float time = atof(Args.GetArg(p + 1));
-		Printf(PRINT_HIGH, "Levels will end after %g minute%s.\n", time, time > 1 ? "s" : "");
+		Printf(PRINT_GAMEEVENT, "Levels will end after %g minute%s.\n", time, time > 1 ? "s" : "");
 		sv_timelimit.Set(time);
 	}
 
 	if (Args.CheckValue("-avg"))
 	{
-		Printf(PRINT_HIGH, "Austin Virtual Gaming: Levels will end after 20 minutes\n");
+		Printf(PRINT_GAMEEVENT, "Austin Virtual Gaming: Levels will end after 20 minutes\n");
 		sv_timelimit.Set(20);
 	}
 
@@ -459,7 +459,7 @@ void D_DoomMain()
 	// [AM] Initialize banlist
 	SV_InitBanlist();
 
-	Printf(PRINT_HIGH, "========== Odamex Server Initialized ==========\n");
+	Printf("========== Odamex Server Initialized ==========\n");
 
 	#ifdef UNIX
 	if (Args.CheckParm("-fork"))

@@ -292,25 +292,25 @@ static DWORD IntQrySendResponse(const WORD& TagId,
 	{
 	case 1:
 	{
-		//Printf(PRINT_HIGH, "Application is Enquirer");
+		//Printf("Application is Enquirer");
 	}
 	break;
 
 	case 2:
 	{
-		//Printf(PRINT_HIGH, "Application is Client");
+		//Printf("Application is Client");
 	}
 	break;
 
 	case 3:
 	{
-		//Printf(PRINT_HIGH, "Application is Server");
+		//Printf("Application is Server");
 	}
 	break;
 
 	case 4:
 	{
-		//Printf(PRINT_HIGH, "Application is Master Server");
+		//Printf("Application is Master Server");
 	}
 	break;
 
@@ -384,7 +384,7 @@ static DWORD IntQrySendResponse(const WORD& TagId,
 
 		NET_SendPacket(ml_message, net_from);
 
-		//Printf(PRINT_HIGH, "Application is old version\n");
+		//Printf("Application is old version\n");
 
 		return 0;
 	}
@@ -404,7 +404,7 @@ static DWORD IntQrySendResponse(const WORD& TagId,
 
 	NET_SendPacket(ml_message, net_from);
 
-	//Printf(PRINT_HIGH, "Success, data sent\n");
+	//Printf("Success, data sent\n");
 
 	return 0;
 }

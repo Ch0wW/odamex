@@ -491,7 +491,7 @@ void ConsoleHistory::movePositionDown()
 void ConsoleHistory::dump()
 {
 	for (ConsoleHistoryList::const_iterator it = history.begin(); it != history.end(); ++it)
-		Printf(PRINT_HIGH, "   %s\n", it->c_str());
+		Printf("   %s\n", it->c_str());
 }
 
 
@@ -1605,7 +1605,7 @@ BEGIN_COMMAND(echo)
 	if (argc > 1)
 	{
 		std::string str = C_ArgCombine(argc - 1, (const char **)(argv + 1));
-		Printf(PRINT_HIGH, "%s\n", str.c_str());
+		Printf("%s\n", str.c_str());
 	}
 }
 END_COMMAND(echo)
@@ -1649,7 +1649,7 @@ void C_MidPrint(const char *msg, player_t *p, int msgtime)
 
 		char *newmsg = strdup(str.c_str());
 
-		Printf(PRINT_HIGH, "%s\n", newmsg);
+		Printf("%s\n", newmsg);
 		midprinting = false;
 
 		if ( (MidMsg = V_BreakLines(I_GetSurfaceWidth() / V_TextScaleXAmount(), (byte *)newmsg)) )

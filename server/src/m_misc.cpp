@@ -107,7 +107,7 @@ void STACK_ARGS M_SaveDefaults(std::string filename)
 
 		fclose(f);
 
-		Printf(PRINT_HIGH, "Configuration saved to %s.\n", configfile.c_str());
+		Printf("Configuration saved to %s.\n", configfile.c_str());
 	}
 }
 
@@ -171,7 +171,7 @@ bool M_ReadJSON(Json::Value &json, const char* filename)
 
 		if (res == false)
 		{
-			Printf(PRINT_HIGH,"M_ReadJSONFromFile: Error parsing JSON: %s.\n",
+			Printf(PRINT_ERROR, "M_ReadJSONFromFile: Error parsing JSON: %s.\n",
 				   reader.getFormattedErrorMessages().c_str());
 			return false;
 		}

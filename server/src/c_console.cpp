@@ -336,7 +336,7 @@ BEGIN_COMMAND (echo)
 	if (argc > 1)
 	{
 		std::string text = C_ArgCombine(argc - 1, (const char **)(argv + 1));
-		Printf(PRINT_HIGH, "%s\n", text.c_str());
+		Printf("%s\n", text.c_str());
 	}
 }
 END_COMMAND (echo)

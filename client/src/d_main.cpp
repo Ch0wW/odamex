@@ -581,13 +581,13 @@ void D_Init()
 	bool use_zone = !Args.CheckParm("-nozone");
 	Z_Init(use_zone);
 	if (first_time)
-		Printf(PRINT_HIGH, "Z_Init: Heapsize: %u megabytes\n", got_heapsize);
+		Printf ("Z_Init: Heapsize: %u megabytes\n", got_heapsize);
 
 	// Load palette and set up colormaps
 	V_Init();
 
 //	if (first_time)
-//		Printf(PRINT_HIGH, "Res_InitTextureManager: Init image resource management.\n");
+//		Printf("Res_InitTextureManager: Init image resource management.\n");
 //	Res_InitTextureManager();
 
 	// [RH] Initialize localizable strings.
@@ -596,7 +596,7 @@ void D_Init()
 
 	// init the renderer
 	if (first_time)
-		Printf(PRINT_HIGH, "R_Init: Init DOOM refresh daemon.\n");
+		Printf("R_Init: Init DOOM refresh daemon.\n");
 	R_Init();
 
 //	V_LoadFonts();
@@ -614,11 +614,11 @@ void D_Init()
 
 	// init the menu subsystem
 	if (first_time)
-		Printf(PRINT_HIGH, "M_Init: Init miscellaneous info.\n");
+		Printf("M_Init: Init miscellaneous info.\n");
 	M_Init();
 
 	if (first_time)
-		Printf(PRINT_HIGH, "P_Init: Init Playloop state.\n");
+		Printf("P_Init: Init Playloop state.\n");
 	P_InitEffects();
 	P_Init();
 
@@ -635,7 +635,7 @@ void D_Init()
 
 	// init the status bar
 	if (first_time)
-		Printf(PRINT_HIGH, "ST_Init: Init status bar.\n");
+		Printf("ST_Init: Init status bar.\n");
 	ST_Init();
 
 	first_time = false;
@@ -757,7 +757,7 @@ void D_DoomMain()
 
 	D_LoadResourceFiles(newwadfiles, newpatchfiles);
 
-	Printf(PRINT_HIGH, "I_Init: Init hardware.\n");
+	Printf("I_Init: Init hardware.\n");
 	atterm(I_ShutdownHardware);
 	I_Init();
 	I_InitInput();
@@ -772,17 +772,17 @@ void D_DoomMain()
 	cvar_t::EnableCallbacks();
 
 	// [RH] User-configurable startup strings. Because BOOM does.
-	if (GStrings(STARTUP1)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP1));
-	if (GStrings(STARTUP2)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP2));
-	if (GStrings(STARTUP3)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP3));
-	if (GStrings(STARTUP4)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP4));
-	if (GStrings(STARTUP5)[0])	Printf(PRINT_HIGH, "%s\n", GStrings(STARTUP5));
+	if (GStrings(STARTUP1)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP1));
+	if (GStrings(STARTUP2)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP2));
+	if (GStrings(STARTUP3)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP3));
+	if (GStrings(STARTUP4)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP4));
+	if (GStrings(STARTUP5)[0])	Printf(PRINT_GAMEEVENT, "%s\n", GStrings(STARTUP5));
 
     // developer mode
 	devparm = Args.CheckParm("-devparm");
 
 	if (devparm)
-		Printf(PRINT_HIGH, "%s", GStrings(D_DEVSTR));        // D_DEVSTR
+		Printf("%s", GStrings(D_DEVSTR));        // D_DEVSTR
  
 	// set the default value for vid_ticker based on the presence of -devparm
 	if (devparm)
@@ -839,7 +839,7 @@ void D_DoomMain()
 
 	I_FinishClockCalibration();
 
-	Printf(PRINT_HIGH, "D_CheckNetGame: Checking network game status.\n");
+	Printf("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame();
 
 	// [RH] Lock any cvars that should be locked now that we're
@@ -877,7 +877,7 @@ void D_DoomMain()
 		p = Args.CheckParm("+playdemo");
 	if (p && p < Args.NumArgs() - 1)
 	{
-		Printf(PRINT_HIGH, "Playdemo parameter found on command line.\n");
+		Printf("Playdemo parameter found on command line.\n");
 		singledemo = true;
 
 		extern std::string defdemoname;
@@ -928,8 +928,8 @@ void D_DoomMain()
 
 	Printf_Bold("\n\35\36\36\36\36 Odamex Client Initialized \36\36\36\36\37\n");
 	if (gamestate != GS_CONNECTING)
-		Printf(PRINT_HIGH, "Type connect <address> or use the Odamex Launcher to connect to a game.\n");
-    Printf(PRINT_HIGH, "\n");
+		Printf("Type connect <address> or use the Odamex Launcher to connect to a game.\n");
+    Printf("\n");
 
 	// Play a demo, start a map, or show the title screen	
 	if (singledemo)

@@ -606,7 +606,7 @@ ActorSnapshot P_LerpActorPosition(const ActorSnapshot &from, const ActorSnapshot
 
 	#ifdef _SNAPSHOT_DEBUG_
 	if (anglediff)
-		Printf(PRINT_HIGH, "Lerp: %d, Lerping to angle (delta %d)\n",
+		DPrintf("Lerp: %d, Lerping to angle (delta %d)\n",
 							gametic, anglediff >> ANGLETOFINESHIFT);
 	#endif // _SNAPSHOT_DEBUG_
 
@@ -1073,7 +1073,7 @@ void SectorSnapshotManager::addSnapshot(const SectorSnapshot &newsnap)
 	if (!newsnap.isValid())
 	{
 		#ifdef _SNAPSHOT_DEBUG_
-		Printf(PRINT_HIGH, "Snapshot %i: Not adding invalid sector snapshot\n", time);
+		DPrintf("Snapshot %i: Not adding invalid sector snapshot\n", time);
 		#endif // _SNAPSHOT_DEBUG_
 		return;
 	}
@@ -1081,7 +1081,7 @@ void SectorSnapshotManager::addSnapshot(const SectorSnapshot &newsnap)
 	if (mMostRecent > newsnap.getTime() + NUM_SNAPSHOTS)
 	{
 		#ifdef _SNAPSHOT_DEBUG_
-		Printf(PRINT_HIGH, "Snapshot %i: Not adding expired sector snapshot\n", time);
+		DPrintf("Snapshot %i: Not adding expired sector snapshot\n", time);
 		#endif // _SNAPSHOT_DEBUG_
 		return;
 	}

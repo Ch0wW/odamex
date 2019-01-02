@@ -564,7 +564,7 @@ static void D_PrintIWADIdentity()
 {
 	if (clientside)
 	{
-		Printf(PRINT_HIGH, "\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36"
+		Printf_Bold("\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36"
     	                   "\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
 		if (gamemode == undetermined)
@@ -575,9 +575,9 @@ static void D_PrintIWADIdentity()
 	else
 	{
 		if (gamemode == undetermined)
-			Printf(PRINT_HIGH, "Game mode indeterminate, no standard wad found.\n");
+			Printf("Game mode indeterminate, no standard wad found.\n");
 		else 
-			Printf(PRINT_HIGH, "%s\n", D_GetTitleString().c_str()); 
+			Printf("%s\n", D_GetTitleString().c_str()); 
 	}
 }
 
@@ -633,7 +633,7 @@ void D_DoDefDehackedPatch(const std::vector<std::string> &newpatchfiles)
 	}
 
 	if (gamemode == retail_chex && !multiplayer && !chexLoaded)
-		Printf(PRINT_HIGH,"Warning: chex.deh not loaded, experience may differ from the original!\n");
+		Printf(PRINT_WARNING, "Warning: chex.deh not loaded, experience may differ from the original!\n");
 }
 
 
@@ -750,7 +750,7 @@ static bool D_AddResourceFile(const std::string& filename, const std::string& ha
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "could not find resource file: %s\n", filename.c_str());
+		Printf(PRINT_ERROR, "could not find resource file: %s\n", filename.c_str());
 		missingfiles.push_back(filename);
 		if (!hash.empty())
 			missinghashes.push_back(hash);

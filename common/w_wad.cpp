@@ -223,11 +223,11 @@ std::string W_AddFile(std::string filename)
 
 	if ( (handle = fopen(filename.c_str(), "rb")) == NULL)
 	{
-		Printf(PRINT_HIGH, "couldn't open %s\n", filename.c_str());
+		Printf(PRINT_WARNING, "couldn't open %s\n", filename.c_str());
 		return "";
 	}
 
-	Printf(PRINT_HIGH, "adding %s", filename.c_str());
+	Printf("adding %s", filename.c_str());
 
 	size_t newlumps;
 
@@ -247,7 +247,7 @@ std::string W_AddFile(std::string filename)
 		std::transform(lumpname.c_str(), lumpname.c_str() + 8, fileinfo->name, toupper);
 
 		newlumps = 1;
-		Printf(PRINT_HIGH, " (single lump)\n");
+		Printf(" (single lump)\n");
 	}
 	else
 	{
@@ -258,7 +258,7 @@ std::string W_AddFile(std::string filename)
 
 		if (length > (unsigned)M_FileLength(handle))
 		{
-			Printf(PRINT_HIGH, "\nbad number of lumps for %s\n", filename.c_str());
+			Printf(PRINT_WARNING, "\nbad number of lumps for %s\n", filename.c_str());
 			fclose(handle);
 			return "";
 		}
@@ -276,7 +276,7 @@ std::string W_AddFile(std::string filename)
 		}
 
 		newlumps = header.numlumps;	
-		Printf(PRINT_HIGH, " (%d lumps)\n", header.numlumps);
+		Printf(" (%d lumps)\n", header.numlumps);
 	}
 
 	W_AddLumps(handle, fileinfo, newlumps, false);

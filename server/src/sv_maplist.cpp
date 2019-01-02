@@ -654,7 +654,7 @@ BEGIN_COMMAND (maplist) {
 	// Query the maplist
 	std::vector<std::pair<size_t, maplist_entry_t*> > result;
 	if (!Maplist::instance().query(arguments, result)) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_ERROR, "%s\n", Maplist::instance().get_error().c_str());
 		return;
 	}
 
@@ -670,7 +670,7 @@ BEGIN_COMMAND (maplist) {
 		} else if (it->first == next_index) {
 			flag = '+';
 		}
-		Printf(PRINT_HIGH, "%c%d. %s %s\n", flag, it->first + 1,
+		Printf("%c%d. %s %s\n", flag, it->first + 1,
 			   JoinStrings(it->second->wads, " ").c_str(),
 			   it->second->map.c_str());
 	}
@@ -678,7 +678,7 @@ BEGIN_COMMAND (maplist) {
 
 BEGIN_COMMAND (addmap) {
 	if (argc < 2) {
-		Printf(PRINT_HIGH, "Usage: addmap <map lump> [wad name] [...]\n");
+		Printf(PRINT_WARNING, "Usage: addmap <map lump> [wad name] [...]\n");
 		return;
 	}
 
@@ -695,13 +695,13 @@ BEGIN_COMMAND (addmap) {
 	}
 
 	if (!Maplist::instance().add(maplist_entry)) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_ERROR, "%s\n", Maplist::instance().get_error().c_str());
 	}
 } END_COMMAND(addmap)
 
 BEGIN_COMMAND(insertmap) {
 	if (argc < 3) {
-		Printf(PRINT_HIGH, "Usage: insertmap <maplist position> <map lump> [wad name] [...]\n");
+		Printf(PRINT_WARNING, "Usage: insertmap <maplist position> <map lump> [wad name] [...]\n");
 	}
 
 	std::vector<std::string> arguments = VectorArgs(argc, argv);
@@ -711,7 +711,7 @@ BEGIN_COMMAND(insertmap) {
 	std::istringstream buffer(arguments[0]);
 	buffer >> maplist_position;
 	if (maplist_position == 0 || arguments[0][0] == '-') {
-		Printf(PRINT_HIGH, "Position must be a positive number.\n");
+		Printf(PRINT_WARNING, "Position must be a positive number.\n");
 		return;
 	}
 
@@ -726,13 +726,13 @@ BEGIN_COMMAND(insertmap) {
 	}
 
 	if (!Maplist::instance().insert(maplist_position - 1, maplist_entry)) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_ERROR, "%s\n", Maplist::instance().get_error().c_str());
 	}
 } END_COMMAND(insertmap)
 
 BEGIN_COMMAND(delmap) {
 	if (argc < 2) {
-		Printf(PRINT_HIGH, "Usage: delmap <maplist index>\n");
+		Printf(PRINT_WARNING, "Usage: delmap <maplist index>\n");
 		return;
 	}
 
@@ -743,18 +743,18 @@ BEGIN_COMMAND(delmap) {
 	std::istringstream buffer(arguments[0]);
 	buffer >> maplist_index;
 	if (maplist_index == 0 || arguments[0][0] == '-') {
-		Printf(PRINT_HIGH, "Index must be a positive number.\n");
+		Printf(PRINT_WARNING, "Index must be a positive number.\n");
 		return;
 	}
 
 	if (!Maplist::instance().remove(maplist_index - 1)) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_ERROR, "%s\n", Maplist::instance().get_error().c_str());
 	}
 } END_COMMAND(delmap)
 
 BEGIN_COMMAND(clearmaplist) {
 	if (!Maplist::instance().clear()) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf("%s\n", Maplist::instance().get_error().c_str());
 	}
 } END_COMMAND(clearmaplist)
 
@@ -767,26 +767,26 @@ BEGIN_COMMAND (gotomap) {
 	std::vector<std::string> arguments = VectorArgs(argc, argv);
 
 	if (arguments.empty()) {
-		Printf(PRINT_HIGH, "Usage: gotomap <map index or unambiguous map name>\n");
+		Printf(PRINT_WARNING, "Usage: gotomap <map index or unambiguous map name>\n");
 		return;
 	}
 
 	// Query the maplist
 	query_result_t result;
 	if (!Maplist::instance().query(arguments, result)) {
-		Printf(PRINT_HIGH, "%s\n", Maplist::instance().get_error().c_str());
+		Printf(PRINT_ERROR, "%s\n", Maplist::instance().get_error().c_str());
 		return;
 	}
 
 	// If we got back an empty response, complain.
 	if (result.empty()) {
-		Printf(PRINT_HIGH, "Map not found.\n");
+		Printf(PRINT_WARNING, "Map not found.\n");
 		return;
 	}
 
 	// If we got back more than one response, complain.
 	if (result.size() > 1) {
-		Printf(PRINT_HIGH, "Map is ambiguous.\n");
+		Printf(PRINT_WARNING, "Map is ambiguous.\n");
 		return;
 	}
 
@@ -810,6 +810,6 @@ bool CMD_Randmap(std::string &error) {
 BEGIN_COMMAND (randmap) {
 	std::string error;
 	if (!CMD_Randmap(error)) {
-		Printf(PRINT_HIGH, "%s\n", error.c_str());
+		Printf(PRINT_ERROR, "%s\n", error.c_str());
 	}
 } END_COMMAND (randmap)

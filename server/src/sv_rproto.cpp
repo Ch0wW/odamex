@@ -164,7 +164,7 @@ bool SV_SendPacket(player_t &pl)
 
 	if (log_packetdebug)
 	{
-		Printf(PRINT_HIGH, "ply %03u, pkt %06u, size %04u, tic %07u, time %011u\n",
+		Printf("ply %03u, pkt %06u, size %04u, tic %07u, time %011u\n",
 			   pl.id, cl->sequence - 1, sendd.cursize, gametic, I_MSTime());
 	}
 

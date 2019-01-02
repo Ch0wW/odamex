@@ -1090,7 +1090,7 @@ void ISDL12InputSubsystem::initKeyboard(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	setKeyboardInputDevice(new ISDL12KeyboardInputDevice(id));
 	registerInputDevice(getKeyboardInputDevice());
@@ -1175,7 +1175,7 @@ void ISDL12InputSubsystem::initMouse(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	if (id == SDL_MOUSE_DRIVER)
 		setMouseInputDevice(new ISDL12MouseInputDevice(id));
@@ -1262,7 +1262,7 @@ void ISDL12InputSubsystem::initJoystick(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	setJoystickInputDevice(new ISDL12JoystickInputDevice(id));
 	registerInputDevice(getJoystickInputDevice());
@@ -2372,7 +2372,7 @@ void ISDL20InputSubsystem::initKeyboard(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	setKeyboardInputDevice(new ISDL20KeyboardInputDevice(id));
 	registerInputDevice(getKeyboardInputDevice());
@@ -2457,7 +2457,7 @@ void ISDL20InputSubsystem::initMouse(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	if (id == SDL_MOUSE_DRIVER)
 		setMouseInputDevice(new ISDL20MouseInputDevice(id));
@@ -2545,7 +2545,7 @@ void ISDL20InputSubsystem::initJoystick(int id)
 			device_name = it->mDeviceName;
 	}
 
-	Printf(PRINT_HIGH, "I_InitInput: intializing %s\n", device_name.c_str());
+	Printf("I_InitInput: intializing %s\n", device_name.c_str());
 
 	setJoystickInputDevice(new ISDL20JoystickInputDevice(id));
 	registerInputDevice(getJoystickInputDevice());

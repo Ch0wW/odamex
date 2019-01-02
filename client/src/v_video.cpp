@@ -234,7 +234,7 @@ BEGIN_COMMAND(vid_listmodes)
 		if (*it == *I_GetWindow()->getVideoMode())
 			Printf_Bold("%s\n", I_GetVideoModeString(&(*it)).c_str());
 		else
-			Printf(PRINT_HIGH, "%s\n", I_GetVideoModeString(&(*it)).c_str());
+			Printf("%s\n", I_GetVideoModeString(&(*it)).c_str());
 	}
 }
 END_COMMAND(vid_listmodes)
@@ -268,7 +268,7 @@ BEGIN_COMMAND(vid_currentmode)
 	}
 
 	const IVideoMode* mode = I_GetWindow()->getVideoMode();
-	Printf(PRINT_HIGH, "%s %s surface\n",
+	Printf("%s %s surface\n",
 			I_GetVideoModeString(mode).c_str(), pixel_string.c_str());
 }
 END_COMMAND(vid_currentmode)
@@ -276,7 +276,7 @@ END_COMMAND(vid_currentmode)
 
 BEGIN_COMMAND(checkres)
 {
-	Printf(PRINT_HIGH, "%dx%d\n", I_GetVideoWidth(), I_GetVideoHeight());
+	Printf("%dx%d\n", I_GetVideoWidth(), I_GetVideoHeight());
 }
 END_COMMAND(checkres)
 
@@ -293,7 +293,7 @@ BEGIN_COMMAND(vid_setmode)
 	// No arguments
 	if (argc == 1)
 	{
-		Printf(PRINT_HIGH, "Usage: vid_setmode <width> <height>\n");
+		Printf(PRINT_WARNING, "Usage: vid_setmode <width> <height>\n");
 		return;
 	}
 
@@ -309,13 +309,13 @@ BEGIN_COMMAND(vid_setmode)
 
 	if (width < 320 || height < 200)
 	{
-		Printf(PRINT_HIGH, "%dx%d is too small.  Minimum resolution is 320x200.\n", width, height);
+		Printf(PRINT_WARNING, "%dx%d is too small.  Minimum resolution is 320x200.\n", width, height);
 		return;
 	}
 
 	if (width > MAXWIDTH || height > MAXHEIGHT)
 	{
-		Printf(PRINT_HIGH, "%dx%d is too large.  Maximum resolution is %dx%d.\n", width, height, MAXWIDTH, MAXHEIGHT);
+		Printf(PRINT_WARNING, "%dx%d is too large.  Maximum resolution is %dx%d.\n", width, height, MAXWIDTH, MAXHEIGHT);
 		return;
 	}
 
@@ -490,7 +490,7 @@ void V_Init()
 
 		V_DoSetResolution(video_width, video_height);
 
-		Printf(PRINT_HIGH, "V_Init: using %s video driver.\n", I_GetVideoDriverName().c_str());
+		Printf("V_Init: using %s video driver.\n", I_GetVideoDriverName().c_str());
 	}
 
 	if (!I_VideoInitialized())

@@ -211,7 +211,7 @@ void daemon_init(void)
     FILE   *fpid;
     string  pidfile;
 
-    Printf(PRINT_HIGH, "Launched into the background\n");
+    Printf("Launched into the background\n");
 
     if ((pid = fork()) != 0)
     {

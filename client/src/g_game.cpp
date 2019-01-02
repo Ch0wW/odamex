@@ -1770,7 +1770,7 @@ bool G_RecordDemo(const std::string& mapname, const std::string& basedemoname)
 
     if (!recorddemo_fp)
     {
-        Printf(PRINT_HIGH, "Could not open file %s for writing\n", demoname.c_str());
+        Printf(PRINT_WARNING, "Could not open file %s for writing\n", demoname.c_str());
         return false;
     }
 
@@ -1892,7 +1892,7 @@ static void G_RecordCommand(int argc, char** argv, demoversion_t ver)
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "Usage: record%s map file\n",
+		Printf(PRINT_WARNING, "Usage: record%s map file\n",
 				ver == LMP_DOOM_1_9_1 ? "longtics" : "vanilla");
 	}
 }
@@ -1926,12 +1926,12 @@ BEGIN_COMMAND(playdemo)
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "Cannot play demo because WAD didn't load\n");
-			Printf(PRINT_HIGH, "Use the 'wad' command\n");
+			Printf(PRINT_WARNING, "Cannot play demo because WAD didn't load\n");
+			Printf(PRINT_WARNING, "Use the 'wad' command\n");
 		}
 	}
 	else
-		Printf(PRINT_HIGH, "Usage: playdemo lumpname or file\n");
+		Printf(PRINT_WARNING, "Usage: playdemo lumpname or file\n");
 }
 END_COMMAND(playdemo)
 
@@ -1944,7 +1944,7 @@ BEGIN_COMMAND(streamdemo)
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "Usage: streamdemo lumpname or file\n");
+		Printf(PRINT_WARNING, "Usage: streamdemo lumpname or file\n");
 	}
 }
 END_COMMAND(streamdemo)
@@ -1990,7 +1990,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		if (bytelen)
 			Z_Free(demobuffer);
 
-		Printf(PRINT_HIGH, "DOOM Demo file too short\n");
+		Printf(PRINT_WARNING, "DOOM Demo file too short\n");
 		gameaction = ga_fullconsole;
 		return;
 	}
@@ -2004,7 +2004,7 @@ void G_DoPlayDemo(bool justStreamInput)
 		demo_p[0] == DOOM_1_9p_DEMO ||
 		demo_p[0] == DOOM_1_9_1_DEMO)
 	{
-		Printf(PRINT_HIGH, "Playing DOOM demo %s\n", defdemoname.c_str());
+		Printf(PRINT_GAMEEVENT, "Playing DOOM demo %s\n", defdemoname.c_str());
 
 		democlassic = true;
 		demostartgametic = gametic;
@@ -2047,7 +2047,7 @@ void G_DoPlayDemo(bool justStreamInput)
 			if (!validplayer(con))
 			{
 				Z_Free(demobuffer);
-				Printf(PRINT_HIGH, "DOOM Demo: invalid console player %d of %d\n", who + 1, players.size());
+				Printf(PRINT_ERROR, "DOOM Demo: invalid console player %d of %d\n", who + 1, players.size());
 				gameaction = ga_fullconsole;
 				return;
 			}
@@ -2126,7 +2126,7 @@ void G_DoPlayDemo(bool justStreamInput)
 	else
 	{
 		democlassic = false;
-		Printf(PRINT_HIGH, "Unsupported demo format.  If you are trying to play an Odamex " \
+		Printf(PRINT_ERROR, "Unsupported demo format.  If you are trying to play an Odamex " \
 						"netdemo, please use the netplay command\n");
 		gameaction = ga_nothing;
 	}
@@ -2190,7 +2190,7 @@ void G_CleanupDemo()
 		cvar_t::C_RestoreCVars();		// [RH] Restore cvars demo might have changed
 
 		demorecording = false;
-		Printf(PRINT_HIGH, "Demo %s recorded\n", demoname);
+		Printf("Demo %s recorded\n", demoname);
 
 		// reset longtics after demo recording
 		longtics = !(Args.CheckParm("-shorttics"));
@@ -2220,9 +2220,9 @@ BOOL G_CheckDemoStatus (void)
 			AActor *mo = idplayer(1).mo;
 
 			if (mo)
-				Printf(PRINT_HIGH, "demotest:%x %x %x %x\n", mo->angle, mo->x, mo->y, mo->z);
+				Printf("demotest:%x %x %x %x\n", mo->angle, mo->x, mo->y, mo->z);
 			else
-				Printf(PRINT_HIGH, "demotest:no player\n");
+				Printf(PRINT_WARNING, "demotest:no player\n");
 
 			demotest = false;
 
@@ -2240,7 +2240,7 @@ BOOL G_CheckDemoStatus (void)
 				int realtics = endtime * TICRATE / 1000;
 				float fps = float(gametic * TICRATE) / realtics;
 
-				Printf(PRINT_HIGH, "timed %i gametics in %i realtics (%.1f fps)\n",
+				Printf("timed %i gametics in %i realtics (%.1f fps)\n",
 						gametic, realtics, fps);
 
 				// exit the application

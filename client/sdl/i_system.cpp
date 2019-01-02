@@ -794,7 +794,7 @@ std::string I_GetClipboardText()
 
 	if (!dis)
 	{
-		Printf(PRINT_HIGH, "I_GetClipboardText: XOpenDisplay failed");
+		Printf(PRINT_ERROR, "I_GetClipboardText: XOpenDisplay failed");
 		return "";
 	}
 
@@ -810,7 +810,7 @@ std::string I_GetClipboardText()
 			XDestroyWindow(dis, WindowEvents);
 			XUnlockDisplay(dis);
 			XCloseDisplay(dis);
-			Printf(PRINT_HIGH, "I_GetClipboardText: XConvertSelection failed");
+			Printf(PRINT_ERROR, "I_GetClipboardText: XConvertSelection failed");
 			return "";
 		}
 
@@ -838,7 +838,7 @@ std::string I_GetClipboardText()
 			XDestroyWindow(dis, WindowEvents);
 			XUnlockDisplay(dis);
 			XCloseDisplay(dis);
-			Printf(PRINT_HIGH, "I_GetClipboardText: XGetWindowProperty failed(1)");
+			Printf(PRINT_ERROR, "I_GetClipboardText: XGetWindowProperty failed(1)");
 			return "";
 		}
 
@@ -858,7 +858,7 @@ std::string I_GetClipboardText()
 			XDestroyWindow(dis, WindowEvents);
 			XUnlockDisplay(dis);
 			XCloseDisplay(dis);
-			Printf(PRINT_HIGH, "I_GetClipboardText: XGetWindowProperty failed(2)");
+			Printf(PRINT_ERROR, "I_GetClipboardText: XGetWindowProperty failed(2)");
 			return "";
 		}
 
@@ -922,7 +922,7 @@ std::string I_GetClipboardText()
 
 	if (err)
 	{
-		Printf(PRINT_HIGH, "GetCurrentScrap error: %d", err);
+		Printf(PRINT_ERROR, "GetCurrentScrap error: %d", err);
 		return "";
 	}
 
@@ -930,7 +930,7 @@ std::string I_GetClipboardText()
 
 	if (err)
 	{
-		Printf(PRINT_HIGH, "GetScrapFlavorSize error: %d", err);
+		Printf(PRINT_ERROR, "GetScrapFlavorSize error: %d", err);
 		return "";
 	}
 
@@ -941,7 +941,7 @@ std::string I_GetClipboardText()
 
 	if(err)
 	{
-		Printf(PRINT_HIGH, "GetScrapFlavorData error: %d", err);
+		Printf(PRINT_ERROR, "GetScrapFlavorData error: %d", err);
 		delete[] data;
 
 		return "";
@@ -959,7 +959,7 @@ std::string I_GetClipboardText()
 
     if(NULL == textp)
     {
-        Printf(PRINT_HIGH, "SDL_GetClipboardText error: %s", SDL_GetError());
+        Printf(PRINT_ERROR, "SDL_GetClipboardText error: %s", SDL_GetError());
         return "";
     }
 
