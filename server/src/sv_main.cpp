@@ -2519,6 +2519,9 @@ void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...)
 
 	Printf(level, "%s", string);  // print to the console
 
+	if (level == PRINT_NO_RCON)
+		return;
+
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
 		cl = &(it->client);
@@ -2544,6 +2547,9 @@ void STACK_ARGS SV_SpectatorPrintf(int level, const char *fmt, ...)
 	va_end(argptr);
 
 	Printf(level, "%s", string);  // print to the console
+
+	if (level == PRINT_NO_RCON)
+		return;
 
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
 	{
@@ -2606,6 +2612,9 @@ void STACK_ARGS SV_TeamPrintf(int level, int who, const char *fmt, ...)
 	va_end(argptr);
 
 	Printf(level, "%s", string);  // print to the console
+
+	if (level == PRINT_NO_RCON)
+		return;
 
 	player_t* player = &idplayer(who);
 
