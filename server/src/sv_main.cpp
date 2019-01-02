@@ -455,7 +455,7 @@ void SV_InitNetwork (void)
     if (v)
     {
        localport = atoi (v);
-       Printf (PRINT_HIGH, "using alternate port %i\n", localport);
+       Printf (PRINT_WARNING, "using alternate port %i\n", localport);
     }
 	else
 	   localport = SERVERPORT;
@@ -466,7 +466,7 @@ void SV_InitNetwork (void)
 	// determine my name & address
 	// NET_GetLocalAddress ();
 
-	Printf(PRINT_HIGH, "UDP Initialized\n");
+	Printf("UDP Initialized\n");
 
 	const char *w = Args.CheckValue ("-maxclients");
 	if (w)
@@ -640,7 +640,7 @@ void SV_Sound (AActor *mo, byte channel, const char *name, byte attenuation)
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -678,7 +678,7 @@ void SV_Sound (player_t &pl, AActor *mo, byte channel, const char *name, byte at
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -721,7 +721,7 @@ void UV_SoundAvoidPlayer (AActor *mo, byte channel, const char *name, byte atten
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -789,7 +789,7 @@ void SV_Sound (fixed_t x, fixed_t y, byte channel, const char *name, byte attenu
 
 	if (sfx_id > 255 || sfx_id < 0)
 	{
-		Printf (PRINT_HIGH, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
+		Printf (PRINT_ERROR, "SV_StartSound: range error. Sfx_id = %d\n", sfx_id);
 		return;
 	}
 
@@ -4219,7 +4219,7 @@ void SV_ParseCommands(player_t &player)
             break;
 
 		case clc_abort:
-			Printf(PRINT_HIGH, "Client abort.\n");
+			Printf(PRINT_WARNING, "Client abort.\n");
 			SV_DropClient(player);
 			return;
 
@@ -4244,14 +4244,14 @@ void SV_ParseCommands(player_t &player)
 			break;
 
 		default:
-			Printf(PRINT_HIGH, "SV_ParseCommands: Unknown client message %d.\n", (int)cmd);
+			Printf(PRINT_ERROR, "SV_ParseCommands: Unknown client message %d.\n", (int)cmd);
 			SV_DropClient(player);
 			return;
 		}
 
 		if (net_message.overflowed)
 		{
-			Printf (PRINT_HIGH, "SV_ReadClientMessage: badread %d(%s)\n",
+			Printf (PRINT_ERROR, "SV_ReadClientMessage: badread %d(%s)\n",
 					    (int)cmd,
 					    clc_info[cmd].getName());
 			SV_DropClient(player);
@@ -4656,7 +4656,7 @@ BEGIN_COMMAND (playerinfo)
 
 		if (!validplayer(p))
 		{
-			Printf (PRINT_HIGH, "Bad player number\n");
+			Printf (PRINT_WARNING, "Bad player number\n");
 			return;
 		}
 		else
@@ -4665,7 +4665,7 @@ BEGIN_COMMAND (playerinfo)
 
 	if (!validplayer(*player))
 	{
-		Printf(PRINT_HIGH, "Not a valid player\n");
+		Printf(PRINT_WARNING, "Not a valid player\n");
 		return;
 	}
 
@@ -4899,7 +4899,7 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	{
 		SexMessage(message, gendermessage, gender,
 				self->player->userinfo.netname.c_str(), self->player->userinfo.netname.c_str());
-		SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+		SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 		return;
 	}
 
@@ -4937,13 +4937,13 @@ void ClientObituary(AActor* self, AActor* inflictor, AActor* attacker)
 	{
 		SexMessage(message, gendermessage, gender,
 				self->player->userinfo.netname.c_str(), attacker->player->userinfo.netname.c_str());
-		SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+		SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 		return;
 	}
 
 	SexMessage(GStrings(OB_DEFAULT), gendermessage, gender,
 			self->player->userinfo.netname.c_str(), self->player->userinfo.netname.c_str());
-	SV_BroadcastPrintf(PRINT_MEDIUM, "%s\n", gendermessage);
+	SV_BroadcastPrintf(PRINT_DEATHEVENT, "%s\n", gendermessage);
 }
 
 void SV_SendDamagePlayer(player_t *player, int damage)

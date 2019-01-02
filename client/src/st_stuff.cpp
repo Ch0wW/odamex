@@ -500,7 +500,7 @@ BOOL CheckCheatmode (void)
 
 	if ((multiplayer || sv_gametype != GM_COOP) && !sv_allowcheats)
 	{
-		Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
+		Printf (PRINT_WARNING, "You must run the server with '+set sv_allowcheats 1' to enable this command.\n");
 		return true;
 	}
 	else
@@ -644,7 +644,7 @@ bool ST_Responder (event_t *ev)
                 if (CheckCheatmode ())
                     return false;
 
-                Printf(PRINT_HIGH, "Power-up toggled\n");
+                Printf(PRINT_LOCALEVENT, "Power-up toggled\n");
                 if (!plyr->powers[i])
                     P_GivePower( plyr, i);
                 else if (i!=pw_strength)
@@ -666,7 +666,7 @@ bool ST_Responder (event_t *ev)
             if (CheckCheatmode ())
                 return false;
 
-            Printf (PRINT_HIGH, "%s\n", GStrings(STSTR_BEHOLD));
+            Printf (PRINT_LOCALEVENT, "%s\n", GStrings(STSTR_BEHOLD));
 
         }
 
@@ -676,7 +676,7 @@ bool ST_Responder (event_t *ev)
             if (CheckCheatmode ())
                 return false;
 
-            Printf(PRINT_HIGH, "... Doesn't suck - GM\n");
+            Printf(PRINT_LOCALEVENT, "... Doesn't suck - GM\n");
             plyr->weaponowned[wp_chainsaw] = true;
 
             MSG_WriteMarker(&net_buffer, clc_cheatpulse);

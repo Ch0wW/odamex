@@ -394,7 +394,7 @@ BOOL SC_GetNumber (void)
 			{
 				//I_Error ("SC_GetNumber: Bad numeric constant \"%s\".\n"
 				//	"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
-				Printf (PRINT_HIGH,"SC_GetNumber: Bad numeric constant \"%s\".\n"
+				Printf (PRINT_WARNING, "SC_GetNumber: Bad numeric constant \"%s\".\n"
 					"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
 			}
 		}
@@ -435,7 +435,7 @@ BOOL SC_GetFloat (void)
 		{
 			//I_Error ("SC_GetFloat: Bad numeric constant \"%s\".\n"
 			//	"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
-			Printf (PRINT_HIGH,"SC_GetFloat: Bad numeric constant \"%s\".\n"
+			Printf (PRINT_WARNING, "SC_GetFloat: Bad numeric constant \"%s\".\n"
 				"Script %s, Line %d\n", sc_String, ScriptName.c_str(), sc_Line);
 		}
 		sc_Number = (int)sc_Float;

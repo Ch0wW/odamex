@@ -1951,7 +1951,7 @@ BOOL CheckIfExitIsGood (AActor *self)
 	}
 
 	if (self->player && multiplayer)
-		Printf (PRINT_HIGH, "%s exited the level.\n", self->player->userinfo.netname.c_str());
+		Printf ("%s exited the level.\n", self->player->userinfo.netname.c_str());
 
 	return true;
 }

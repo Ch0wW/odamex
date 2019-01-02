@@ -79,8 +79,8 @@ static int ListActionCommands (void)
 
 	for (i = 0; i < NUM_ACTIONS; i++)
 	{
-		Printf (PRINT_HIGH, "+%s\n", actionbits[i].name);
-		Printf (PRINT_HIGH, "-%s\n", actionbits[i].name);
+		Printf ("+%s\n", actionbits[i].name);
+		Printf ("-%s\n", actionbits[i].name);
 	}
 	return NUM_ACTIONS * 2;
 }
@@ -212,7 +212,7 @@ void C_DoCommand (const char *cmd)
 			}
 			else
 			{
-				Printf (PRINT_HIGH, "Not a cvar command \"%s\"\n", argv[0]);
+				Printf (PRINT_WARNING, "Not a cvar command \"%s\"\n", argv[0]);
 			}
 		}
 		else
@@ -248,13 +248,13 @@ void C_DoCommand (const char *cmd)
 						com->Run();
 					}
 					else
-						Printf(PRINT_HIGH, "get command not found\n");
+						Printf(PRINT_WARNING, "get command not found\n");
 				}
 			}
 			else
 			{
 				// We don't know how to handle this command
-				Printf (PRINT_HIGH, "Unknown command \"%s\"\n", argv[0]);
+				Printf (PRINT_WARNING, "Unknown command \"%s\"\n", argv[0]);
 			}
 		}
 		delete[] argv;
@@ -367,13 +367,13 @@ BEGIN_COMMAND (exec)
 
 	if(std::find(exec_stack.begin(), exec_stack.end(), argv[1]) != exec_stack.end())
 	{
-		Printf (PRINT_HIGH, "Ignoring recursive exec \"%s\"\n", argv[1]);
+		Printf (PRINT_WARNING, "Ignoring recursive exec \"%s\"\n", argv[1]);
 		return;
 	}
 
 	if(exec_stack.size() >= MAX_EXEC_DEPTH)
 	{
-		Printf (PRINT_HIGH, "Ignoring recursive exec \"%s\"\n", argv[1]);
+		Printf (PRINT_WARNING, "Ignoring recursive exec \"%s\"\n", argv[1]);
 		return;
 	}
 
@@ -381,7 +381,7 @@ BEGIN_COMMAND (exec)
 
 	if(ifs.fail())
 	{
-		Printf (PRINT_HIGH, "Could not open \"%s\"\n", argv[1]);
+		Printf (PRINT_WARNING, "Could not open \"%s\"\n", argv[1]);
 		return;
 	}
 
@@ -409,7 +409,7 @@ BEGIN_COMMAND (exec)
 		if(line.substr(0, 5) == "#else")
 		{
 			if(tag_stack.empty())
-				Printf(PRINT_HIGH, "Ignoring stray #else\n");
+				Printf(PRINT_WARNING, "Ignoring stray #else\n");
 			else
 				tag_stack.back() = !tag_stack.back();
 
@@ -788,7 +788,7 @@ BEGIN_COMMAND (alias)
 {
 	if (argc == 1)
 	{
-		Printf (PRINT_HIGH, "Current alias commands:\n");
+		Printf ("Current alias commands:\n");
 		DumpHash (true);
 	}
 	else
@@ -831,7 +831,7 @@ BEGIN_COMMAND (cmdlist)
 
 	count = ListActionCommands ();
 	count += DumpHash (false);
-	Printf (PRINT_HIGH, "%d commands\n", count);
+	Printf ("%d commands\n", count);
 }
 END_COMMAND (cmdlist)
 
@@ -841,11 +841,11 @@ BEGIN_COMMAND (key)
 	{
 		while (argc > 1)
 		{
-			Printf (PRINT_HIGH, " %08x", MakeKey (argv[1]));
+			Printf ("%s ==> %08x", argv[1], MakeKey (argv[1]));
 			argc--;
 			argv++;
 		}
-		Printf (PRINT_HIGH, "\n");
+		Printf ("\n");
 	}
 }
 END_COMMAND (key)
@@ -899,10 +899,10 @@ BEGIN_COMMAND (dumpactors)
 {
 	AActor *mo;
 	TThinkerIterator<AActor> iterator;
-	Printf (PRINT_HIGH, "Actors at level.time == %d:\n", level.time);
+	Printf ("Actors at level.time == %d:\n", level.time);
 	while ( (mo = iterator.Next ()) )
 	{
-		Printf (PRINT_HIGH, "%s (%x, %x, %x | %x) state: %d tics: %d\n", mobjinfo[mo->type].name, mo->x, mo->y, mo->z, mo->angle, mo->state - states, mo->tics);
+		Printf ("%s (%x, %x, %x | %x) state: %d tics: %d\n", mobjinfo[mo->type].name, mo->x, mo->y, mo->z, mo->angle, mo->state - states, mo->tics);
 	}
 }
 END_COMMAND (dumpactors)
@@ -915,13 +915,13 @@ BEGIN_COMMAND (logfile)
 
 	if (LOG.is_open()) {
 		if ((argc == 1 && LOG_FILE == DEFAULT_LOG_FILE) || (argc > 1 && LOG_FILE == argv[1])) {
-			Printf (PRINT_HIGH, "Log file %s already in use\n", LOG_FILE);
+			Printf (PRINT_WARNING, "Log file %s already in use\n", LOG_FILE);
 			return;
 		}
 
     	time (&rawtime);
     	timeinfo = localtime (&rawtime);
-    	Printf (PRINT_HIGH, "Log file %s closed on %s\n", LOG_FILE, asctime (timeinfo));
+    	Printf (PRINT_WARNING, "Log file %s closed on %s\n", LOG_FILE, asctime (timeinfo));
 		LOG.close();
 	}
 
@@ -929,13 +929,13 @@ BEGIN_COMMAND (logfile)
 	LOG.open (LOG_FILE, std::ios::app);
 
 	if (!LOG.is_open())
-		Printf (PRINT_HIGH, "Unable to create logfile: %s\n", LOG_FILE);
+		Printf (PRINT_WARNING, "Unable to create logfile: %s\n", LOG_FILE);
 	else {
 		time (&rawtime);
     	timeinfo = localtime (&rawtime);
     	LOG.flush();
     	LOG << std::endl;
-		Printf (PRINT_HIGH, "Logging in file %s started %s\n", LOG_FILE, asctime (timeinfo));
+		Printf ("Logging in file %s started %s\n", LOG_FILE, asctime (timeinfo));
     }
 }
 END_COMMAND (logfile)
@@ -960,7 +960,7 @@ bool P_StartScript (AActor *who, line_t *where, int script, char *map, int lineS
 BEGIN_COMMAND (puke)
 {
 	if (argc < 2 || argc > 5) {
-		Printf (PRINT_HIGH, " puke <script> [arg1] [arg2] [arg3]\n");
+		Printf (PRINT_WARNING, "Puke <script> [arg1] [arg2] [arg3]\n");
 	} else {
 		int script = atoi (argv[1]);
 		int arg0=0, arg1=0, arg2=0;

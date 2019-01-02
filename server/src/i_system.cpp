@@ -533,7 +533,7 @@ std::string I_GetBinaryDir()
 
 void I_FinishClockCalibration ()
 {
-    ///    Printf (PRINT_HIGH, "CPU Frequency: ~%f MHz\n", CyclesPerSecond / 1e6);
+    ///    Printf ("CPU Frequency: ~%f MHz\n", CyclesPerSecond / 1e6);
 }
 
 //

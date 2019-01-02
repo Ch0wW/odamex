@@ -701,7 +701,7 @@ void G_DoLoadLevel (int position)
 	G_InitLevelLocals ();
 
 	if (firstmapinit) {
-		Printf (PRINT_HIGH, "--- %s: \"%s\" ---\n", level.mapname, level.level_name);
+		Printf ("--- %s: \"%s\" ---\n", level.mapname, level.level_name);
 		firstmapinit = false;
 	}
 

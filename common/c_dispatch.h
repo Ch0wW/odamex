@@ -54,7 +54,7 @@ public:
 	virtual ~DConsoleCommand ();
 	virtual void Run () = 0;
 	virtual bool IsAlias () { return false; }
-	void PrintCommand () { Printf (PRINT_HIGH, "%s\n", m_Name.c_str()); }
+	void PrintCommand () { Printf ("%s\n", m_Name.c_str()); }
 
 	std::string m_Name;
 
@@ -88,7 +88,7 @@ public:
 	virtual ~DConsoleAlias ();
 	virtual void Run ();
 	virtual bool IsAlias () { return true; }
-	void PrintAlias () { Printf (PRINT_HIGH, "%s : %s\n", m_Name.c_str(), m_Command.c_str()); }
+	void PrintAlias () { Printf ("%s : %s\n", m_Name.c_str(), m_Command.c_str()); }
 	void Archive (FILE *f);
 
 	// Write out alias commands to a file for all current aliases.

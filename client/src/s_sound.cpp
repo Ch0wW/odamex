@@ -1020,7 +1020,7 @@ void S_UpdateMusic()
 void S_SetMusicVolume (float volume)
 {
 	if (volume < 0.0 || volume > 1.0)
-		Printf (PRINT_HIGH, "Attempt to set music volume at %f\n", volume);
+		Printf ("Attempt to set music volume at %f\n", volume);					// ToDo : probably change that, as it's irrevelant ?
 	else
 		I_SetMusicVolume (volume);
 }
@@ -1028,7 +1028,7 @@ void S_SetMusicVolume (float volume)
 void S_SetSfxVolume (float volume)
 {
 	if (volume < 0.0 || volume > 1.0)
-		Printf (PRINT_HIGH, "Attempt to set sfx volume at %f\n", volume);
+		Printf ("Attempt to set sfx volume at %f\n", volume);					// ToDo : probably change that, as it's irrevelant ?
 	else
 		I_SetSfxVolume (volume);
 }
@@ -1070,7 +1070,7 @@ void S_ChangeMusic (std::string musicname, int looping)
 	{
 		if ((lumpnum = W_CheckNumForName (musicname.c_str())) == -1)
 		{
-			Printf (PRINT_HIGH, "Music lump \"%s\" not found\n", musicname.c_str());
+			Printf (PRINT_WARNING, "Music lump \"%s\" not found\n", musicname.c_str());
 			return;
 		}
 
@@ -1248,7 +1248,7 @@ void S_ParseSndInfo (void)
 					sndinfo = COM_Parse (sndinfo);
 					index = atoi (com_token);
 					if (index < 0 || index > 255) {
-						Printf (PRINT_HIGH, "Bad ambient index (%d)\n", index);
+						Printf (PRINT_WARNING, "Bad ambient index (%d)\n", index);
 						ambient = &dummy;
 					} else {
 						ambient = Ambients + index;
@@ -1299,7 +1299,7 @@ void S_ParseSndInfo (void)
 						sndinfo = COM_Parse (sndinfo);
 						ambient->periodmin = (int)(atof (com_token) * TICRATE);
 					} else {
-						Printf (PRINT_HIGH, "Unknown ambient type (%s)\n", com_token);
+						Printf (PRINT_WARNING, "Unknown ambient type (%s)\n", com_token);
 					}
 
 					sndinfo = COM_Parse (sndinfo);
@@ -1322,7 +1322,7 @@ void S_ParseSndInfo (void)
 						std::transform(info->music, info->music + strlen(info->music), info->music, toupper);
 					}
 				} else {
-					Printf (PRINT_HIGH, "Unknown SNDINFO command %s\n", com_token);
+					Printf (PRINT_WARNING, "Unknown SNDINFO command %s\n", com_token);
 					while (*sndinfo != '\n' && *sndinfo != '\0')
 						sndinfo++;
 				}
@@ -1445,10 +1445,10 @@ BEGIN_COMMAND (snd_soundlist)
 		if (S_sfx[i].lumpnum != -1)
 		{
 			strncpy (lumpname, lumpinfo[S_sfx[i].lumpnum].name, 8);
-			Printf (PRINT_HIGH, "%3d. %s (%s)\n", i+1, S_sfx[i].name, lumpname);
+			Printf ("%3d. %s (%s)\n", i+1, S_sfx[i].name, lumpname);
 		}
 		else
-			Printf (PRINT_HIGH, "%3d. %s **not present**\n", i+1, S_sfx[i].name);
+			Printf (PRINT_WARNING, "%3d. %s **not present**\n", i+1, S_sfx[i].name);
 }
 END_COMMAND (snd_soundlist)
 
@@ -1458,7 +1458,7 @@ BEGIN_COMMAND (snd_soundlinks)
 
 	for (i = 0; i < numsfx; i++)
 		if (S_sfx[i].link)
-			Printf (PRINT_HIGH, "%s -> %s\n", S_sfx[i].name, S_sfx[i].link->name);
+			Printf ("%s -> %s\n", S_sfx[i].name, S_sfx[i].link->name);
 }
 END_COMMAND (snd_soundlinks)
 

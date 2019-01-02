@@ -168,6 +168,7 @@ typedef uint64_t			dtime_t;
 
 // [RH] This gets used all over; define it here:
 int STACK_ARGS Printf (int printlevel, const char *, ...);
+int STACK_ARGS Printf(const char *format, ...);				// Ch0wW : simplier version if not wanting to pass PRINT_HIGH everywhere.
 // [Russell] Prints a bold green message to the console
 int STACK_ARGS Printf_Bold (const char *format, ...);
 // [RH] Same here:
@@ -182,12 +183,25 @@ extern const char *LOG_FILE; //  Default is "odamex.log"
 extern std::ifstream CON;
 
 // game print flags
-#define	PRINT_LOW			0		// pickup messages
-#define	PRINT_MEDIUM		1		// death messages
-#define	PRINT_HIGH			2		// critical messages
-#define	PRINT_CHAT			3		// chat messages
-#define PRINT_TEAMCHAT		4		// chat messages from a teammate
-#define PRINT_SERVERCHAT	5		// chat messages from the server
+typedef enum {
+	PRINT_PICKUP,		// Pickup messages
+	PRINT_DEATHEVENT,	// Death messages
+	PRINT_LOCALEVENT,	// Ch0wW: Local Game Event (XXX connected / You joined the X team)
+	PRINT_GAMEEVENT,	// Ch0wW: Game Events (Game Won / XXX joined the game)
+	PRINT_HIGH,			// Console messages
+
+	//---------------------------------------
+	// AT THIS POINT, ANY RCON'd PERSON SHOULDN'T HAVE ACCESS TO IT
+	PRINT_CHAT,			// Regular chat messages.
+	PRINT_TEAMCHAT,		// Chat messages from a teammate
+	PRINT_PRIVATECHAT,	// Private chat messages
+	PRINT_SERVERCHAT,	// chat messages from the server
+	PRINT_NO_RCON,		// Ch0wW: message that won't be printed for a RCON player.
+	PRINT_WARNING,		// Ch0wW: RCON messages, or just a warning msg (Color is forced to YELLOW)
+	PRINT_ERROR,		// Ch0wW: ERROR messages (Color is forced to RED/BRICK)
+
+	PRINT_MAXPRINT,
+} printlevel_t;
 
 #ifdef __forceinline
 	#define forceinline __forceinline

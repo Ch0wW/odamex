@@ -814,7 +814,7 @@ BEGIN_COMMAND (playerinfo)
 
 		if (!validplayer(p))
 		{
-			Printf (PRINT_HIGH, "Bad player number\n");
+			Printf (PRINT_WARNING, "Bad player number\n");
 			return;
 		}
 		else
@@ -823,7 +823,7 @@ BEGIN_COMMAND (playerinfo)
 
 	if (!validplayer(*player))
 	{
-		Printf (PRINT_HIGH, "Not a valid player\n");
+		Printf (PRINT_WARNING, "Not a valid player\n");
 		return;
 	}
 
@@ -837,17 +837,17 @@ BEGIN_COMMAND (playerinfo)
 	else if (player->userinfo.team == TEAM_RED)
 		sprintf(team, "RED");
 
-	Printf (PRINT_HIGH, "---------------[player info]----------- \n");
-	Printf(PRINT_HIGH, " userinfo.netname - %s \n",		player->userinfo.netname.c_str());
-	Printf(PRINT_HIGH, " userinfo.team    - %s \n",		team);
-	Printf(PRINT_HIGH, " userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
-	Printf(PRINT_HIGH, " userinfo.unlag   - %d \n",		player->userinfo.unlag);
-	Printf(PRINT_HIGH, " userinfo.color   - %s \n",		color);
-	Printf(PRINT_HIGH, " userinfo.gender  - %d \n",		player->userinfo.gender);
-	Printf(PRINT_HIGH, " time             - %d \n",		player->GameTime);
-	Printf(PRINT_HIGH, " spectator        - %d \n",		player->spectator);
-	Printf(PRINT_HIGH, " downloader       - %d \n",		player->playerstate == PST_DOWNLOAD);
-	Printf (PRINT_HIGH, "--------------------------------------- \n");
+	Printf ("---------------[player info]----------- \n");
+	Printf (" userinfo.netname - %s \n",		player->userinfo.netname.c_str());
+	Printf (" userinfo.team    - %s \n",		team);
+	Printf (" userinfo.aimdist - %d \n",		player->userinfo.aimdist >> FRACBITS);
+	Printf (" userinfo.unlag   - %d \n",		player->userinfo.unlag);
+	Printf (" userinfo.color   - %s \n",		color);
+	Printf (" userinfo.gender  - %d \n",		player->userinfo.gender);
+	Printf (" time             - %d \n",		player->GameTime);
+	Printf (" spectator        - %d \n",		player->spectator);
+	Printf (" downloader       - %d \n",		player->playerstate == PST_DOWNLOAD);
+	Printf ("--------------------------------------- \n");
 }
 END_COMMAND (playerinfo)
 
@@ -857,7 +857,7 @@ BEGIN_COMMAND (kill)
     if (sv_allowcheats || sv_gametype == GM_COOP)
         MSG_WriteMarker(&net_buffer, clc_kill);
     else
-        Printf (PRINT_HIGH, "You must run the server with '+set sv_allowcheats 1' or disable sv_keepkeys to enable this command.\n");
+        Printf (PRINT_WARNING, "You must run the server with '+set sv_allowcheats 1' or disable sv_keepkeys to enable this command.\n");
 }
 END_COMMAND (kill)
 
@@ -967,7 +967,7 @@ END_COMMAND (rcon_logout)
 
 BEGIN_COMMAND (playerteam)
 {
-	Printf (PRINT_MEDIUM, "Your Team is %d \n", consoleplayer().userinfo.team);
+	Printf (PRINT_HIGH, "Your Team is %d \n", consoleplayer().userinfo.team);
 }
 END_COMMAND (playerteam)
 
@@ -2968,7 +2968,7 @@ void CL_CheckMissedPacket(void)
             MSG_ReadChunk(size);
 
 			#ifdef _DEBUG
-                Printf (PRINT_LOW, "warning: duplicate packet\n");
+                Printf (PRINT_HIGH, "warning: duplicate packet\n");
 			#endif
 			return;
 		}
@@ -3714,7 +3714,7 @@ void PickupMessage (AActor *toucher, const char *message)
 	{
 		lastmessagetic = gametic;
 		lastmessage = message;
-		Printf (PRINT_LOW, "%s\n", message);
+		Printf (PRINT_PICKUP, "%s\n", message);
 	}
 }
 

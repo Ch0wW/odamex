@@ -398,7 +398,7 @@ void M_FindResponseFile (void)
 			// DISPLAY ARGS
 			Printf (PRINT_HIGH,"%d command-line args:\n", Args.NumArgs ());
 			for (size_t k = 1; k < Args.NumArgs (); k++)
-				Printf (PRINT_HIGH,"%s\n", Args.GetArg (k));
+				Printf ("%s\n", Args.GetArg (k));
 
 			break;
 		}

@@ -140,7 +140,7 @@ BEGIN_COMMAND (resetcustomcolors)
     am_ovlockedcolor = "bb bb bb";
     am_ovexitcolor = "ff ff 00";
     am_ovteleportcolor = "ff a3 00";
-    Printf (PRINT_HIGH, "Custom automap colors reset to default.\n");
+    Printf (PRINT_WARNING, "Custom automap colors reset to default.\n");
 }
 END_COMMAND (resetcustomcolors)
 
@@ -842,19 +842,19 @@ BOOL AM_Responder (event_t *ev)
 			case AM_FOLLOWKEY:
 				followplayer = !followplayer;
 				f_oldloc.x = MAXINT;
-				Printf (PRINT_HIGH, "%s\n", followplayer ? GStrings(AMSTR_FOLLOWON) : GStrings(AMSTR_FOLLOWOFF));
+				Printf ("%s\n", followplayer ? GStrings(AMSTR_FOLLOWON) : GStrings(AMSTR_FOLLOWOFF));
 				break;
 			case AM_GRIDKEY:
 				grid = !grid;
-				Printf (PRINT_HIGH, "%s\n", grid ? GStrings(AMSTR_GRIDON) : GStrings(AMSTR_GRIDOFF));
+				Printf ("%s\n", grid ? GStrings(AMSTR_GRIDON) : GStrings(AMSTR_GRIDOFF));
 				break;
 			case AM_MARKKEY:
-				Printf (PRINT_HIGH, "%s %d\n",  GStrings(AMSTR_MARKEDSPOT), markpointnum);
+				Printf ("%s %d\n",  GStrings(AMSTR_MARKEDSPOT), markpointnum);
 				AM_addMark();
 				break;
 			case AM_CLEARMARKKEY:
 				AM_clearMarks();
-				Printf (PRINT_HIGH, "%s\n", GStrings(AMSTR_MARKSCLEARED));
+				Printf ("%s\n", GStrings(AMSTR_MARKSCLEARED));
 				break;
 			default:
 				rc = false;

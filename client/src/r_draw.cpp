@@ -458,7 +458,7 @@ static forceinline void R_FillColumnGeneric(PIXEL_T* dest, const drawcolumn_t& d
 #ifdef RANGECHECK 
 	if (drawcolumn.x < 0 || drawcolumn.x >= viewwidth || drawcolumn.yl < 0 || drawcolumn.yh >= viewheight)
 	{
-		Printf (PRINT_HIGH, "R_FillColumn: %i to %i at %i\n", drawcolumn.yl, drawcolumn.yh, drawcolumn.x);
+		Printf (PRINT_WARNING, "R_FillColumn: %i to %i at %i\n", drawcolumn.yl, drawcolumn.yh, drawcolumn.x);
 		return;
 	}
 #endif
@@ -497,7 +497,7 @@ static forceinline void R_DrawColumnGeneric(PIXEL_T* dest, const drawcolumn_t& d
 #ifdef RANGECHECK 
 	if (drawcolumn.x < 0 || drawcolumn.x >= viewwidth || drawcolumn.yl < 0 || drawcolumn.yh >= viewheight)
 	{
-		Printf (PRINT_HIGH, "R_DrawColumn: %i to %i at %i\n", drawcolumn.yl, drawcolumn.yh, drawcolumn.x);
+		Printf (PRINT_WARNING, "R_DrawColumn: %i to %i at %i\n", drawcolumn.yl, drawcolumn.yh, drawcolumn.x);
 		return;
 	}
 #endif

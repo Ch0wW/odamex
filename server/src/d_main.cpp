@@ -172,8 +172,8 @@ void D_DoomLoop (void)
 		}
 		catch (CRecoverableError &error)
 		{
-			Printf (PRINT_HIGH, "ERROR: %s\n", error.GetMsg().c_str());
-			Printf (PRINT_HIGH, "sleeping for 10 seconds before map reload...");
+			Printf (PRINT_ERROR, "ERROR: %s\n", error.GetMsg().c_str());
+			Printf (PRINT_ERROR, "sleeping for 10 seconds before map reload...");
 
 			// denis - drop clients
 			SV_SendDisconnectSignal();
@@ -413,7 +413,7 @@ void D_DoomMain()
 	devparm = Args.CheckParm("-devparm");
 
 	if (devparm)
-		Printf (PRINT_HIGH, "%s", GStrings(D_DEVSTR));        // D_DEVSTR
+		Printf ("%s", GStrings(D_DEVSTR));        // D_DEVSTR
 
 	// Nomonsters
 	if (Args.CheckParm("-nomonsters"))

@@ -576,7 +576,7 @@ void cvar_t::cvarlist()
 		unsigned flags = var->m_Flags;
 
 		count++;
-		Printf (PRINT_HIGH, "%c%c%c%c %s \"%s\"\n",
+		Printf ("%c%c%c%c %s \"%s\"\n",
 				flags & CVAR_ARCHIVE ? 'A' :
 					flags & CVAR_CLIENTARCHIVE ? 'C' :
 					flags & CVAR_SERVERARCHIVE ? 'S' : ' ',
@@ -589,7 +589,7 @@ void cvar_t::cvarlist()
 				var->cstring());
 		var = var->m_Next;
 	}
-	Printf (PRINT_HIGH, "%d cvars\n", count);
+	Printf ("%d cvars\n", count);
 }
 
 
@@ -628,7 +628,7 @@ BEGIN_COMMAND (set)
 {
 	if (argc != 3)
 	{
-		Printf (PRINT_HIGH, "usage: set <variable> <value>\n");
+		Printf (PRINT_WARNING, "usage: set <variable> <value>\n");
 	}
 	else
 	{
@@ -640,12 +640,12 @@ BEGIN_COMMAND (set)
 
 		if (var->flags() & CVAR_NOSET)
 		{
-			Printf(PRINT_HIGH, "%s is write protected.\n", argv[1]);
+			Printf(PRINT_WARNING, "%s is write protected.\n", argv[1]);
 			return;
 		}
 		else if (multiplayer && baseapp == client && (var->flags() & CVAR_SERVERINFO))
 		{
-			Printf (PRINT_HIGH, "%s is under server control.\n", argv[1]);
+			Printf (PRINT_WARNING, "%s is under server control.\n", argv[1]);
 			return;
 		}
 
@@ -685,7 +685,7 @@ BEGIN_COMMAND (get)
 
     if (argc < 2)
 	{
-		Printf (PRINT_HIGH, "usage: get <variable>\n");
+		Printf (PRINT_WARNING, "Usage: get <variable>\n");
         return;
 	}
 
@@ -721,7 +721,7 @@ BEGIN_COMMAND (toggle)
 
     if (argc < 2)
 	{
-		Printf (PRINT_HIGH, "usage: toggle <variable>\n");
+		Printf (PRINT_WARNING, "Usage: toggle <variable>\n");
         return;
 	}
 
@@ -729,11 +729,11 @@ BEGIN_COMMAND (toggle)
 
 	if (!var)
 	{
-		Printf(PRINT_HIGH, "\"%s\" is unset.\n", argv[1]);
+		Printf(PRINT_WARNING, "\"%s\" is unset.\n", argv[1]);
 	}
 	else if (var->flags() & CVAR_NOENABLEDISABLE)
 	{
-		Printf(PRINT_HIGH, "\"%s\" cannot be toggled.\n", argv[1]);
+		Printf(PRINT_WARNING, "\"%s\" cannot be toggled.\n", argv[1]);
 	}
 	else
 	{
@@ -744,11 +744,11 @@ BEGIN_COMMAND (toggle)
 
 		// [Russell] - Don't make the user feel inadequate, tell
 		// them its either enabled, disabled or its other value
-		Printf(PRINT_HIGH, "\"%s\" is %s.\n",
+		Printf("\"%s\" is %s.\n",
 				var->name(), C_GetValueString(var).c_str());
 
 		if (var->flags() & CVAR_LATCH && var->flags() & CVAR_MODIFIED)
-			Printf(PRINT_HIGH, "\"%s\" will be changed to %s.\n",
+			Printf("\"%s\" will be changed to %s.\n",
 					var->name(), C_GetLatchedValueString(var).c_str());
 	}
 }
@@ -767,7 +767,7 @@ BEGIN_COMMAND (help)
 
     if (argc < 2)
     {
-		Printf (PRINT_HIGH, "usage: help <variable>\n");
+		Printf (PRINT_WARNING, "Usage: help <variable>\n");
         return;
     }
 
@@ -775,11 +775,11 @@ BEGIN_COMMAND (help)
 
     if (!var)
     {
-        Printf (PRINT_HIGH, "\"%s\" is unset.\n", argv[1]);
+        Printf (PRINT_WARNING, "\"%s\" is unset.\n", argv[1]);
         return;
     }
 
-    Printf(PRINT_HIGH, "Help: %s - %s\n", var->name(), var->helptext());
+    Printf("Help: %s - %s\n", var->name(), var->helptext());
 }
 END_COMMAND (help)
 

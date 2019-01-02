@@ -193,10 +193,10 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 	{
 		client_t* cl = &(it->client);
 
-		if (cl->allow_rcon)
+		if (cl->allow_rcon && printlevel < PRINT_NO_RCON)
 		{
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
-			MSG_WriteByte(&cl->reliablebuf, PRINT_MEDIUM);
+			MSG_WriteByte(&cl->reliablebuf, PRINT_WARNING);
 			MSG_WriteString(&cl->reliablebuf, (char*)str.c_str());
 		}
 	}
@@ -212,11 +212,21 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 int STACK_ARGS Printf (int printlevel, const char *format, ...)
 {
 	va_list argptr;
-	int count;
 
 	va_start (argptr, format);
-	count = VPrintf (printlevel, format, argptr);
+	int count = VPrintf (printlevel, format, argptr);
 	va_end (argptr);
+
+	return count;
+}
+
+int STACK_ARGS Printf(const char *format, ...)
+{
+	va_list argptr;
+
+	va_start(argptr, format);
+	int count = VPrintf(PRINT_HIGH, format, argptr);
+	va_end(argptr);
 
 	return count;
 }
@@ -225,8 +235,8 @@ int STACK_ARGS Printf_Bold (const char *format, ...)
 {
 	va_list argptr;
 	int count;
-
-	printxormask = 0x80;
+	
+	printxormask = 0x80; // Ch0wW : ????????
 	va_start (argptr, format);
 	count = VPrintf (PRINT_HIGH, format, argptr);
 	va_end (argptr);
@@ -303,7 +313,7 @@ BEGIN_COMMAND (history)
 
 	while (hist)
 	{
-		Printf (PRINT_HIGH, "   %s\n", hist->String);
+		Printf ("   %s\n", hist->String);
 		hist = hist->Newer;
 	}
 }

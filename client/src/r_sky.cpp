@@ -144,7 +144,7 @@ void R_InitSkyMap()
 
 	if (sky2texture && textureheight[sky1texture] != textureheight[sky2texture])
 	{
-		Printf (PRINT_HIGH,"\x1f+Both sky textures must be the same height.\x1f-\n");
+		Printf (PRINT_WARNING, "\x1f+Both sky textures must be the same height.\x1f-\n");
 		sky2texture = sky1texture;
 	}
 	

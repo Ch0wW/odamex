@@ -1618,7 +1618,7 @@ void DLevelScript::RunScript ()
 	{
 		if (++runaway > 500000)
 		{
-			Printf (PRINT_HIGH,"Runaway script %d terminated\n", script);
+			Printf ("Runaway script %d terminated\n", script);
 			state = SCRIPT_PleaseRemove;
 			break;
 		}
@@ -1627,7 +1627,7 @@ void DLevelScript::RunScript ()
 		switch (pcd)
 		{
 		default:
-			Printf (PRINT_HIGH,"Unknown P-Code %d in script %d\n", pcd, script);
+			Printf (PRINT_WARNING, "Unknown P-Code %d in script %d\n", pcd, script);
 			// fall through
 		case PCD_TERMINATE:
 			state = SCRIPT_PleaseRemove;
@@ -1811,13 +1811,13 @@ void DLevelScript::RunScript ()
 				func = level.behavior->GetFunction (funcnum);
 				if (func == NULL)
 				{
-					Printf (PRINT_HIGH,"Function %d in script %d out of range\n", funcnum, script);
+					Printf (PRINT_WARNING, "Function %d in script %d out of range\n", funcnum, script);
 					state = SCRIPT_PleaseRemove;
 					break;
 				}
 				if (sp + func->LocalCount + 32 > STACK_SIZE)
 				{ // 32 is the margin for the function's working space
-					Printf (PRINT_HIGH,"Out of stack space in script %d\n", script);
+					Printf (PRINT_WARNING, "Out of stack space in script %d\n", script);
 					state = SCRIPT_PleaseRemove;
 					break;
 				}
@@ -3202,7 +3202,7 @@ void P_DoDeferedScripts (void)
 				P_GetScriptGoing (gomo, NULL, def->script, scriptdata, 0, def->arg0, def->arg1, def->arg2, def->type == acsdefered_t::defexealways, true);
 
 			} else
-				Printf (PRINT_HIGH,"P_DoDeferredScripts: Unknown script %d\n", def->script);
+				Printf (PRINT_WARNING, "P_DoDeferredScripts: Unknown script %d\n", def->script);
 			break;
 
 		case acsdefered_t::defsuspend:
@@ -3262,7 +3262,7 @@ bool P_StartScript (AActor *who, line_t *where, int script, char *map, int lineS
 		}
 		else
 		{
-			Printf (PRINT_HIGH,"P_StartScript: Unknown script %d\n", script);
+			Printf (PRINT_WARNING, "P_StartScript: Unknown script %d\n", script);
 		}
 	}
 	else
@@ -3399,7 +3399,7 @@ BEGIN_COMMAND (scriptstat)
 {
 	if (DACSThinker::ActiveThinker == NULL)
 	{
-		Printf (PRINT_HIGH,"No scripts are running.\n");
+		Printf (PRINT_WARNING, "No scripts are running.\n");
 	}
 	else
 	{
@@ -3425,7 +3425,7 @@ void DACSThinker::DumpScriptStatus ()
 
 	while (script != NULL)
 	{
-		Printf (PRINT_HIGH,"%d: %s\n", script->script, stateNames[script->state]);
+		Printf ("%d: %s\n", script->script, stateNames[script->state]);
 		script = script->next;
 	}
 }

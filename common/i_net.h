@@ -457,7 +457,7 @@ public:
 			{
 				clear();
 				overflowed = true;
-				Printf (PRINT_HIGH, "buf_t::resize(): overflow\n");
+				Printf (PRINT_WARNING, "buf_t::resize(): overflow\n");
 			}
 		}
 		else
@@ -474,7 +474,7 @@ public:
 		{
 			clear();
 			overflowed = true;
-			Printf (PRINT_HIGH, "SZ_GetSpace: overflow\n");
+			Printf (PRINT_WARNING, "SZ_GetSpace: overflow\n");
 		}
 
 		byte *ret = data + cursize;

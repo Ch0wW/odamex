@@ -352,7 +352,7 @@ void S_ParseSndInfo (void)
 					sndinfo = COM_Parse (sndinfo);
 					index = atoi (com_token);
 					if (index < 0 || index > 255) {
-						Printf (PRINT_HIGH, "Bad ambient index (%d)\n", index);
+						Printf (PRINT_WARNING, "Bad ambient index (%d)\n", index);
 						ambient = &dummy;
 					} else {
 						ambient = Ambients + index;
@@ -403,7 +403,7 @@ void S_ParseSndInfo (void)
 						sndinfo = COM_Parse (sndinfo);
 						ambient->periodmin = (int)(atof (com_token) * TICRATE);
 					} else {
-						Printf (PRINT_HIGH, "Unknown ambient type (%s)\n", com_token);
+						Printf (PRINT_WARNING, "Unknown ambient type (%s)\n", com_token);
 					}
 
 					sndinfo = COM_Parse (sndinfo);
@@ -426,7 +426,7 @@ void S_ParseSndInfo (void)
 						std::transform(info->music, info->music + strlen(info->music), info->music, toupper);
 					}
 				} else {
-					Printf (PRINT_HIGH, "Unknown SNDINFO command %s\n", com_token);
+					Printf (PRINT_WARNING, "Unknown SNDINFO command %s\n", com_token);
 					while (*sndinfo != '\n' && *sndinfo != '\0')
 						sndinfo++;
 				}
