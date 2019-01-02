@@ -538,7 +538,7 @@ BEGIN_COMMAND(ban)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "Usage: ban <player id> [ban length] [reason].\n");
+		Printf(PRINT_WARNING, "Usage: ban <player id> [ban length] [reason].\n");
 		return;
 	}
 
@@ -547,14 +547,14 @@ BEGIN_COMMAND(ban)
 	buffer >> pid;
 	if (!buffer)
 	{
-		Printf(PRINT_HIGH, "ban: need a player id.\n");
+		Printf(PRINT_WARNING, "ban: need a player id.\n");
 		return;
 	}
 
 	player_t &player = idplayer(pid);
 	if (!validplayer(player))
 	{
-		Printf(PRINT_HIGH, "ban: %d is not a valid player id.\n", pid);
+		Printf(PRINT_WARNING, "ban: %d is not a valid player id.\n", pid);
 		return;
 	}
 
@@ -564,7 +564,7 @@ BEGIN_COMMAND(ban)
 	{
 		if (!StrToTime(arguments[1], tim))
 		{
-			Printf(PRINT_HIGH, "ban: invalid ban time (try a period of time like \"2 hours\" or \"permanent\")\n");
+			Printf(PRINT_ERROR, "ban: invalid ban time (try a period of time like \"2 hours\" or \"permanent\")\n");
 			return;
 		}
 	}
@@ -585,14 +585,14 @@ BEGIN_COMMAND(ban)
 
 	// Add the ban and kick the player.
 	banlist.add(player, tim, reason);
-	Printf(PRINT_HIGH, "ban: ban added.\n");
+	Printf("ban: ban added.\n");
 
 	// If we have a banfile, save the banlist.
 	if (sv_banfile.cstring()[0] != 0)
 	{
 		Json::Value json_bans(Json::arrayValue);
 		if (!(banlist.json(json_bans) && M_WriteJSON(sv_banfile.cstring(), json_bans, true)))
-			Printf(PRINT_HIGH, "ban: banlist could not be saved.\n");
+			Printf(PRINT_WARNING, "ban: banlist could not be saved.\n");
 	}
 
 	SV_KickPlayer(player, reason);
@@ -607,7 +607,7 @@ BEGIN_COMMAND(addban)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "Usage: addban <ip address or ip range> [ban length] [player name] [reason]\n");
+		Printf(PRINT_WARNING, "Usage: addban <ip address or ip range> [ban length] [player name] [reason]\n");
 		return;
 	}
 
@@ -619,7 +619,7 @@ BEGIN_COMMAND(addban)
 	{
 		if (!StrToTime(arguments[1], tim))
 		{
-			Printf(PRINT_HIGH, "addban: invalid ban time (try a period of time like \"2 hours\" or \"permanent\")\n");
+			Printf(PRINT_WARNING, "addban: invalid ban time (try a period of time like \"2 hours\" or \"permanent\")\n");
 			return;
 		}
 	}
@@ -647,17 +647,17 @@ BEGIN_COMMAND(addban)
 
 	if (!banlist.add(address, tim, name, reason))
 	{
-		Printf(PRINT_HIGH, "addban: invalid address or range.\n");
+		Printf(PRINT_ERROR, "addban: invalid address or range.\n");
 		return;
 	}
-	Printf(PRINT_HIGH, "addban: ban added.\n");
+	Printf("addban: ban added.\n");
 
 	// If we have a banfile, save the banlist.
 	if (sv_banfile.cstring()[0] != 0)
 	{
 		Json::Value json_bans(Json::arrayValue);
 		if (!(banlist.json(json_bans) && M_WriteJSON(sv_banfile.cstring(), json_bans, true)))
-			Printf(PRINT_HIGH, "addban: banlist could not be saved.\n");
+			Printf(PRINT_WARNING, "addban: banlist could not be saved.\n");
 	}
 }
 END_COMMAND(addban)
@@ -670,7 +670,7 @@ BEGIN_COMMAND(except)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "Usage: except <player id>.\n");
+		Printf(PRINT_WARNING, "Usage: except <player id>.\n");
 		return;
 	}
 
@@ -679,14 +679,14 @@ BEGIN_COMMAND(except)
 	buffer >> pid;
 	if (!buffer)
 	{
-		Printf(PRINT_HIGH, "except: need a player id.\n");
+		Printf(PRINT_WARNING, "except: need a player id.\n");
 		return;
 	}
 
 	player_t &player = idplayer(pid);
 	if (!validplayer(player))
 	{
-		Printf(PRINT_HIGH, "except: %d is not a valid player id.\n", pid);
+		Printf(PRINT_WARNING, "except: %d is not a valid player id.\n", pid);
 		return;
 	}
 
@@ -703,7 +703,7 @@ BEGIN_COMMAND(addexception)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "Usage: addexception <ip address or ip range> [player name]\n");
+		Printf(PRINT_WARNING, "Usage: addexception <ip address or ip range> [player name]\n");
 		return;
 	}
 
@@ -728,7 +728,7 @@ BEGIN_COMMAND(delban)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "Usage: delban <banlist index>\n");
+		Printf(PRINT_WARNING, "Usage: delban <banlist index>\n");
 		return;
 	}
 
@@ -737,24 +737,24 @@ BEGIN_COMMAND(delban)
 	buffer >> bid;
 	if (!buffer || bid == 0)
 	{
-		Printf(PRINT_HIGH, "delban: banlist index must be a nonzero number.\n");
+		Printf(PRINT_WARNING, "delban: banlist index must be a nonzero number.\n");
 		return;
 	}
 
 	if (!banlist.remove(bid - 1))
 	{
-		Printf(PRINT_HIGH, "delban: banlist index does not exist.\n");
+		Printf(PRINT_WARNING, "delban: banlist index does not exist.\n");
 		return;
 	}
 
-	Printf(PRINT_HIGH, "delban: ban deleted.\n");
+	Printf("delban: ban deleted.\n");
 
 	// If we have a banfile, save the banlist.
 	if (sv_banfile.cstring()[0] != 0)
 	{
 		Json::Value json_bans(Json::arrayValue);
 		if (!(banlist.json(json_bans) && M_WriteJSON(sv_banfile.cstring(), json_bans, true)))
-			Printf(PRINT_HIGH, "delban: banlist could not be saved.\n");
+			Printf(PRINT_ERROR, "delban: banlist could not be saved.\n");
 	}
 }
 END_COMMAND(delban)
@@ -766,7 +766,7 @@ BEGIN_COMMAND(delexception)
 	// We need at least one argument.
 	if (arguments.size() < 1)
 	{
-		Printf(PRINT_HIGH, "delexception: delban <banlist index>\n");
+		Printf(PRINT_WARNING, "delexception: delban <banlist index>\n");
 		return;
 	}
 
@@ -775,13 +775,13 @@ BEGIN_COMMAND(delexception)
 	buffer >> bid;
 	if (!buffer || bid == 0)
 	{
-		Printf(PRINT_HIGH, "delexception: exception index must be a nonzero number.\n");
+		Printf(PRINT_WARNING, "delexception: exception index must be a nonzero number.\n");
 		return;
 	}
 
 	if (!banlist.remove_exception(bid - 1))
 	{
-		Printf(PRINT_HIGH, "delexception: exception index does not exist.\n");
+		Printf(PRINT_WARNING, "delexception: exception index does not exist.\n");
 		return;
 	}
 }
@@ -794,13 +794,13 @@ BEGIN_COMMAND(banlist)
 	banlist_results_t result;
 	if (!banlist.query(JoinStrings(arguments, " "), result))
 	{
-		Printf(PRINT_HIGH, "banlist: banlist is empty.\n");
+		Printf(PRINT_WARNING, "banlist: banlist is empty.\n");
 		return;
 	}
 
 	if (result.empty())
 	{
-		Printf(PRINT_HIGH, "banlist: no results found.\n");
+		Printf(PRINT_WARNING, "banlist: no results found.\n");
 		return;
 	}
 
@@ -847,7 +847,7 @@ BEGIN_COMMAND(banlist)
 			buffer << ")";
 		}
 
-		Printf(PRINT_HIGH, "%s", buffer.str().c_str());
+		Printf("%s", buffer.str().c_str());
 	}
 }
 END_COMMAND(banlist)
@@ -856,14 +856,14 @@ BEGIN_COMMAND(clearbanlist)
 {
 	banlist.clear();
 
-	Printf(PRINT_HIGH, "clearbanlist: banlist cleared.\n");
+	Printf("clearbanlist: banlist cleared.\n");
 
 	// If we have a banfile, save the banlist.
 	if (sv_banfile.cstring()[0] != 0)
 	{
 		Json::Value json_bans(Json::arrayValue);
 		if (!(banlist.json(json_bans) && M_WriteJSON(sv_banfile.cstring(), json_bans, true)))
-			Printf(PRINT_HIGH, "clearbanlist: banlist could not be saved.\n");
+			Printf(PRINT_WARNING, "clearbanlist: banlist could not be saved.\n");
 	}
 }
 END_COMMAND(clearbanlist)
@@ -878,9 +878,9 @@ BEGIN_COMMAND(savebanlist)
 
 	Json::Value json_bans(Json::arrayValue);
 	if (banlist.json(json_bans) && M_WriteJSON(banfile.c_str(), json_bans, true))
-		Printf(PRINT_HIGH, "savebanlist: banlist saved to %s.\n", banfile.c_str());
+		Printf("savebanlist: banlist saved to %s.\n", banfile.c_str());
 	else
-		Printf(PRINT_HIGH, "savebanlist: could not save banlist.\n");
+		Printf(PRINT_WARNING, "savebanlist: could not save banlist.\n");
 }
 END_COMMAND(savebanlist)
 
@@ -895,12 +895,12 @@ BEGIN_COMMAND(loadbanlist)
 	Json::Value json_bans;
 	if (!M_ReadJSON(json_bans, banfile.c_str()))
 	{
-		Printf(PRINT_HIGH, "loadbanlist: could not load banlist.\n");
+		Printf(PRINT_ERROR, "loadbanlist: could not load banlist.\n");
 		return;
 	}
 	if (!banlist.json_replace(json_bans))
 	{
-		Printf(PRINT_HIGH, "loadbanlist: malformed banlist file, aborted.\n");
+		Printf(PRINT_ERROR, "loadbanlist: malformed banlist file, aborted.\n");
 		return;
 	}
 
@@ -908,9 +908,9 @@ BEGIN_COMMAND(loadbanlist)
 	size_t jsonsize = json_bans.size();
 
 	if (bansize == jsonsize)
-		Printf(PRINT_HIGH, "loadbanlist: loaded %d bans from %s.\n", bansize, banfile.c_str());
+		Printf("loadbanlist: loaded %d bans from %s.\n", bansize, banfile.c_str());
 	else
-		Printf(PRINT_HIGH, "loadbanlist: loaded %d bans and skipped %d invalid entries from %s.", bansize, jsonsize - bansize, banfile.c_str());
+		Printf("loadbanlist: loaded %d bans and skipped %d invalid entries from %s.", bansize, jsonsize - bansize, banfile.c_str());
 }
 END_COMMAND(loadbanlist)
 
@@ -921,13 +921,13 @@ BEGIN_COMMAND(exceptionlist)
 	exceptionlist_results_t result;
 	if (!banlist.query_exception(JoinStrings(arguments, " "), result))
 	{
-		Printf(PRINT_HIGH, "exceptionlist: exceptionlist is empty.\n");
+		Printf(PRINT_WARNING, "exceptionlist: exceptionlist is empty.\n");
 		return;
 	}
 
 	if (result.empty())
 	{
-		Printf(PRINT_HIGH, "exceptionlist: no results found.\n");
+		Printf(PRINT_WARNING, "exceptionlist: no results found.\n");
 		return;
 	}
 
@@ -942,7 +942,7 @@ BEGIN_COMMAND(exceptionlist)
 			buffer << " (" << it->second->name << ")";
 		}
 
-		Printf(PRINT_HIGH, "%s", buffer.str().c_str());
+		Printf("%s", buffer.str().c_str());
 	}
 }
 END_COMMAND(exceptionlist)
@@ -950,7 +950,7 @@ END_COMMAND(exceptionlist)
 BEGIN_COMMAND(clearexceptionlist)
 {
 	banlist.clear_exceptions();
-	Printf(PRINT_HIGH, "clearexceptionlist: exceptionlist cleared.\n");
+	Printf("clearexceptionlist: exceptionlist cleared.\n");
 }
 END_COMMAND(clearexceptionlist)
 
@@ -961,7 +961,7 @@ void SV_InitBanlist()
 
 	if (!banfile)
 	{
-		Printf(PRINT_HIGH, "SV_InitBanlist: No banlist loaded.\n");
+		Printf(PRINT_WARNING, "SV_InitBanlist: No banlist loaded.\n");
 		return;
 	}
 
@@ -971,19 +971,19 @@ void SV_InitBanlist()
 		if (!M_FileExists(banfile))
 		{
 			if (!M_WriteJSON(banfile, json_bans, true))
-				Printf(PRINT_HIGH, "SV_InitBanlist: Could not create new banlist.\n");
+				Printf(PRINT_ERROR, "SV_InitBanlist: Could not create new banlist.\n");
 			else
-				Printf(PRINT_HIGH, "SV_InitBanlist: Initialized new banlist.\n");
+				Printf("SV_InitBanlist: Initialized new banlist.\n");
 		}
 		else
 		{
-			Printf(PRINT_HIGH, "SV_InitBanlist: Could not parse banlist.\n");
+			Printf(PRINT_ERROR, "SV_InitBanlist: Could not parse banlist.\n");
 		}
 		return;
 	}
 	if (!banlist.json_replace(json_bans))
 	{
-		Printf(PRINT_HIGH, "SV_InitBanlist: Detected malformed banlist file, ignored.\n");
+		Printf(PRINT_WARNING, "SV_InitBanlist: Detected malformed banlist file, ignored.\n");
 		return;
 	}
 
@@ -991,9 +991,9 @@ void SV_InitBanlist()
 	size_t jsonsize = json_bans.size();
 
 	if (bansize == jsonsize)
-		Printf(PRINT_HIGH, "SV_InitBanlist: Loaded %d bans from %s.\n", bansize, banfile);
+		Printf("SV_InitBanlist: Loaded %d bans from %s.\n", bansize, banfile);
 	else
-		Printf(PRINT_HIGH, "SV_InitBanlist: Loaded %d bans and skipped %d invalid entries from %s.", bansize, jsonsize - bansize, banfile);
+		Printf("SV_InitBanlist: Loaded %d bans and skipped %d invalid entries from %s.", bansize, jsonsize - bansize, banfile);
 }
 
 // Check to see if a client is on the banlist, and kick them out of the server
@@ -1054,7 +1054,7 @@ bool SV_BanCheck(client_t* cl)
 	}
 
 	// Log the banned connection attempt to the server.
-	Printf(PRINT_HIGH, "%s is banned, dropping client.\n", NET_AdrToString(cl->address));
+	Printf(PRINT_WARNING, "%s is banned, dropping client.\n", NET_AdrToString(cl->address));
 
 	// Send the message to the client.
 	SV_ClientPrintf(cl, PRINT_HIGH, "%s", buffer.str().c_str());
@@ -1088,12 +1088,12 @@ void SV_BanlistTics()
 		Json::Value json_bans;
 		if (!M_ReadJSON(json_bans, banfile))
 		{
-			Printf(PRINT_HIGH, "sv_banfile_reload: could not load banlist.\n");
+			Printf(PRINT_ERROR, "sv_banfile_reload: could not load banlist.\n");
 			return;
 		}
 		if (!banlist.json_replace(json_bans))
 		{
-			Printf(PRINT_HIGH, "sv_banfile_reload: malformed banlist file, ignored.\n");
+			Printf(PRINT_WARNING, "sv_banfile_reload: malformed banlist file, ignored.\n");
 			return;
 		}
 	}

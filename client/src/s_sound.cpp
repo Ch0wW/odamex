@@ -1475,11 +1475,11 @@ BEGIN_COMMAND (changemus)
 
 	if (argc == 1)
 	{
-	    Printf(PRINT_HIGH, "Usage: changemus lumpname [loop]");
-	    Printf(PRINT_HIGH, "\n");
-	    Printf(PRINT_HIGH, "Plays music from an internal lump, loop\n");
-	    Printf(PRINT_HIGH, "parameter determines if the music should play\n");
-	    Printf(PRINT_HIGH, "continuously or not, (1 or 0, default: 1)\n");
+	    Printf(PRINT_WARNING, "Usage: changemus lumpname [loop]");
+	    Printf(PRINT_WARNING, "\n");
+	    Printf(PRINT_WARNING, "Plays music from an internal lump, loop\n");
+	    Printf(PRINT_WARNING, "parameter determines if the music should play\n");
+	    Printf(PRINT_WARNING, "continuously or not, (1 or 0, default: 1)\n");
 
 	    return;
 	}

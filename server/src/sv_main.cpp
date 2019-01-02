@@ -223,9 +223,9 @@ EXTERN_CVAR (sv_friendlyfire)
 CVAR_FUNC_IMPL (join_password)
 {
 	if (strlen(var.cstring()))
-		Printf(PRINT_HIGH, "join password set");
+		Printf("Join password set.");
 	else
-		Printf(PRINT_HIGH, "join password cleared");
+		Printf("Join password cleared.");
 }
 
 CVAR_FUNC_IMPL (rcon_password) // Remote console password.
@@ -233,15 +233,15 @@ CVAR_FUNC_IMPL (rcon_password) // Remote console password.
 	if(strlen(var.cstring()) < 5)
 	{
 		if(!strlen(var.cstring()))
-			Printf(PRINT_HIGH, "rcon password cleared");
+			Printf("RCON password cleared.");
 		else
 		{
-			Printf(PRINT_HIGH, "rcon password must be at least 5 characters");
+			Printf(PRINT_WARNING, "RCON password must be at least 5 characters.");
 			var.Set("");
 		}
 	}
 	else
-		Printf(PRINT_HIGH, "rcon password set");
+		Printf("RCON password set.");
 }
 
 //
@@ -315,7 +315,7 @@ BEGIN_COMMAND (kick) {
 	std::string reason;
 
 	if (!CMD_KickCheck(arguments, error, pid, reason)) {
-		Printf(PRINT_HIGH, "kick: %s\n", error.c_str());
+		Printf(PRINT_ERROR, "Kick: %s\n", error.c_str());
 		return;
 	}
 
@@ -383,11 +383,11 @@ void SV_InvalidateClient(player_t &player, const std::string& reason)
 {
 	if (&(player.client) == NULL)
 	{
-		Printf(PRINT_HIGH, "Player with NULL client fails security check (%s), client cannot be safely dropped.\n");
+		Printf(PRINT_WARNING, "Player with NULL client fails security check (%s), client cannot be safely dropped.\n");
 		return;
 	}
 
-	Printf(PRINT_HIGH, "%s fails security check (%s), dropping client.\n", NET_AdrToString(player.client.address), reason.c_str());
+	Printf(PRINT_WARNING, "%s fails security check (%s), dropping client.\n", NET_AdrToString(player.client.address), reason.c_str());
 	SV_DropClient(player);
 }
 
@@ -1830,7 +1830,7 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 		SV_SendPacket(*it);
 
 		// GhostlyDeath -- And we tell the server
-		Printf(PRINT_HIGH,
+		Printf(PRINT_ERROR,
                 "%s -- Version mismatch (%s != %s)\n",
                 NET_AdrToString(net_from),
                 VersionStr,
@@ -1869,14 +1869,14 @@ void SV_ConnectClient()
 	if (!SV_IsValidToken(MSG_ReadLong()))
 		return;
 
-	Printf(PRINT_HIGH, "%s is trying to connect...\n", NET_AdrToString (net_from));
+	Printf("%s is trying to connect...\n", NET_AdrToString (net_from));
 
 	// find an open slot
 	Players::iterator it = SV_GetFreeClient();
 
 	if (it == players.end()) // a server is full
 	{
-		Printf(PRINT_HIGH, "%s disconnected (server full).\n", NET_AdrToString (net_from));
+		Printf("%s disconnected (server full).\n", NET_AdrToString (net_from));
 
 		static buf_t smallbuf(16);
 		MSG_WriteLong(&smallbuf, 0);
@@ -1956,10 +1956,10 @@ void SV_ConnectClient()
 	std::string passhash = MSG_ReadString();
 	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
 	{
-		Printf(PRINT_HIGH, "%s disconnected (password failed).\n", NET_AdrToString(net_from));
+		Printf(PRINT_WARNING, "%s disconnected (password failed).\n", NET_AdrToString(net_from));
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
+		MSG_WriteByte(&cl->reliablebuf, PRINT_ERROR);
 		MSG_WriteString(&cl->reliablebuf, "Server is passworded, no password specified or bad password\n");
 
 		SV_SendPacket(*player);
@@ -2004,7 +2004,7 @@ void SV_ConnectClient()
 			// bother telling anyone else
 			cl->displaydisconnect = false;
 
-			Printf(PRINT_HIGH, "%s has connected. (downloading)\n", player->userinfo.netname.c_str());
+			Printf("%s has connected. (downloading)\n", player->userinfo.netname.c_str());
 
 			MSG_WriteMarker(&cl->reliablebuf, svc_print);
 			MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
@@ -2012,7 +2012,7 @@ void SV_ConnectClient()
 
 			SV_DropClient(*player);
 
-			Printf(PRINT_HIGH, "%s disconnected. Downloading is disabled.\n", player->userinfo.netname.c_str());
+			Printf("%s disconnected. Downloading is disabled.\n", player->userinfo.netname.c_str());
 		}
 
 		return;
@@ -2307,7 +2307,7 @@ void SV_DrawScores()
 		else
 			sortedspectators.push_back(&*it);
 
-	Printf(PRINT_HIGH, "\n");
+	Printf("\n");
 
 	if (sv_gametype == GM_CTF)
 	{
@@ -2494,7 +2494,7 @@ void SV_DrawScores()
 		}
 	}
 
-	Printf(PRINT_HIGH, "\n");
+	Printf("\n");
 }
 
 BEGIN_COMMAND (showscores)
@@ -3770,7 +3770,7 @@ BEGIN_COMMAND (forcespec) {
 	size_t pid;
 
 	if (!CMD_ForcespecCheck(arguments, error, pid)) {
-		Printf(PRINT_HIGH, "forcespec: %s\n", error.c_str());
+		Printf(PRINT_ERROR, "forcespec: %s\n", error.c_str());
 		return;
 	}
 
@@ -3876,7 +3876,7 @@ void SV_RConLogout (player_t &player)
 
 	if (cl->allow_rcon)
 	{
-		Printf(PRINT_HIGH, "rcon logout from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
+		Printf("RCON logout from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
 		cl->allow_rcon = false;
 	}
 }
@@ -3900,11 +3900,11 @@ void SV_RConPassword (player_t &player)
 	if (!password.empty() && MD5SUM(password + cl->digest) == challenge)
 	{
 		cl->allow_rcon = true;
-		Printf(PRINT_HIGH, "rcon login from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
+		Printf("RCON login from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "rcon login failure from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
+		Printf(PRINT_WARNING, "RCON login failure from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
 		MSG_WriteMarker (&cl->reliablebuf, svc_print);
 		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
 		MSG_WriteString (&cl->reliablebuf, "Bad password\n");
@@ -4076,7 +4076,7 @@ void SV_WantWad(player_t &player)
 	}
 
 	if (player.playerstate != PST_DOWNLOAD || cl->download.name != wadfiles[i])
-		Printf(PRINT_HIGH, "> client %d is downloading %s\n", player.id, filename.c_str());
+		Printf("> client %d is downloading %s\n", player.id, filename.c_str());
 
 	cl->download.name = wadfiles[i];
 	cl->download.next_offset = next_offset;
@@ -4150,7 +4150,7 @@ void SV_ParseCommands(player_t &player)
 
 				if (player.client.allow_rcon)
 				{
-					Printf(PRINT_HIGH, "rcon command from %s - %s -> %s",
+					Printf(PRINT_WARNING, "rcon command from %s - %s -> %s",
 							player.userinfo.netname.c_str(), NET_AdrToString(net_from), str.c_str());
 					AddCommandString(str);
 				}
@@ -4638,9 +4638,9 @@ BEGIN_COMMAND(step)
 
 	// debugging output
 	if (players.size() && players.begin() != players.end())
-		Printf(PRINT_HIGH, "level.time %d, prndindex %d, %d %d %d\n", level.time, prndindex, players.begin()->mo->x, players.begin()->mo->y, players.begin()->mo->z);
+		Printf("level.time %d, prndindex %d, %d %d %d\n", level.time, prndindex, players.begin()->mo->x, players.begin()->mo->y, players.begin()->mo->z);
 	else
-		Printf(PRINT_HIGH, "level.time %d, prndindex %d\n", level.time, prndindex);
+		Printf("level.time %d, prndindex %d\n", level.time, prndindex);
 }
 END_COMMAND(step)
 
