@@ -38,6 +38,8 @@
 #include <signal.h>
 #endif
 
+#include "i_rlutil.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -80,12 +82,42 @@ void STACK_ARGS call_terms (void)
 		TermFuncs.top().first(), TermFuncs.pop();
 }
 
+void SetColor(int printlevel)
+{
+	int iColor;
+
+	switch (printlevel)
+	{
+	case PRINT_HIGH:
+		iColor = rlutil::WHITE; 
+		break;
+	case PRINT_WARNING:
+		iColor = rlutil::YELLOW; 
+		break;
+	case PRINT_ERROR:
+		iColor = rlutil::RED; 
+		break;
+	case PRINT_SERVERCHAT:
+	case PRINT_CHAT:
+		iColor = rlutil::GREEN;
+		break;
+	default:
+		iColor = rlutil::WHITE;
+		break;
+	}
+
+	rlutil::setColor(iColor);
+}
+
 int PrintString(int printlevel, char const* str)
 {
 	std::string sanitized_str(str);
 	StripColorCodes(sanitized_str);
 
+	SetColor(printlevel);
+
 	printf("%s", sanitized_str.c_str());
+	rlutil::setColor(rlutil::WHITE);
 	fflush(stdout);
 
 	return sanitized_str.length();

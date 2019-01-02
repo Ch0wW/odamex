@@ -183,7 +183,9 @@ int VPrintf(int printlevel, const char* format, va_list parms)
 
 	std::string str(TimeStamp());
 	str.append(" ");
-	str.append(outline);
+	PrintString(PRINT_HIGH, str.c_str());
+
+	str = outline;
 
 	if (str[str.length() - 1] != '\n')
 		str += '\n';

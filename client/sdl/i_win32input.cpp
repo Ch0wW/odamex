@@ -500,7 +500,7 @@ void IRawWin32MouseInputDevice::debug() const
 		hwndTarget = device.hwndTarget;
 	}
 
-	Printf(PRINT_HIGH, "IRawWin32MouseInputDevice: Current Window Address: 0x%x, mWindow: 0x%x, RAWINPUTDEVICE Window: 0x%x\n",
+	Printf(PRINT_ERROR, "IRawWin32MouseInputDevice: Current Window Address: 0x%x, mWindow: 0x%x, RAWINPUTDEVICE Window: 0x%x\n",
 			cur_window, mWindow, hwndTarget);
 
 	WNDPROC wndproc = (WNDPROC)GetWindowLongPtr(cur_window, GWLP_WNDPROC);

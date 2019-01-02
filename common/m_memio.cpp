@@ -77,7 +77,7 @@ size_t mem_fread(void *buf, size_t size, size_t nmemb, MEMFILE *stream)
 
 	if (stream->mode != MODE_READ)
 	{
-		Printf(PRINT_HIGH, "mem_fread: not a read stream\n");
+		Printf(PRINT_ERROR, "mem_fread: not a read stream\n");
 		return 0;
 	}
 
