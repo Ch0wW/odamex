@@ -2508,7 +2508,7 @@ void P_SpawnMapThing (mapthing2_t *mthing, int position)
 	if (i >= NUMMOBJTYPES || i < 0)
 	{
 		// [RH] Don't die if the map tries to spawn an unknown thing
-		Printf (PRINT_HIGH, "Unknown type %i at (%i, %i)\n",
+		Printf (PRINT_WARNING, "Unknown type %i at (%i, %i)\n",
 			mthing->type,
 			mthing->x, mthing->y);
 		i = MT_UNKNOWNTHING;

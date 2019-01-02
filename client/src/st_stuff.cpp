@@ -847,7 +847,7 @@ BEGIN_COMMAND (idmus)
 				map = CalcMapName (0, l);
 			else
 			{
-				Printf (PRINT_HIGH, "%s\n", GStrings(STSTR_NOMUS));
+				Printf ("%s\n", GStrings(STSTR_NOMUS));
 				return;
 			}
 		}
@@ -861,10 +861,10 @@ BEGIN_COMMAND (idmus)
 			if (info->music[0])
 			{
 				S_ChangeMusic (std::string(info->music, 8), 1);
-				Printf (PRINT_HIGH, "%s\n", GStrings(STSTR_MUS));
+				Printf ("%s\n", GStrings(STSTR_MUS));
 			}
 		} else
-			Printf (PRINT_HIGH, "%s\n", GStrings(STSTR_NOMUS));
+			Printf ("%s\n", GStrings(STSTR_NOMUS));
 	}
 }
 END_COMMAND (idmus)

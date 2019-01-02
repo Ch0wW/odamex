@@ -466,12 +466,12 @@ int NET_GetPacket (void)
 
         if (errno == WSAEMSGSIZE)
 		{
-             Printf (PRINT_HIGH, "Warning:  Oversize packet from %s\n",
+             Printf (PRINT_WARNING, "Warning:  Oversize packet from %s\n",
                              NET_AdrToString (net_from));
              return false;
         }
 
-        Printf (PRINT_HIGH, "NET_GetPacket: %s\n", strerror(errno));
+        Printf (PRINT_ERROR, "NET_GetPacket: %s\n", strerror(errno));
 		return false;
 #else
         if (errno == EWOULDBLOCK)
@@ -479,7 +479,7 @@ int NET_GetPacket (void)
         if (errno == ECONNREFUSED)
             return false;
 
-        Printf (PRINT_HIGH, "NET_GetPacket: %s\n", strerror(errno));
+        Printf (PRINT_ERROR, "NET_GetPacket: %s\n", strerror(errno));
         return false;
 #endif
     }
@@ -521,7 +521,7 @@ int NET_SendPacket (buf_t &buf, netadr_t &to)
               return 0;
           if (errno == ECONNREFUSED)
               return 0;
-          Printf (PRINT_HIGH, "NET_SendPacket: %s\n", strerror(errno));
+          Printf (PRINT_ERROR, "NET_SendPacket: %s\n", strerror(errno));
 #endif
     }
 
@@ -709,7 +709,7 @@ void MSG_WriteHexString(buf_t *b, const char *s)
 
     if (numdigits > STACKARRAY_LENGTH(output))
     {
-        Printf (PRINT_HIGH, "MSG_WriteHexString: too many digits\n");
+        Printf (PRINT_ERROR, "MSG_WriteHexString: too many digits\n");
         return;
     }
 

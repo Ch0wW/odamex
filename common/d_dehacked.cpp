@@ -1492,7 +1492,7 @@ static int PatchText (int oldSize)
 
 	if (*temp == 0)
 	{
-		Printf (PRINT_HIGH,"Text chunk is missing size of new string.\n");
+		Printf (PRINT_WARNING, "Text chunk is missing size of new string.\n");
 		return 2;
 	}
 	newSize = atoi (temp);
@@ -1502,7 +1502,7 @@ static int PatchText (int oldSize)
 
 	if (!oldStr || !newStr)
 	{
-		Printf (PRINT_HIGH,"Out of memory.\n");
+		Printf (PRINT_ERROR, "Out of memory.\n");
 		goto donewithtext;
 	}
 
@@ -1513,13 +1513,13 @@ static int PatchText (int oldSize)
 	{
 		delete[] newStr;
 		delete[] oldStr;
-		Printf (PRINT_HIGH,"Unexpected end-of-file.\n");
+		Printf (PRINT_ERROR, "Unexpected end-of-file.\n");
 		return 0;
 	}
 
 	if (includenotext)
 	{
-		Printf (PRINT_HIGH,"Skipping text chunk in included patch.\n");
+		Printf (PRINT_WARNING,"Skipping text chunk in included patch.\n");
 		goto donewithtext;
 	}
 
@@ -1620,7 +1620,7 @@ static int PatchStrings (int dummy)
 
 		if (i == -1)
 		{
-			Printf (PRINT_HIGH,"Unknown string: %s\n", Line1);
+			Printf (PRINT_WARNING, "Unknown string: %s\n", Line1);
 		}
 		else
 		{
@@ -1760,7 +1760,7 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 		}
 
 		if (!PatchFile) {
-			Printf (PRINT_HIGH, "Could not open DeHackEd patch \"%s\"\n", file.c_str());
+			Printf (PRINT_WARNING, "Could not open DeHackEd patch \"%s\"\n", file.c_str());
 			return false;
 		}
 	} else {
@@ -1782,7 +1782,7 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 		}
 		if (!cont || dversion == -1 || pversion == -1) {
 			delete[] PatchFile;
-			Printf (PRINT_HIGH, "\"%s\" is not a DeHackEd patch file\n", file.c_str());
+			Printf (PRINT_WARNING, "\"%s\" is not a DeHackEd patch file\n", file.c_str());
 			return false;
 		}
 	} else {
@@ -1823,9 +1823,9 @@ bool DoDehPatch (const char *patchfile, BOOL autoloading)
 
 	delete[] PatchFile;
 	if (autoloading)
-		Printf (PRINT_HIGH, "DeHackEd patch lump installed\n");
+		Printf ("DeHackEd patch lump installed\n");
 	else
-		Printf (PRINT_HIGH, "DeHackEd patch installed:\n  %s\n", file.c_str());
+		Printf ("DeHackEd patch installed:\n  %s\n", file.c_str());
 
     return true;
 }

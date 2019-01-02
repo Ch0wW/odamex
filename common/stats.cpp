@@ -84,14 +84,14 @@ void FStat::dumpstat(std::string which)
 
 void FStat::dump()
 {
-	Printf(PRINT_HIGH, "%s: %dms\n", name.c_str(), last_elapsed);
+	Printf("%s: %dms\n", name.c_str(), last_elapsed);
 }
 
 BEGIN_COMMAND (stat)
 {
 	if (argc != 2)
 	{
-		Printf (PRINT_HIGH, "Usage: stat <statistics>\n");
+		Printf (PRINT_WARNING, "Usage: stat <statistics>\n");
 		FStat::dumpstat ();
 	}
 	else

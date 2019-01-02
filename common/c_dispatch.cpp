@@ -948,7 +948,7 @@ BEGIN_COMMAND (stoplog)
 	if (LOG.is_open()) {
 		time (&rawtime);
     	timeinfo = localtime (&rawtime);
-		Printf (PRINT_HIGH, "Logging to file %s stopped %s\n", LOG_FILE, asctime (timeinfo));
+		Printf ("Logging to file %s stopped %s\n", LOG_FILE, asctime (timeinfo));
 		LOG.close();
 	}
 }

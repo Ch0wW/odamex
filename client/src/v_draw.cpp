@@ -541,7 +541,7 @@ void DCanvas::DrawWrapper(EWrapperCode drawer, const patch_t *patch, int x, int 
 #ifdef RANGECHECK
 	if (x < 0 ||x + patch->width() > surface_width || y < 0 || y + patch->height() > surface_height)
 	{
-	  // Printf (PRINT_HIGH, "Patch at %d,%d exceeds LFB\n", x,y );
+	  // Printf ("Patch at %d,%d exceeds LFB\n", x,y );
 	  // No I_Error abort - what is up with TNT.WAD?
 	  DPrintf ("DCanvas::DrawWrapper: bad patch (ignored)\n");
 	  return;

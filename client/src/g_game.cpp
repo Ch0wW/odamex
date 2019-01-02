@@ -313,7 +313,7 @@ BEGIN_COMMAND (turnspeeds)
 {
 	if (argc == 1)
 	{
-		Printf (PRINT_HIGH, "Current turn speeds: %ld %ld %ld\n",
+		Printf ("Current turn speeds: %ld %ld %ld\n",
 				angleturn[0], angleturn[1], angleturn[2]);
 	}
 	else
@@ -821,7 +821,7 @@ int outrate;
 
 BEGIN_COMMAND(netstat)
 {
-    Printf (PRINT_HIGH, "in = %d  out = %d \n", netin, netout);
+    Printf ("in = %d  out = %d \n", netin, netout);
 }
 END_COMMAND(netstat)
 
@@ -1509,7 +1509,7 @@ void G_DoLoadGame (void)
 	FILE *stdfile = fopen (savename, "rb");
 	if (stdfile == NULL)
 	{
-		Printf (PRINT_HIGH, "Could not read savegame '%s'\n", savename);
+		Printf (PRINT_WARNING, "Could not read savegame '%s'\n", savename);
 		return;
 	}
 
@@ -1517,7 +1517,7 @@ void G_DoLoadGame (void)
 	fread (text, 16, 1, stdfile);
 	if (strncmp (text, SAVESIG, 16))
 	{
-		Printf (PRINT_HIGH, "Savegame '%s' is from a different version\n", savename);
+		Printf (PRINT_ERROR, "Savegame '%s' is from a different version\n", savename);
 
 		fclose(stdfile);
 
@@ -1533,7 +1533,7 @@ void G_DoLoadGame (void)
 	if (!savefile.IsOpen ())
 		I_Error ("Savegame '%s' is corrupt\n", savename);
 
-	Printf (PRINT_HIGH, "Loading savegame '%s'...\n", savename);
+	Printf ("Loading savegame '%s'...\n", savename);
 
 	CL_QuitNetGame();
 
@@ -1633,7 +1633,7 @@ void G_DoSaveGame (void)
 	xbox_WriteSaveMeta(name.substr(0, name.rfind(PATHSEPCHAR)), description);
 #endif
 
-	Printf (PRINT_HIGH, "Saving game to '%s'...\n", name.c_str());
+	Printf ("Saving game to '%s'...\n", name.c_str());
 
 	fwrite (description, SAVESTRINGSIZE, 1, stdfile);
 	fwrite (SAVESIG, 16, 1, stdfile);
@@ -1669,7 +1669,7 @@ void G_DoSaveGame (void)
 	gameaction = ga_nothing;
 	savedescription[0] = 0;
 
-	Printf (PRINT_HIGH, "%s\n", GStrings(GGSAVED));
+	Printf ("%s\n", GStrings(GGSAVED));
 	arc.Close ();
 
     if (level.info->snapshot != NULL)
@@ -2248,7 +2248,7 @@ BOOL G_CheckDemoStatus (void)
 				return false;
 			}
 			else
-				Printf (PRINT_HIGH, "Demo ended.\n");
+				Printf ("Demo ended.\n");
 
 			gameaction = ga_fullconsole;
 			timingdemo = false;

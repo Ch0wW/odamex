@@ -890,7 +890,7 @@ BEGIN_COMMAND (serverinfo)
 	std::sort(server_cvars.begin(), server_cvars.end());
 
     // Heading
-    Printf (PRINT_HIGH,	"\n%*s - Value\n", MaxFieldLength, "Name");
+    Printf ("\n%*s - Value\n", MaxFieldLength, "Name");
 
     // Data
 	for (size_t i = 0; i < server_cvars.size(); i++)
@@ -898,14 +898,13 @@ BEGIN_COMMAND (serverinfo)
 		cvar_t *dummy;
 		Cvar = cvar_t::FindCVar(server_cvars[i].c_str(), &dummy);
 
-		Printf(PRINT_HIGH,
-				"%*s - %s\n",
+		Printf( "%*s - %s\n",
 				MaxFieldLength,
 				Cvar->name(),
 				Cvar->cstring());
 	}
 
-    Printf (PRINT_HIGH,	"\n");
+    Printf ("\n");
 }
 END_COMMAND (serverinfo)
 
@@ -967,7 +966,7 @@ END_COMMAND (rcon_logout)
 
 BEGIN_COMMAND (playerteam)
 {
-	Printf (PRINT_HIGH, "Your Team is %d \n", consoleplayer().userinfo.team);
+	Printf ("Your Team is %d \n", consoleplayer().userinfo.team);
 }
 END_COMMAND (playerteam)
 
@@ -1737,7 +1736,7 @@ void CL_InitNetwork (void)
     if (v)
     {
 		localport = atoi (v);
-		Printf (PRINT_HIGH, "using alternate port %i\n", localport);
+		Printf (PRINT_WARNING, "using alternate port %i\n", localport);
     }
     else
 		localport = CLIENTPORT;
@@ -2968,7 +2967,7 @@ void CL_CheckMissedPacket(void)
             MSG_ReadChunk(size);
 
 			#ifdef _DEBUG
-                Printf (PRINT_HIGH, "warning: duplicate packet\n");
+                Printf (PRINT_WARNING, "warning: duplicate packet\n");
 			#endif
 			return;
 		}

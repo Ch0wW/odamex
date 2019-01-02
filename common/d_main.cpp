@@ -271,9 +271,9 @@ static std::string BaseFileSearchDir(std::string dir, const std::string &file, c
 				}
 				else if (!hash.empty())
 				{
-					Printf (PRINT_HIGH, "WAD at %s does not match required copy\n", local_file.c_str());
-					Printf (PRINT_HIGH, "Local MD5: %s\n", local_hash.c_str());
-					Printf (PRINT_HIGH, "Required MD5: %s\n\n", hash.c_str());
+					Printf (PRINT_ERROR, "WAD at %s does not match required copy\n", local_file.c_str());
+					Printf (PRINT_ERROR, "Local MD5: %s\n", local_hash.c_str());
+					Printf (PRINT_ERROR, "Required MD5: %s\n\n", hash.c_str());
 				}
 			}
 		}
@@ -309,9 +309,9 @@ static std::string BaseFileSearchDir(std::string dir, const std::string &file, c
 			}
 			else if (!hash.empty())
 			{
-				Printf (PRINT_HIGH, "WAD at %s does not match required copy\n", local_file.c_str());
-				Printf (PRINT_HIGH, "Local MD5: %s\n", local_hash.c_str());
-				Printf (PRINT_HIGH, "Required MD5: %s\n\n", hash.c_str());
+				Printf (PRINT_ERROR, "WAD at %s does not match required copy\n", local_file.c_str());
+				Printf (PRINT_ERROR, "Local MD5: %s\n", local_hash.c_str());
+				Printf (PRINT_ERROR, "Required MD5: %s\n\n", hash.c_str());
 			}
 		}
 	} while (FindNextFile(hFind, &FindFileData));
@@ -862,7 +862,7 @@ bool D_DoomWadReboot(
 		newwadhashes == std::vector<std::string>(wadhashes.begin()+1, wadhashes.end()))
 	{
 		// fast track if files have not been changed // denis - todo - actually check the file timestamps
-		Printf (PRINT_HIGH, "Currently loaded WADs match server checksum\n\n");
+		Printf ("Currently loaded WADs match server checksum\n\n");
 		return true;
 	}
 

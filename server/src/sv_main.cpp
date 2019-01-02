@@ -1046,7 +1046,7 @@ void SV_ForceSetTeam (player_t &who, team_t team)
 	MSG_WriteMarker (&cl->reliablebuf, svc_forceteam);
 
 	who.userinfo.team = team;
-	Printf (PRINT_HIGH, "Forcing %s to %s team\n", who.userinfo.netname.c_str(), team == TEAM_NONE ? "NONE" : team_names[team]);
+	Printf (PRINT_GAMEEVENT, "Forcing %s to %s team\n", who.userinfo.netname.c_str(), team == TEAM_NONE ? "NONE" : team_names[team]);
 	MSG_WriteShort (&cl->reliablebuf, team);
 }
 

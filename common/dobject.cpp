@@ -129,7 +129,7 @@ void DObject::EndFrame ()
 
 	if (ToDestroy.Size ())
 	{
-		//Printf (PRINT_HIGH, "Destroyed %d objects\n", ToDestroy.Size());
+		//Printf (PRINT_WARNING, "Destroyed %d objects\n", ToDestroy.Size());
 
 		while (ToDestroy.Pop (obj))
 		{

@@ -511,7 +511,7 @@ void HU_Drawer()
 		mousegraph.draw(hud_mousegraph);
 
 	if (idmypos && gamestate == GS_LEVEL)
-		Printf (PRINT_HIGH, "ang=%d;x,y,z=(%d,%d,%d)\n",
+		Printf ("ang=%d;x,y,z=(%d,%d,%d)\n",
 				displayplayer().camera->angle/FRACUNIT,
 				displayplayer().camera->x/FRACUNIT,
 				displayplayer().camera->y/FRACUNIT,

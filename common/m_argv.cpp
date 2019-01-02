@@ -359,11 +359,11 @@ void M_FindResponseFile (void)
 			handle = fopen (Args.GetArg(i) + 1,"rb");
 			if (!handle)
 			{ // [RH] Make this a warning, not an error.
-				Printf (PRINT_HIGH,"No such response file (%s)!", Args.GetArg(i) + 1);
+				Printf (PRINT_WARNING, "No such response file (%s)!", Args.GetArg(i) + 1);
 				continue;
 			}
 
-			Printf (PRINT_HIGH,"Found response file %s!\n", Args.GetArg(i) + 1);
+			Printf ("Found response file %s!\n", Args.GetArg(i) + 1);
 			fseek (handle, 0, SEEK_END);
 			size = ftell (handle);
 			fseek (handle, 0, SEEK_SET);
@@ -396,7 +396,7 @@ void M_FindResponseFile (void)
 			delete[] file;
 		
 			// DISPLAY ARGS
-			Printf (PRINT_HIGH,"%d command-line args:\n", Args.NumArgs ());
+			Printf ("%d command-line args:\n", Args.NumArgs ());
 			for (size_t k = 1; k < Args.NumArgs (); k++)
 				Printf ("%s\n", Args.GetArg (k));
 

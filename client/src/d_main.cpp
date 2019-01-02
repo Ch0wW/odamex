@@ -625,9 +625,9 @@ void D_Init()
 	// init sound and music
 	if (first_time)
 	{
-		Printf (PRINT_HIGH, "S_Init: Setting up sound.\n");
-		Printf (PRINT_HIGH, "S_Init: default sfx volume is %g\n", (float)snd_sfxvolume);
-		Printf (PRINT_HIGH, "S_Init: default music volume is %g\n", (float)snd_musicvolume);
+		Printf ("S_Init: Setting up sound.\n");
+		Printf ("S_Init: default sfx volume is %g\n", (float)snd_sfxvolume);
+		Printf ("S_Init: default music volume is %g\n", (float)snd_musicvolume);
 	}
 	S_Init(snd_sfxvolume, snd_musicvolume);
 

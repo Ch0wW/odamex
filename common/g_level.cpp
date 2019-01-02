@@ -657,7 +657,7 @@ BEGIN_COMMAND (map)
 
 			if (W_CheckNumForName (mapname) == -1)
 			{ // Still no luck, oh well.
-				Printf (PRINT_HIGH, "Map %s not found.\n", argv[1]);
+				Printf (PRINT_WARNING, "Map %s not found.\n", argv[1]);
 			}
 			else
 			{ // Success
@@ -671,7 +671,7 @@ BEGIN_COMMAND (map)
 			// Ch0wW - Map was still not found, so don't bother trying loading the map.
 			if (W_CheckNumForName (argv[1]) == -1)
 			{
-				Printf (PRINT_HIGH, "Map %s not found.\n", argv[1]);
+				Printf (PRINT_WARNING, "Map %s not found.\n", argv[1]);
 			}
 			else
 			{
@@ -682,7 +682,7 @@ BEGIN_COMMAND (map)
 	}
 	else
 	{
-		Printf (PRINT_HIGH, "The current map is %s: \"%s\"\n", level.mapname, level.level_name);
+		Printf ("The current map is %s: \"%s\"\n", level.mapname, level.level_name);
 	}
 }
 END_COMMAND (map)
