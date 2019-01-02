@@ -233,6 +233,8 @@ int STACK_ARGS Printf(const char *format, ...)
 	return count;
 }
 
+// Ch0wW : Bold is just another PRINT_HIGH shortcut, 
+// So change it to NO_RCON temporarily.
 int STACK_ARGS Printf_Bold (const char *format, ...)
 {
 	va_list argptr;
@@ -240,7 +242,7 @@ int STACK_ARGS Printf_Bold (const char *format, ...)
 	
 	printxormask = 0x80; // Ch0wW : ????????
 	va_start (argptr, format);
-	count = VPrintf (PRINT_HIGH, format, argptr);
+	count = VPrintf (PRINT_NO_RCON, format, argptr);
 	va_end (argptr);
 
 	return count;

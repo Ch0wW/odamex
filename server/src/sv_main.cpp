@@ -237,7 +237,7 @@ CVAR_FUNC_IMPL (rcon_password) // Remote console password.
 		else
 		{
 			Printf(PRINT_WARNING, "RCON password must be at least 5 characters.");
-			var.Set("");
+			var.RestoreDefault();
 		}
 	}
 	else
