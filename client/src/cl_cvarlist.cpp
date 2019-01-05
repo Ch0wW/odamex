@@ -333,7 +333,7 @@ CVAR_RANGE(			cl_autoaim,	"5000", "",
 CVAR(				chasedemo, "0", "",
 					CVARTYPE_BOOL, CVAR_NULL)
 
-CVAR(				cl_run, "0", "Always run",
+CVAR(				cl_run, "1", "Always run",
 					CVARTYPE_BOOL, CVAR_CLIENTARCHIVE)		// Always run? // [Toke - Defaults]
 
 CVAR(				cl_showspawns, "0", "Show spawn points as particle fountains",
