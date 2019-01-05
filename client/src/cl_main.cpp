@@ -1011,6 +1011,17 @@ BEGIN_COMMAND (join)
 		return;
 	}
 
+	// Ch0wW : join team shortcut
+	if (argc == 2)
+	{
+		if (iequals(argv[1], "1") || iequals(argv[1], "red") || iequals(argv[1], "r")) {
+			cl_team.Set("RED");
+		}
+		else if (iequals(argv[1], "0") || iequals(argv[1], "blue") || iequals(argv[1], "b")) {
+			cl_team.Set("BLUE");
+		}
+	}
+
 	MSG_WriteMarker(&net_buffer, clc_spectate);
 	MSG_WriteByte(&net_buffer, false);
 }
