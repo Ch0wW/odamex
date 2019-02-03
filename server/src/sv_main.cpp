@@ -91,7 +91,7 @@ extern int mapchange;
 
 bool step_mode = false;
 
-std::queue<byte> free_player_ids;
+std::set<byte> free_player_ids;
 
 // General server settings
 EXTERN_CVAR(sv_motd)
@@ -484,21 +484,18 @@ Players::iterator SV_GetFreeClient(void)
 	if (players.size() >= sv_maxclients)
 		return players.end();
 
-	if (players.empty())
+	if (free_player_ids.empty())
 	{
-		while (!free_player_ids.empty())
-			free_player_ids.pop();
-
 		// list of free ids needs to be initialized
 		for (int i = 1; i < MAXPLAYERS; i++)
-			free_player_ids.push(i);
+			free_player_ids.insert(i);
 	}
 
 	players.push_back(player_t());
 
 	// generate player id
-	players.back().id = free_player_ids.front();
-	free_player_ids.pop();
+	players.back().id = *free_player_ids.begin();
+	free_player_ids.erase(players.back().id);
 
 	// update tracking cvar
 	sv_clientcount.ForceSet(players.size());
@@ -548,6 +545,8 @@ Players::iterator SV_RemoveDisconnectedPlayer(Players::iterator it)
 
 	int player_id = it->id;
 
+	P_LeavesGame(&(*it));
+
 	// remove player awareness from all actors
 	AActor* mo;
 	TThinkerIterator<AActor> iterator;
@@ -573,7 +572,7 @@ Players::iterator SV_RemoveDisconnectedPlayer(Players::iterator it)
 	// remove this player from the global players vector
 	Players::iterator next;
 	next = players.erase(it);
-	free_player_ids.push(player_id);
+	free_player_ids.insert(player_id);
 
 	Unlag::getInstance().unregisterPlayer(player_id);
 
@@ -2029,7 +2028,7 @@ void SV_ConnectClient()
 	}
 
 	SV_BroadcastUserInfo(*player);
-	player->playerstate = PST_REBORN;
+	player->playerstate = PST_ENTER;
 
 	player->fragcount = 0;
 	player->killcount = 0;
@@ -3621,7 +3620,6 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		if ((level.time > player.joinafterspectatortime + TICRATE * 3) ||
 			level.time > player.joinafterspectatortime + TICRATE * 5)
 		{
-
 			// Check to see if there is an empty spot on the server
 			int NumPlayers = 0;
 			for (Players::iterator it = players.begin(); it != players.end(); ++it)
@@ -3659,7 +3657,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			if (player.mo)
 				P_KillMobj(NULL, player.mo, NULL, true);
 
-			player.playerstate = PST_REBORN;
+			player.playerstate = PST_ENTER;
 
 			if (!silent)
 			{
@@ -3686,6 +3684,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	}
 	else if (setting && !player.spectator)
 	{
+		P_LeavesGame(&player);
+
 		// We want to spectate the player
 		for (Players::iterator it = players.begin(); it != players.end(); ++it)
 		{

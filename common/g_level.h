@@ -66,6 +66,11 @@
 #define LEVEL_CHANGEMAPCHEAT	0x40000000u	// Don't display cluster messages
 #define LEVEL_VISITED			0x80000000u	// Used for intermission map
 
+enum OdamexLevelFlags
+{
+	ODALEVEL_LOBBY = 1
+};
+
 struct acsdefered_s;
 class FBehavior;
 
@@ -80,6 +85,7 @@ struct level_info_t {
 	char			skypic[9];
 	char			music[9];
 	DWORD			flags;
+	DWORD			odamexflags;
 	int				cluster;
 	FLZOMemFile*	snapshot;
 	acsdefered_s*	defered;
@@ -98,6 +104,7 @@ struct level_pwad_info_t
 	char			skypic[9];
 	char			music[9];
 	DWORD			flags;
+	DWORD			odamexflags;
 	int				cluster;
 	FLZOMemFile*	snapshot;
 	acsdefered_s*	defered;
@@ -135,7 +142,7 @@ struct level_locals_t {
 	char			secretmap[8];			// map to go to when used secret exit
 
 	DWORD			flags;
-
+	DWORD			odamexflags;
 	// [SL] use 4 bytes for color types instead of argb_t so that the struct
 	// can consist of only plain-old-data types. It is also important to have
 	// the channel layout be platform neutral in case the pixel format changes

@@ -1951,12 +1951,12 @@ EXTERN_CVAR (sv_fragexitswitch)
 
 BOOL CheckIfExitIsGood (AActor *self)
 {
-	if (self == NULL)
+	if (self == NULL || !serverside)
 		return false;
 
 	// [Toke - dmflags] Old location of DF_NO_EXIT
 
-	if (sv_gametype != GM_COOP && self)
+	if (sv_gametype != GM_COOP && self && !(level.odamexflags & ODALEVEL_LOBBY))
 	{
         if (!sv_allowexit)
         {
@@ -1967,7 +1967,7 @@ BOOL CheckIfExitIsGood (AActor *self)
 		}
 	}
 
-	if (self->player && multiplayer)
+	if (self->player && multiplayer && !(level.odamexflags & ODALEVEL_LOBBY))
 		Printf (PRINT_HIGH, "%s exited the level.\n", self->player->userinfo.netname.c_str());
 
 	return true;

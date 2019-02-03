@@ -80,7 +80,7 @@ enum
 {
 	MITL_MAP,
 	MITL_DEFAULTMAP,
-	MITL_CLUSTERDEF
+	MITL_CLUSTERDEF,
 };
 
 static const char *MapInfoMapLevel[] =
@@ -126,6 +126,7 @@ static const char *MapInfoMapLevel[] =
 	"warptrans",
 	"gravity",
 	"aircontrol",
+	"lobby",
 	NULL
 };
 
@@ -143,7 +144,8 @@ enum EMIType
 	MITYPE_SCFLAGS,
 	MITYPE_CLUSTER,
 	MITYPE_STRING,
-	MITYPE_CSTRING
+	MITYPE_CSTRING,
+	MITYPE_SETODAFLAG
 };
 
 struct MapInfoHandler
@@ -193,7 +195,8 @@ MapHandlers[] =
 	{ MITYPE_EATNEXT,	0, 0 },
 	{ MITYPE_EATNEXT,	0, 0 },
 	{ MITYPE_FLOAT,		lioffset(gravity), 0 },
-	{ MITYPE_FLOAT,		lioffset(aircontrol), 0 }
+	{ MITYPE_FLOAT,		lioffset(aircontrol), 0 },
+	{ MITYPE_SETODAFLAG, ODALEVEL_LOBBY, 0}
 };
 
 static const char *MapInfoClusterLevel[] =
@@ -443,6 +446,10 @@ static void ParseMapInfoLower (MapInfoHandler *handlers,
 			SC_MustGetString();
 			strncpy((char*)(info + handler->data1), sc_String, handler->data2);
 			*((char*)(info + handler->data1 + handler->data2)) = '\0';
+			break;
+
+		case MITYPE_SETODAFLAG:
+			levelinfo->odamexflags |= handler->data1;
 			break;
 		}
 	}
@@ -1146,6 +1153,7 @@ void G_InitLevelLocals()
 		level.partime = info->partime;
 		level.cluster = info->cluster;
 		level.flags = info->flags;
+		level.odamexflags = info->odamexflags;
 		level.levelnum = info->levelnum;
 
 		strncpy(level.level_name, info->level_name, 63);
@@ -1164,6 +1172,7 @@ void G_InitLevelLocals()
 		strncpy(level.skypic, "SKY1", 8);
 		strncpy(level.skypic2, "SKY1", 8);
 		level.flags = 0;
+		level.odamexflags = 0;
 		level.levelnum = 1;
 	}
 	

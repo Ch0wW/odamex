@@ -437,8 +437,7 @@ void G_DoCompleted (void)
 			//level.inttimeleft = 0;
 		}
 
-		if (!(sv_gametype == GM_DM) &&
-			((level.flags & LEVEL_NOINTERMISSION) ||
+		if (((level.flags & LEVEL_NOINTERMISSION) ||
 			((nextcluster == thiscluster) && (thiscluster->flags & CLUSTER_HUB)))) {
 			G_WorldDone ();
 			return;

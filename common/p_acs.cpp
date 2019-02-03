@@ -837,7 +837,7 @@ DWORD FBehavior::FindLanguage (DWORD langid, bool ignoreregion) const
 	return 0;
 }
 
-void FBehavior::StartTypedScripts (WORD type, AActor *activator) const
+void FBehavior::StartTypedScripts (WORD type, AActor *activator, int arg0) const
 {
 	ScriptPtr *ptr;
 	int i;
@@ -848,7 +848,7 @@ void FBehavior::StartTypedScripts (WORD type, AActor *activator) const
 		if (ptr->Type == type)
 		{
 			P_GetScriptGoing (activator, NULL, ptr->Number,
-				(int *)(ptr->Address + Data), 0, 0, 0, 0, 0, true);
+				(int *)(ptr->Address + Data), 0, arg0, 0, 0, 0, true);
 		}
 	}
 }
@@ -3052,50 +3052,27 @@ void DLevelScript::RunScript ()
 			sp--;
 			break;
 
-		/*case PCD_CHECKWEAPON:
+		case PCD_PLAYERNUMBER:
 			if (activator == NULL || activator->player == NULL)
-			{ // Non-players do not have ready weapons
-				STACK(1) = 0;
+			{
+				PushToStack(-1);
 			}
 			else
 			{
-				STACK(1) = 0 == strcmp (level.behavior->LookupString (STACK(1)),
-					wpnlev1info[activator->player->readyweapon]->type->Name+1);
+				PushToStack(GetPlayerNumber(activator->player));
 			}
 			break;
 
-		case PCD_SETWEAPON:
-			if (activator == NULL || activator->player == NULL)
+		case PCD_ACTIVATORTID:
+			if (activator == NULL)
 			{
-				STACK(1) = 0;
+				PushToStack(0);
 			}
 			else
 			{
-				int i;
-
-				for (i = 0; i < NUMWEAPONS; ++i)
-				{
-					if (0 == strcmp (level.behavior->LookupString (STACK(1)),
-						wpnlev1info[i]->type->Name+1))
-					{
-						break;
-					}
-				}
-				if (i >= NUMWEAPONS || !activator->player->weaponowned[i])
-				{
-					STACK(1) = 0;
-				}
-				else
-				{
-					STACK(1) = 1;
-					if (activator->player->readyweapon != i)
-					{
-						activator->player->pendingweapon = (weapontype_t)i;
-					}
-				}
+				PushToStack(activator->tid);
 			}
 			break;
-        */
 		}
 	}
 

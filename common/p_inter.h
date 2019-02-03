@@ -35,6 +35,7 @@ BOOL P_GiveArmor(player_s*, int);
 void P_GiveCard(player_s*, card_t);
 BOOL P_GivePower(player_s*, int);
 void P_KillMobj (AActor *source, AActor *target, AActor *inflictor, bool joinkill);
+void P_LeavesGame(player_s*);
 
 #endif
 

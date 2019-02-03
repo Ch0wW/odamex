@@ -68,6 +68,7 @@
 #include "g_warmup.h"
 #include "v_text.h"
 #include "hu_stuff.h"
+#include "p_acs.h"
 
 #include <string>
 #include <vector>
@@ -2369,6 +2370,14 @@ void CL_SpawnPlayer()
 		// [SL] 2012-03-08 - Resync with the server's incoming tic since we don't care
 		// about players/sectors jumping to new positions when the displayplayer spawns
 		CL_ResyncWorldIndex();
+
+		if (level.behavior && !p->spectator && p->playerstate == PST_LIVE)
+		{
+			if (p->deathcount)
+				level.behavior->StartTypedScripts(SCRIPT_Respawn, p->mo);
+			else
+				level.behavior->StartTypedScripts(SCRIPT_Enter, p->mo);
+		}
 	}
 
 	int snaptime = last_svgametic;

@@ -1517,5 +1517,13 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 	}
 }
 
+void P_LeavesGame(player_s* player)
+{
+	if (level.behavior != NULL)
+	{
+		level.behavior->StartTypedScripts(SCRIPT_Disconnect, player->mo, GetPlayerNumber(player));
+	}
+}
+
 VERSION_CONTROL (p_interaction_cpp, "$Id$")
 

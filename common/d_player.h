@@ -371,8 +371,6 @@ public:
 	player_s &operator =(const player_s &other);
 	
 	~player_s();
-
-
 };
 
 typedef player_s player_t;
@@ -389,6 +387,11 @@ player_t		&listenplayer();
 player_t		&idplayer(byte id);
 player_t		&nameplayer(const std::string &netname);
 bool			validplayer(player_t &ref);
+
+static inline int GetPlayerNumber(player_s* player)
+{
+	return player->id - 1;
+}
 
 extern byte consoleplayer_id;
 extern byte displayplayer_id;
