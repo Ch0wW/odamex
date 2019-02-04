@@ -1517,5 +1517,15 @@ void P_DamageMobj(AActor *target, AActor *inflictor, AActor *source, int damage,
 	}
 }
 
+#ifdef SERVER_APP
+void P_CallACSDisconnect(player_s* player)
+{
+	if (level.behavior)
+	{
+		level.behavior->StartTypedScripts(SCRIPT_Disconnect, player->mo, player->GetPlayerNumber());
+	}
+}
+#endif
+
 VERSION_CONTROL (p_interaction_cpp, "$Id$")
 

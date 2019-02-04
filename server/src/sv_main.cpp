@@ -112,6 +112,7 @@ EXTERN_CVAR(sv_warmup)
 void SexMessage (const char *from, char *to, int gender,
 	const char *victim, const char *killer);
 Players::iterator SV_RemoveDisconnectedPlayer(Players::iterator it);
+void P_CallACSDisconnect(player_s* player);
 
 CVAR_FUNC_IMPL (sv_maxclients)
 {
@@ -531,7 +532,6 @@ void SV_CheckTimeouts()
 	}
 }
 
-
 //
 // SV_RemoveDisconnectedPlayer
 //
@@ -545,6 +545,8 @@ Players::iterator SV_RemoveDisconnectedPlayer(Players::iterator it)
 		return players.end();
 
 	int player_id = it->id;
+
+	P_CallACSDisconnect(&(*it));
 
 	// remove player awareness from all actors
 	AActor* mo;
@@ -3702,6 +3704,9 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	}
 	else if (setting && !player.spectator)
 	{
+		// Call the DISCONNECT parameter
+		P_CallACSDisconnect(&player);
+
 		// We want to spectate the player
 		for (Players::iterator it = players.begin(); it != players.end(); ++it)
 		{
