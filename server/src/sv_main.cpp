@@ -3646,40 +3646,45 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			// [SL] 2011-09-01 - Clear any previous SV_MidPrint (sv_motd for example)
 			SV_MidPrint("", &player, 0);
 
+			// Warn everyone we're not a spectator anymore.
 			player.spectator = false;
 			for (Players::iterator it = players.begin(); it != players.end(); ++it)
 			{
 				MSG_WriteMarker(&it->client.reliablebuf, svc_spectate);
 				MSG_WriteByte(&it->client.reliablebuf, player.id);
-				MSG_WriteByte(&it->client.reliablebuf, false);
+				MSG_WriteByte(&it->client.reliablebuf, player.spectator);
 			}
 
 			if (player.mo)
 				P_KillMobj(NULL, player.mo, NULL, true);
 
-			player.playerstate = PST_REBORN;
+			// Reinitialize the ACS state, frags and other stuff.
+			{
+				player.playerstate = PST_ENTER;
 
+				player.fragcount = 0;
+				player.deathcount = 0;
+				player.killcount = 0;
+				SV_UpdateFrags(player);
+
+				// [AM] Set player unready if we're in warmup mode.
+				if (sv_warmup)
+				{
+					SV_SetReady(player, false, true);
+					player.timeout_ready = 0;
+				}
+			}
+			
+			// Everything is set, now warn everyone the player joined.
 			if (!silent)
 			{
 				if (sv_gametype != GM_TEAMDM && sv_gametype != GM_CTF)
 					SV_BroadcastPrintf(PRINT_HIGH, "%s joined the game.\n", player.userinfo.netname.c_str());
 				else
 					SV_BroadcastPrintf(PRINT_HIGH, "%s joined the game on the %s team.\n",
-									   player.userinfo.netname.c_str(), team_names[player.userinfo.team]);
+						player.userinfo.netname.c_str(), team_names[player.userinfo.team]);
 			}
 
-			// GhostlyDeath -- Reset Frags, Deaths and Kills
-			player.fragcount = 0;
-			player.deathcount = 0;
-			player.killcount = 0;
-			SV_UpdateFrags(player);
-
-			// [AM] Set player unready if we're in warmup mode.
-			if (sv_warmup)
-			{
-				SV_SetReady(player, false, true);
-				player.timeout_ready = 0;
-			}
 		}
 	}
 	else if (setting && !player.spectator)
