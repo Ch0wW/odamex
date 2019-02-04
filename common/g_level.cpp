@@ -1210,6 +1210,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_E1M1",
 		0,
+		0,
 		1,
 		0
 	},
@@ -1223,6 +1224,7 @@ level_info_t LevelInfos[] = {
 		75,
 		"SKY1",
 		"D_E1M2",
+		0,
 		0,
 		1,
 		0
@@ -1238,6 +1240,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_E1M3",
 		0,
+		0,
 		1,
 		0
 	},
@@ -1251,6 +1254,7 @@ level_info_t LevelInfos[] = {
 		90,
 		"SKY1",
 		"D_E1M4",
+		0,
 		0,
 		1,
 		0
@@ -1266,6 +1270,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_E1M5",
 		0,
+		0,
 		1,
 		0
 	},
@@ -1280,6 +1285,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_E1M6",
 		0,
+		0,
 		1,
 		0
 	},
@@ -1293,6 +1299,7 @@ level_info_t LevelInfos[] = {
 		180,
 		"SKY1",
 		"D_E1M7",
+		0,
 		0,
 		1,
 		0
@@ -1309,6 +1316,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_E1M8",
 		LEVEL_NOINTERMISSION|LEVEL_NOSOUNDCLIPPING|LEVEL_BRUISERSPECIAL|LEVEL_SPECLOWERFLOOR,
+		0,
 		1,
 		0
 	},
@@ -1322,6 +1330,7 @@ level_info_t LevelInfos[] = {
 		165,
 		"SKY1",
 		"D_E1M9",
+		0,
 		0,
 		1,
 		0
@@ -1339,6 +1348,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_E2M1",
 		0,
+		0,
 		2,
 		0
 	},
@@ -1354,6 +1364,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_E2M2",
 		0,
+		0,
 		2,
 		0
 	},
@@ -1367,6 +1378,7 @@ level_info_t LevelInfos[] = {
 		90,
 		"SKY2",
 		"D_E2M3",
+		0,
 		0,
 		2,
 		0
@@ -1382,6 +1394,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_E2M4",
 		0,
+		0,
 		2,
 		0
 	},
@@ -1395,6 +1408,7 @@ level_info_t LevelInfos[] = {
 		90,
 		"SKY2",
 		"D_E2M5",
+		0,
 		0,
 		2,
 		0
@@ -1410,6 +1424,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_E2M6",
 		0,
+		0,
 		2,
 		0
 	},
@@ -1423,6 +1438,7 @@ level_info_t LevelInfos[] = {
 		240,
 		"SKY2",
 		"D_E2M7",
+		0,
 		0,
 		2,
 		0
@@ -1439,6 +1455,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_E2M8",
 		LEVEL_NOINTERMISSION|LEVEL_NOSOUNDCLIPPING|LEVEL_CYBORGSPECIAL,
+		0,
 		2,
 		0
 	},
@@ -1452,6 +1469,7 @@ level_info_t LevelInfos[] = {
 		170,
 		"SKY2",
 		"D_E2M9",
+		0,
 		0,
 		2,
 		0
@@ -1470,6 +1488,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_E3M1",
 		0,
+		0,
 		3,
 		0
 	},
@@ -1483,6 +1502,7 @@ level_info_t LevelInfos[] = {
 		45,
 		"SKY3",
 		"D_E3M2",
+		0,
 		0,
 		3,
 		0
@@ -1498,6 +1518,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_E3M3",
 		0,
+		0,
 		3,
 		0
 	},
@@ -1511,6 +1532,7 @@ level_info_t LevelInfos[] = {
 		150,
 		"SKY3",
 		"D_E3M4",
+		0,
 		0,
 		3,
 		0
@@ -1526,6 +1548,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_E3M5",
 		0,
+		0,
 		3,
 		0
 	},
@@ -1540,6 +1563,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_E3M6",
 		0,
+		0,
 		3,
 		0
 	},
@@ -1553,6 +1577,7 @@ level_info_t LevelInfos[] = {
 		165,
 		"SKY3",
 		"D_E3M7",
+		0,
 		0,
 		3,
 		0
@@ -1569,6 +1594,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_E3M8",
 		LEVEL_NOINTERMISSION|LEVEL_NOSOUNDCLIPPING|LEVEL_SPIDERSPECIAL,
+		0,
 		3,
 		0
 	},
@@ -1582,6 +1608,7 @@ level_info_t LevelInfos[] = {
 		135,
 		"SKY3",
 		"D_E3M9",
+		0,
 		0,
 		3,
 		0
@@ -1599,6 +1626,7 @@ level_info_t LevelInfos[] = {
 		"SKY4",
 		"D_E3M4",
 		0,
+		0,
 		4,
 		0
 	},
@@ -1612,6 +1640,7 @@ level_info_t LevelInfos[] = {
 		0,
 		"SKY4",
 		"D_E3M2",
+		0,
 		0,
 		4,
 		0
@@ -1627,6 +1656,7 @@ level_info_t LevelInfos[] = {
 		"SKY4",
 		"D_E3M3",
 		0,
+		0,
 		4,
 		0
 	},
@@ -1640,6 +1670,7 @@ level_info_t LevelInfos[] = {
 		0,
 		"SKY4",
 		"D_E1M5",
+		0,
 		0,
 		4,
 		0
@@ -1655,6 +1686,7 @@ level_info_t LevelInfos[] = {
 		"SKY4",
 		"D_E2M7",
 		0,
+		0,
 		4,
 		0
 	},
@@ -1669,6 +1701,7 @@ level_info_t LevelInfos[] = {
 		"SKY4",
 		"D_E2M4",
 		LEVEL_CYBORGSPECIAL|LEVEL_SPECOPENDOOR,
+		0,
 		4,
 		0
 	},
@@ -1682,6 +1715,7 @@ level_info_t LevelInfos[] = {
 		0,
 		"SKY4",
 		"D_E2M6",
+		0,
 		0,
 		4,
 		0
@@ -1698,6 +1732,7 @@ level_info_t LevelInfos[] = {
 		"SKY4",
 		"D_E2M5",
 		LEVEL_NOINTERMISSION|LEVEL_NOSOUNDCLIPPING|LEVEL_SPIDERSPECIAL|LEVEL_SPECLOWERFLOOR,
+		0,
 		4,
 		0
 	},
@@ -1711,6 +1746,7 @@ level_info_t LevelInfos[] = {
 		0,
 		"SKY4",
 		"D_E1M9",
+		0,
 		0,
 		4,
 		0
@@ -1730,6 +1766,7 @@ level_info_t LevelInfos[] = {
         "D_RUNNIN",
 //		{ 'D','_','R','U','N','N','I','N' },
 		0,
+		0,
 		5,
 		0
 	},
@@ -1744,6 +1781,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_STALKS",
 //		{ 'D','_','S','T','A','L','K','S' },
+		0,
 		0,
 		5,
 		0
@@ -1760,6 +1798,7 @@ level_info_t LevelInfos[] = {
         "D_COUNTD",
 //		{ 'D','_','C','O','U','N','T','D' },
 		0,
+		0,
 		5,
 		0
 	},
@@ -1775,6 +1814,7 @@ level_info_t LevelInfos[] = {
 		"D_BETWEE",
 //		{ 'D','_','B','E','T','W','E','E' },
 		0,
+		0,
 		5,
 		0
 	},
@@ -1788,6 +1828,7 @@ level_info_t LevelInfos[] = {
 		90,
 		"SKY1",
 		"D_DOOM",
+		0,
 		0,
 		5,
 		0
@@ -1804,6 +1845,7 @@ level_info_t LevelInfos[] = {
 		"D_THE_DA",
 //		{ 'D','_','T','H','E','_','D','A' },
 		0,
+		0,
 		5,
 		0
 	},
@@ -1818,6 +1860,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_SHAWN",
 		LEVEL_MAP07SPECIAL,
+		0,
 		6,
 		0
 	},
@@ -1832,6 +1875,7 @@ level_info_t LevelInfos[] = {
 		"SKY1",
 		"D_DDTBLU",
 //		{ 'D','_','D','D','T','B','L','U' },
+		0,
 		0,
 		6,
 		0
@@ -1848,6 +1892,7 @@ level_info_t LevelInfos[] = {
         "D_IN_CIT",
 //		{ 'D','_','I','N','_','C','I','T' },
 		0,
+		0,
 		6,
 		0
 	},
@@ -1861,6 +1906,7 @@ level_info_t LevelInfos[] = {
 		90,
 		"SKY1",
 		"D_DEAD",
+		0,
 		0,
 		6,
 		0
@@ -1877,6 +1923,7 @@ level_info_t LevelInfos[] = {
         "D_STLKS2",
 //		{ 'D','_','S','T','L','K','S','2' },
 		0,
+		0,
 		6,
 		0
 	},
@@ -1892,6 +1939,7 @@ level_info_t LevelInfos[] = {
 		"D_THEDA2",
 //		{ 'D','_','T','H','E','D','A','2' },
 		0,
+		0,
 		7,
 		0
 	},
@@ -1905,6 +1953,7 @@ level_info_t LevelInfos[] = {
 		150,
 		"SKY2",
 		"D_DOOM2",
+		0,
 		0,
 		7,
 		0
@@ -1921,6 +1970,7 @@ level_info_t LevelInfos[] = {
 		"D_DDTBL2",
 //		{ 'D','_','D','D','T','B','L','2' },
 		0,
+		0,
 		7,
 		0
 	},
@@ -1936,6 +1986,7 @@ level_info_t LevelInfos[] = {
 		"D_RUNNI2",
 //		{ 'D','_','R','U','N','N','I','2' },
 		0,
+		0,
 		7,
 		0
 	},
@@ -1949,6 +2000,7 @@ level_info_t LevelInfos[] = {
 		150,
 		"SKY2",
 		"D_DEAD2",
+		0,
 		0,
 		7,
 		0
@@ -1965,6 +2017,7 @@ level_info_t LevelInfos[] = {
 		"D_STLKS3",
 //		{ 'D','_','S','T','L','K','S','3' },
 		0,
+		0,
 		7,
 		0
 	},
@@ -1979,6 +2032,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_ROMERO",
 //		{ 'D','_','R','O','M','E','R','O' },
+		0,
 		0,
 		7,
 		0
@@ -1995,6 +2049,7 @@ level_info_t LevelInfos[] = {
 		"D_SHAWN2",
 //		{ 'D','_','S','H','A','W','N','2' },
 		0,
+		0,
 		7,
 		0
 	},
@@ -2009,6 +2064,7 @@ level_info_t LevelInfos[] = {
 		"SKY2",
 		"D_MESSAG",
 //		{ 'D','_','M','E','S','S','A','G' },
+		0,
 		0,
 		7,
 		0
@@ -2025,6 +2081,7 @@ level_info_t LevelInfos[] = {
 		"D_COUNT2",
 //		{ 'D','_','C','O','U','N','T','2' },
 		0,
+		0,
 		8,
 		0
 	},
@@ -2040,6 +2097,7 @@ level_info_t LevelInfos[] = {
 		"D_DDTBL3",
 //		{ 'D','_','D','D','T','B','L','3' },
 		0,
+		0,
 		8,
 		0
 	},
@@ -2053,6 +2111,7 @@ level_info_t LevelInfos[] = {
 		180,
 		"SKY3",
 		"D_AMPIE",
+		0,
 		0,
 		8,
 		0
@@ -2069,6 +2128,7 @@ level_info_t LevelInfos[] = {
 		"D_THEDA3",
 //		{ 'D','_','T','H','E','D','A','3' },
 		0,
+		0,
 		8,
 		0
 	},
@@ -2083,6 +2143,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_ADRIAN",
 //		{ 'D','_','A','D','R','I','A','N' },
+		0,
 		0,
 		8,
 		0
@@ -2099,6 +2160,7 @@ level_info_t LevelInfos[] = {
 		"D_MESSG2",
 //		{ 'D','_','M','E','S','S','G','2' },
 		0,
+		0,
 		8,
 		0
 	},
@@ -2114,6 +2176,7 @@ level_info_t LevelInfos[] = {
         "D_ROMER2",
 //		{ 'D','_','R','O','M','E','R','2' },
 		0,
+		0,
 		8,
 		0
 	},
@@ -2127,6 +2190,7 @@ level_info_t LevelInfos[] = {
 		420,
 		"SKY3",
 		"D_TENSE",
+		0,
 		0,
 		8,
 		0
@@ -2142,6 +2206,7 @@ level_info_t LevelInfos[] = {
 		"SKY3",
 		"D_SHAWN3",
 //		{ 'D','_','S','H','A','W','N','3' },
+		0,
 		0,
 		8,
 		0
@@ -2160,6 +2225,7 @@ level_info_t LevelInfos[] = {
 		"D_OPENIN",
 //		{ 'D','_','O','P','E','N','I','N' },
 		LEVEL_MONSTERSTELEFRAG,
+		0,
 		8,
 		0
 	},
@@ -2173,6 +2239,7 @@ level_info_t LevelInfos[] = {
 		120,
 		"SKY3",
 		"D_EVIL",
+		0,
 		0,
 		9,
 		0
@@ -2189,6 +2256,7 @@ level_info_t LevelInfos[] = {
 		"D_ULTIMA",
 //		{ 'D','_','U','L','T','I','M','A' },
 		0,
+		0,
 		10,
 		0
 	},
@@ -2202,6 +2270,7 @@ level_info_t LevelInfos[] = {
 		0,
 		"",
 		"",
+		0,
 		0,
 		0,
 		0
