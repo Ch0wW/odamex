@@ -848,6 +848,10 @@ void SV_SendUserInfo (player_t &player, client_t* cl)
 	MSG_WriteShort	(&cl->reliablebuf, time(NULL) - p->JoinTime);
 }
 
+/**
+Spreads a player's userinfo to every client.
+@param player Player to parse info for.
+ */
 void SV_BroadcastUserInfo(player_t &player)
 {
 	for (Players::iterator it = players.begin();it != players.end();++it)
@@ -1897,35 +1901,39 @@ void SV_ConnectClient()
 	player_t* player = &(*it);
 	client_t* cl = &(player->client);
 
-	// clear client network info
-	cl->address = net_from;
-	cl->last_received = gametic;
-	cl->reliable_bps = 0;
-	cl->unreliable_bps = 0;
-	cl->lastcmdtic = 0;
-	cl->lastclientcmdtic = 0;
-	cl->allow_rcon = false;
-	cl->displaydisconnect = false;
+	// clear and reinitialize client network info
+	{
+		cl->address = net_from;
+		cl->last_received = gametic;
+		cl->reliable_bps = 0;
+		cl->unreliable_bps = 0;
+		cl->lastcmdtic = 0;
+		cl->lastclientcmdtic = 0;
+		cl->allow_rcon = false;
+		cl->displaydisconnect = false;
 
+		SZ_Clear(&cl->netbuf);
+		SZ_Clear(&cl->reliablebuf);
+		SZ_Clear(&cl->relpackets);
+
+		memset(cl->packetseq, -1, sizeof(cl->packetseq));
+		memset(cl->packetbegin, 0, sizeof(cl->packetbegin));
+		memset(cl->packetsize, 0, sizeof(cl->packetsize));
+
+		cl->sequence = 0;
+		cl->last_sequence = -1;
+		cl->packetnum = 0;
+	}
+	
 	// generate a random string
-	std::stringstream ss;
-	ss << time(NULL) << level.time << VERSION << NET_AdrToString(net_from);
-	cl->digest = MD5SUM(ss.str());
+	{
+		std::stringstream ss;
+		ss << time(NULL) << level.time << VERSION << NET_AdrToString(net_from);
+		cl->digest = MD5SUM(ss.str());
+	}
 
 	// Set player time
 	player->JoinTime = time(NULL);
-
-	SZ_Clear(&cl->netbuf);
-	SZ_Clear(&cl->reliablebuf);
-	SZ_Clear(&cl->relpackets);
-
-	memset(cl->packetseq, -1, sizeof(cl->packetseq));
-	memset(cl->packetbegin, 0, sizeof(cl->packetbegin));
-	memset(cl->packetsize, 0, sizeof(cl->packetsize));
-
-	cl->sequence = 0;
-	cl->last_sequence = -1;
-	cl->packetnum =  0;
 
 	cl->version = MSG_ReadShort();
 	byte connection_type = MSG_ReadByte();
@@ -1934,13 +1942,14 @@ void SV_ConnectClient()
 	// for unlagging
 	Unlag::getInstance().registerPlayer(player->id);
 
+	// Check if the client uses the same version as the server.
 	if (!SV_CheckClientVersion(cl, it))
 	{
 		SV_DropClient(*player);
 		return;
 	}
 
-	// get client userinfo
+	// Get the userinfo from the client.
 	clc_t userinfo = (clc_t)MSG_ReadByte();
 	if (userinfo != clc_userinfo)
 	{
@@ -1951,9 +1960,10 @@ void SV_ConnectClient()
 	if (!SV_SetupUserInfo(*player))
 		return;
 
-	// get rate value
+	// Get the rate value of the client.
 	SV_SetClientRate(*cl, MSG_ReadLong());
 
+	// Check if the IP is banned from our list or not.
 	if (SV_BanCheck(cl))
 	{
 		cl->displaydisconnect = false;
@@ -1961,6 +1971,7 @@ void SV_ConnectClient()
 		return;
 	}
 
+	// Check if the user entered a good password (if any)
 	std::string passhash = MSG_ReadString();
 	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
 	{
@@ -1968,7 +1979,7 @@ void SV_ConnectClient()
 
 		MSG_WriteMarker(&cl->reliablebuf, svc_print);
 		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString(&cl->reliablebuf, "Server is passworded, no password specified or bad password\n");
+		MSG_WriteString(&cl->reliablebuf, "Server is passworded, no password specified or bad password.\n");
 
 		SV_SendPacket(*player);
 		SV_DropClient(*player);
@@ -2027,12 +2038,15 @@ void SV_ConnectClient()
 	}
 
 	SV_BroadcastUserInfo(*player);
-	player->playerstate = PST_REBORN;
+	player->playerstate = PST_ENTER;
 
-	player->fragcount = 0;
-	player->killcount = 0;
-	player->points = 0;
-
+	// Reset all frags and stuff 
+	// ToDo: Make that in a function so that we're sure not to forget stuff.
+	{
+		player->fragcount = 0;
+		player->killcount = 0;
+		player->points = 0;
+	}
 	if (!step_mode)
 	{
 		player->spectator = true;
@@ -2040,11 +2054,11 @@ void SV_ConnectClient()
 		{
 			MSG_WriteMarker(&pit->client.reliablebuf, svc_spectate);
 			MSG_WriteByte(&pit->client.reliablebuf, player->id);
-			MSG_WriteByte(&pit->client.reliablebuf, true);
+			MSG_WriteByte(&pit->client.reliablebuf, player->spectator);
 		}
 	}
 
-	// send a map name
+	// Send a map name
 	SV_SendLoadMap(wadfiles, patchfiles, level.mapname, player);
 
 	// [SL] 2011-12-07 - Force the player to jump to intermission if not in a level
@@ -2063,6 +2077,7 @@ void SV_ConnectClient()
 		MSG_WriteByte(&pit->client.reliablebuf, player->id);
 	}
 
+	// Send out the server's MOTD.
 	SV_MidPrint((char*)sv_motd.cstring(), player, 6);
 }
 
@@ -3616,10 +3631,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	if (!setting && player.spectator)
 	{
 		// We want to unspectate the player.
-		if ((level.time > player.joinafterspectatortime + TICRATE * 3) ||
-			level.time > player.joinafterspectatortime + TICRATE * 5)
+		if (level.time > player.joinafterspectatortime + TICRATE * 5)
 		{
-
 			// Check to see if there is an empty spot on the server
 			int NumPlayers = 0;
 			for (Players::iterator it = players.begin(); it != players.end(); ++it)
