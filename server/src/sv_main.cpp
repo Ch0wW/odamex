@@ -4406,6 +4406,10 @@ void SV_TimelimitCheck()
 	if(!sv_timelimit)
 		return;
 
+	// Do not have timelimit in lobbies.
+	if (level.flags & LEVEL_LOBBYSPECIAL)
+		return;
+
 	level.timeleft = (int)(sv_timelimit * TICRATE * 60);
 
 	// Don't substract the proper amount of time unless we're actually ingame.
