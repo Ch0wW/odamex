@@ -25,8 +25,9 @@
 #define __VERSION_H__
 
 // Lots of different representations for the version number
-#define CONFIGVERSIONSTR "81"
-#define GAMEVER (0*256+81)
+#define ODAMEX_VERSION 81
+#define CONFIGVERSIONSTR STRINGIFY(ODAMEX_VERSION)
+#define GAMEVER (0*256+ODAMEX_VERSION)
 
 #define DOTVERSIONSTR "0.8.1"
 
@@ -44,7 +45,7 @@
 // earlier than this version.
 #define SAVESIG "ODAMEXSAVE080   "	// Needs to be exactly 16 chars long
 
-#define NETDEMOVER 3
+#define NETDEMOVER ODAMEX_VERSION	// Should be sync'd with Odamex's version, for future retrocompatibility control
 
 // denis - per-file svn version stamps
 class file_version

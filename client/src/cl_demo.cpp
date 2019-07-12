@@ -510,9 +510,22 @@ bool NetDemo::startPlaying(const std::string &filename)
 		return false;
 	}
 
+	// make sure the demo header is compatible with out version of Odamex.
     if (header.version != NETDEMOVER)
     {
-        // Do nothing since there is only one version of netdemo files currently
+		if (header.version == 3) {
+			error("This demo uses a version of Odamex between 0.6.1 and 0.8.0.\n");
+		}
+		else if (header.version == 2) {
+			error("This demo uses a version of Odamex between 0.5.0 and 0.6.0.\n");
+		}
+		else if (header.version > NETDEMOVER) {
+			error("This demo uses an updated version of Odamex. Please check www.odamex.net in order to download the latest release.");
+		}
+		else {
+			error("This demo uses an unsupported protocol.");
+		}
+		return false;
     }
 
 	// read the demo's index

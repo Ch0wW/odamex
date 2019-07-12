@@ -430,5 +430,7 @@ IndexType BinarySearchFlexible (IndexType max, const KeyType key, IndexType noIn
 	return noIndex;
 }
 
+#define STRINGIFY_(x) #x
+#define STRINGIFY(x) STRINGIFY_(x)
 
 #endif	// __DOOMDEF_H__
