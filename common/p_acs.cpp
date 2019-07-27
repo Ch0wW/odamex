@@ -24,6 +24,7 @@
 
 #include "z_zone.h"
 #include "doomdef.h"
+#include "d_items.h"
 #include "p_local.h"
 #include "p_spec.h"
 #include "g_level.h"
@@ -108,11 +109,33 @@ static const char* DoomAmmoNames[4] =
 {
 	"Clip", "Shell", "Cell", "RocketAmmo"
 };
-static const char* DoomWeaponNames[9] =
-{
-	"Fist", "Pistol", "Shotgun", "Chaingun", "RocketLauncher",
-	"PlasmaRifle", "BFG9000", "Chainsaw", "SuperShotgun"
+
+struct acsweapon_t {
+	const char *name;
+	weapontype_t weaponinfo;
 };
+
+acsweapon_t DoomWeaponNames[9] = {
+		{"Fist", wp_fist},
+		{"Pistol", wp_pistol},
+		{"Shotgun", wp_shotgun},
+		{"Chaingun",wp_chaingun},
+		{"RocketLauncher", wp_missile},
+		{"PlasmaRifle", wp_plasma},
+		{"BFG9000", wp_bfg},
+		{"Chainsaw", wp_chainsaw},
+		{"SuperShotgun", wp_supershotgun}
+};
+
+const char *FindWeaponName(weapontype_t wpn) {
+	for (int i = 0; 9; i++) {
+		if (wpn == DoomWeaponNames[i].weaponinfo)
+			return DoomWeaponNames[i].name;
+	}
+
+	return "";
+}
+
 static const char* DoomKeyNames[6] =
 {
 	"BlueCard", "YellowCard", "RedCard",
@@ -163,7 +186,7 @@ static void DoGiveInv(player_t* player, const char* type, int amount)
 	// Give weapon
 	for (int i = 0; i < NUMWEAPONS; i++)
 	{
-		if (strcmp(DoomWeaponNames[i], type) == 0)
+		if (strcmp(DoomWeaponNames[i].name, type) == 0)
 		{
 			do
 			{
@@ -327,7 +350,7 @@ static void DoTakeInv(player_t* player, const char* type, int amount)
 	}
 	for (i = 0; i < NUMWEAPONS; ++i)
 	{
-		if (strcmp(DoomWeaponNames[i], type) == 0)
+		if (strcmp(DoomWeaponNames[i].name, type) == 0)
 		{
 			TakeWeapon(player, i);
 			return;
@@ -385,7 +408,7 @@ static int CheckInventory(AActor* activator, const char* type)
 	}
 	for (int i = 0; i < NUMWEAPONS; ++i)
 	{
-		if (strcmp(DoomWeaponNames[i], type) == 0)
+		if (strcmp(DoomWeaponNames[i].name, type) == 0)
 		{
 			return player->weaponowned[i] ? 1 : 0;
 		}
@@ -3066,18 +3089,17 @@ void DLevelScript::RunScript ()
 				PushToStack(activator->tid);
 			break;
 
-		/*case PCD_CHECKWEAPON:
-			if (activator == NULL || activator->player == NULL)
+		case PCD_CHECKWEAPON:
+			if (activator == NULL || activator->player == NULL || activator->player->readyweapon == NULL)
 			{ // Non-players do not have ready weapons
 				STACK(1) = 0;
 			}
 			else
 			{
-				STACK(1) = 0 == strcmp (level.behavior->LookupString (STACK(1)),
-					wpnlev1info[activator->player->readyweapon]->type->Name+1);
+				STACK(1) = 0 == strcmp (level.behavior->LookupString (STACK(1)), FindWeaponName(activator->player->readyweapon));
 			}
 			break;
-
+			/*
 		case PCD_SETWEAPON:
 			if (activator == NULL || activator->player == NULL)
 			{
