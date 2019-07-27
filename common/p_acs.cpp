@@ -3099,7 +3099,7 @@ void DLevelScript::RunScript ()
 				STACK(1) = 0 == strcmp (level.behavior->LookupString (STACK(1)), FindWeaponName(activator->player->readyweapon));
 			}
 			break;
-			/*
+			
 		case PCD_SETWEAPON:
 			if (activator == NULL || activator->player == NULL)
 			{
@@ -3111,8 +3111,7 @@ void DLevelScript::RunScript ()
 
 				for (i = 0; i < NUMWEAPONS; ++i)
 				{
-					if (0 == strcmp (level.behavior->LookupString (STACK(1)),
-						wpnlev1info[i]->type->Name+1))
+					if (0 == strcmp (level.behavior->LookupString (STACK(1)), FindWeaponName(DoomWeaponNames[i].weaponinfo)))
 					{
 						break;
 					}
@@ -3131,7 +3130,6 @@ void DLevelScript::RunScript ()
 				}
 			}
 			break;
-        */
 		}
 	}
 
