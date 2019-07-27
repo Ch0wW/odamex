@@ -23,6 +23,7 @@
 //
 
 #include "z_zone.h"
+#include "c_cvars.h"
 #include "doomdef.h"
 #include "d_items.h"
 #include "p_local.h"
@@ -3130,6 +3131,14 @@ void DLevelScript::RunScript ()
 				}
 			}
 			break;
+
+			/*case PCD_GETCVAR:
+			cvar_t *var = NULL, *prev = NULL;
+			char *cvarname;
+			sprintf(cvarname, "%d", STACK(1));
+			var = cvar_t::FindCVar(cvarname, &prev);
+			STACK(1) = var->asInt();
+			break; */
 		}
 	}
 
