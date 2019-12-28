@@ -3048,26 +3048,6 @@ void SV_CalcPing(player_t &player)
 	player.ping = ping;
 }
 
-//
-// SV_UpdatePing
-// send pings to a client
-//
-void SV_UpdatePing(client_t* cl)
-{
-	if (!P_AtInterval(3*TICRATE))	// Update ping broadcasts every 3 seconds
-		return;
-
-	for (Players::iterator it = players.begin(); it != players.end(); ++it)
-	{
-		if (!(it->ingame()))
-			continue;
-
-		MSG_WriteMarker(&cl->reliablebuf, svc_updateping);
-		MSG_WriteByte(&cl->reliablebuf, it->id);  // player
-		MSG_WriteLong(&cl->reliablebuf, it->ping);
-	}
-}
-
 
 //
 // SV_UpdateDeadPlayers
@@ -3286,9 +3266,8 @@ void SV_WriteCommands(void)
 
 		SV_UpdateMonsters(*it);
 
-		SV_SendPingRequest(cl);     // request ping reply
-
-		SV_UpdatePing(cl);          // send the ping value of all cients to this client
+		SVCMD_SendPingRequest(cl);		// request ping reply
+		SVCMD_UpdatePlayersPing(cl);	// send the ping value of all cients to this client
 	}
 
 	SV_UpdateDeadPlayers(); // Update dying players.

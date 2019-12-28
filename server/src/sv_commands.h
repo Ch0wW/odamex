@@ -22,3 +22,7 @@ void SVCMD_BroadcastSpectatorStatus(int playerid, bool newstatus);
 // Intermission's "Ready" State
 void SVCMD_SetIntermissionReadyStatus(client_t *cl, int playerid, bool newstatus);
 void SVCMD_BroadcastIntermissionReadyStatus(int playerid, bool newstatus);
+
+// Ping
+void SVCMD_SendPingRequest(client_t* cl);
+void SVCMD_UpdatePlayersPing(client_t* cl);

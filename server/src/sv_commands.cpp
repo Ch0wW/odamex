@@ -159,3 +159,35 @@ void SVCMD_BroadcastIntermissionReadyStatus(int playerid, bool newstatus)
 	}
 }
 #endif
+
+
+/*
+=============================
+PING FUNCTIONS
+=============================
+*/
+
+void SVCMD_SendPingRequest(client_t* cl)
+{
+	if (!P_AtInterval((3 * TICRATE) - 5))	// 5 tic less
+		return;
+
+	MSG_WriteMarker(&cl->reliablebuf, svc_pingrequest);
+	MSG_WriteLong(&cl->reliablebuf, I_MSTime());
+}
+
+void SVCMD_UpdatePlayersPing(client_t* cl)
+{
+	if (!P_AtInterval(3 * TICRATE))	// Update ping broadcasts every 3 seconds
+		return;
+
+	for (Players::iterator it = players.begin(); it != players.end(); ++it)
+	{
+		if (!(it->ingame()))
+			continue;
+
+		MSG_WriteMarker(&cl->reliablebuf, svc_updateping);
+		MSG_WriteByte(&cl->reliablebuf, it->id);  // player
+		MSG_WriteLong(&cl->reliablebuf, it->ping);
+	}
+}
