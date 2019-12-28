@@ -3054,7 +3054,7 @@ void SV_CalcPing(player_t &player)
 //
 void SV_UpdatePing(client_t* cl)
 {
-	if (!P_AtInterval(101))
+	if (!P_AtInterval(3*TICRATE))	// Update ping broadcasts every 3 seconds
 		return;
 
 	for (Players::iterator it = players.begin(); it != players.end(); ++it)
