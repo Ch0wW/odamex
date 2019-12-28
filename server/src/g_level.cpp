@@ -58,6 +58,7 @@
 #include "s_sndseq.h"
 #include "sc_man.h"
 #include "sv_main.h"
+#include "sv_commands.h"
 #include "sv_maplist.h"
 #include "sv_vote.h"
 #include "v_video.h"
@@ -754,18 +755,10 @@ void G_DoLoadLevel (int position)
 		it->points = 0;
 
 		// [AM] Only touch ready state if warmup mode is enabled.
-		if (sv_warmup)
-		{
+		if (sv_warmup) {
 			it->ready = false;
 			it->timeout_ready = 0;
-
-			// [AM] Make sure the clients are updated on the new ready state
-			for (Players::iterator pit = players.begin();pit != players.end();++pit)
-			{
-				MSG_WriteMarker(&(pit->client.reliablebuf), svc_readystate);
-				MSG_WriteByte(&(pit->client.reliablebuf), it->id);
-				MSG_WriteBool(&(pit->client.reliablebuf), false);
-			}
+			SVCMD_BroadcastReadyStatus(it->id, it->ready);	// [AM] Make sure the clients are updated on the new ready state
 		}
 	}
 

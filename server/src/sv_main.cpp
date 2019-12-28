@@ -64,6 +64,7 @@
 #include "sv_maplist.h"
 #include "g_warmup.h"
 #include "sv_banlist.h"
+#include "sv_commands.h"
 #include "d_main.h"
 #include "m_fileio.h"
 
@@ -122,17 +123,12 @@ CVAR_FUNC_IMPL (sv_maxclients)
 	Players::iterator it = players.begin();
 	while (it != players.end())
 	{
-		if (count <= 0)
+		if (count <= 0) 
 		{
-			MSG_WriteMarker(&(it->client.reliablebuf), svc_print);
-			MSG_WriteByte(&(it->client.reliablebuf), PRINT_CHAT);
-			MSG_WriteString(&(it->client.reliablebuf),
-			                "Client limit reduced. Please try connecting again later.\n");
+			SVCMD_PrintMessageToPlayer( &it->client,  PRINT_HIGH, "Client limit reduced. Please try connecting again later.\n");
 			SV_DropClient(*it);
 			it = SV_RemoveDisconnectedPlayer(it);
-		}
-		else
-		{
+		} else {
 			count -= 1;
 			++it;
 		}
@@ -155,20 +151,12 @@ CVAR_FUNC_IMPL (sv_maxplayers)
 
 			if (normalcount > var)
 			{
-				for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
-				{
-					MSG_WriteMarker(&pit->client.reliablebuf, svc_spectate);
-					MSG_WriteByte(&pit->client.reliablebuf, it->id);
-					MSG_WriteByte(&pit->client.reliablebuf, true);
-				}
-				SV_BroadcastPrintf (PRINT_HIGH, "%s became a spectator.\n", it->userinfo.netname.c_str());
-				MSG_WriteMarker(&it->client.reliablebuf, svc_print);
-				MSG_WriteByte(&it->client.reliablebuf, PRINT_CHAT);
-				MSG_WriteString(&it->client.reliablebuf,
-								"Active player limit reduced. You are now a spectator!\n");
 				it->spectator = true;
 				it->playerstate = PST_LIVE;
 				it->joinafterspectatortime = level.time;
+				SVCMD_BroadcastSpectatorStatus(it->id, it->spectator);
+				SV_BroadcastPrintf (PRINT_HIGH, "%s became a spectator.\n", it->userinfo.netname.c_str());
+				SVCMD_PrintMessageToPlayer(&it->client, PRINT_SERVERCHAT, "Active player limit reduced. You are now a spectator!\n");
 			}
 		}
 	}
@@ -811,26 +799,6 @@ void SV_Sound (fixed_t x, fixed_t y, byte channel, const char *name, byte attenu
 }
 
 //
-// SV_UpdateFrags
-//
-void SV_UpdateFrags(player_t &player)
-{
-	for (Players::iterator it = players.begin();it != players.end();++it)
-	{
-		client_t *cl = &(it->client);
-
-		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
-		MSG_WriteByte(&cl->reliablebuf, player.id);
-		if (sv_gametype != GM_COOP)
-			MSG_WriteShort(&cl->reliablebuf, player.fragcount);
-		else
-			MSG_WriteShort(&cl->reliablebuf, player.killcount);
-		MSG_WriteShort (&cl->reliablebuf, player.deathcount);
-		MSG_WriteShort(&cl->reliablebuf, player.points);
-	}
-}
-
-//
 // SV_SendUserInfo
 //
 void SV_SendUserInfo (player_t &player, client_t* cl)
@@ -1281,6 +1249,8 @@ bool SV_IsPlayerAllowedToSee(player_t &p, AActor *mo)
 
 #define HARDWARE_CAPABILITY 1000
 
+
+
 //
 // SV_UpdateHiddenMobj
 //
@@ -1594,25 +1564,17 @@ void SV_ClientFullUpdate(player_t &pl)
 	// update warmup state
 	SV_SendWarmupState(pl, warmup.get_status(), warmup.get_countdown());
 
-	// update frags/points/.tate./ready
+	// update scores/spectator/ready/intready
 	for (Players::iterator it = players.begin();it != players.end();++it)
 	{
-		MSG_WriteMarker(&cl->reliablebuf, svc_updatefrags);
-		MSG_WriteByte(&cl->reliablebuf, it->id);
-		if(sv_gametype != GM_COOP)
-			MSG_WriteShort(&cl->reliablebuf, it->fragcount);
-		else
-			MSG_WriteShort(&cl->reliablebuf, it->killcount);
-		MSG_WriteShort(&cl->reliablebuf, it->deathcount);
-		MSG_WriteShort(&cl->reliablebuf, it->points);
+		SVCMD_SetPlayerScores(cl, *it);
+		SVCMD_SetSpectatorStatus(cl, it->id, it->spectator);
+		SVCMD_SetReadyStatus(cl, it->id, it->ready);
 
-		MSG_WriteMarker (&cl->reliablebuf, svc_spectate);
-		MSG_WriteByte (&cl->reliablebuf, it->id);
-		MSG_WriteByte (&cl->reliablebuf, it->spectator);
-
-		MSG_WriteMarker (&cl->reliablebuf, svc_readystate);
-		MSG_WriteByte (&cl->reliablebuf, it->id);
-		MSG_WriteByte (&cl->reliablebuf, it->ready);
+		// Ch0wW: Only inform intermission state
+		/*if (gamestate == GS_INTERMISSION) {
+			SVCMD_SetIntermissionReadyStatus(&it->client, it->id, it->intermission_ready);
+		}*/
 	}
 
 	// [deathz0r] send team frags/captures if teamplay is enabled
@@ -1835,11 +1797,7 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 		// GhostlyDeath -- Now we tell them our built up message and boot em
 		cl->displaydisconnect = false;	// Don't spam the players
 
-		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString(&cl->reliablebuf,
-                        (const char *)FormattedString.str().c_str());
-
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, FormattedString.str());
 		MSG_WriteMarker(&cl->reliablebuf, svc_disconnect);
 
 		SV_SendPacket(*it);
@@ -1981,11 +1939,7 @@ void SV_ConnectClient()
 	if (strlen(join_password.cstring()) && MD5SUM(join_password.cstring()) != passhash)
 	{
 		Printf(PRINT_HIGH, "%s disconnected (password failed).\n", NET_AdrToString(net_from));
-
-		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString(&cl->reliablebuf, "Server is passworded, no password specified or bad password.\n");
-
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, "Server is passworded, no password specified or bad password.\n");
 		SV_SendPacket(*player);
 		SV_DropClient(*player);
 		return;
@@ -2014,13 +1968,8 @@ void SV_ConnectClient()
 			// send the client the scores and list of other clients
 			SV_ClientFullUpdate(*player);
 
-			for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
-			{
-				// [SL] 2011-07-30 - clients should consider downloaders as spectators
-				MSG_WriteMarker(&pit->client.reliablebuf, svc_spectate);
-				MSG_WriteByte(&pit->client.reliablebuf, player->id);
-				MSG_WriteByte(&pit->client.reliablebuf, true);
-			}
+			// [SL] 2011-07-30 - clients should consider downloaders as spectators
+			SVCMD_BroadcastSpectatorStatus(player->id, true);
 		}
 		else
 		{
@@ -2029,13 +1978,8 @@ void SV_ConnectClient()
 			cl->displaydisconnect = false;
 
 			Printf(PRINT_HIGH, "%s has connected. (downloading)\n", player->userinfo.netname.c_str());
-
-			MSG_WriteMarker(&cl->reliablebuf, svc_print);
-			MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-			MSG_WriteString(&cl->reliablebuf, "Server: Downloading is disabled.\n");
-
+			SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, "Server: Downloading is disabled.\n");
 			SV_DropClient(*player);
-
 			Printf(PRINT_HIGH, "%s disconnected. Downloading is disabled.\n", player->userinfo.netname.c_str());
 		}
 
@@ -2045,15 +1989,9 @@ void SV_ConnectClient()
 	SV_BroadcastUserInfo(*player);
 	SV_InitPlayerEnterState(player);
 
-	if (!step_mode)
-	{
+	if (!step_mode) {
 		player->spectator = true;
-		for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
-		{
-			MSG_WriteMarker(&pit->client.reliablebuf, svc_spectate);
-			MSG_WriteByte(&pit->client.reliablebuf, player->id);
-			MSG_WriteByte(&pit->client.reliablebuf, player->spectator);
-		}
+		SVCMD_BroadcastSpectatorStatus(player->id, player->spectator);
 	}
 
 	// Send a map name
@@ -2522,6 +2460,7 @@ BEGIN_COMMAND (showscores)
 }
 END_COMMAND (showscores)
 
+
 //
 // SV_BroadcastPrintf
 // Sends text to all active clients.
@@ -2544,10 +2483,8 @@ void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...)
 
 		if (cl->allow_rcon) // [mr.crispy -- sept 23 2013] RCON guy already got it when it printed to the console
 			continue;
-
-		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, level);
-		MSG_WriteString (&cl->reliablebuf, string);
+	
+		SVCMD_PrintMessageToPlayer(cl, level, string);
 	}
 }
 
@@ -2572,12 +2509,10 @@ void STACK_ARGS SV_SpectatorPrintf(int level, const char *fmt, ...)
 			continue;
 
 		bool spectator = it->spectator || !it->ingame();
+
 		if (spectator)
-		{
-			MSG_WriteMarker(&cl->reliablebuf, svc_print);
-			MSG_WriteByte(&cl->reliablebuf, level);
-			MSG_WriteString(&cl->reliablebuf, string);
-		}
+			SVCMD_PrintMessageToPlayer(cl, level, string);
+		
 	}
 }
 
@@ -2591,9 +2526,7 @@ void STACK_ARGS SV_ClientPrintf(client_t *cl, int level, const char *fmt, ...)
 	vsprintf(string, fmt, argptr);
 	va_end(argptr);
 
-	MSG_WriteMarker(&cl->reliablebuf, svc_print);
-	MSG_WriteByte(&cl->reliablebuf, level);
-	MSG_WriteString(&cl->reliablebuf, string);
+	SVCMD_PrintMessageToPlayer(cl, level, string);
 }
 
 // Print directly to a specific player.
@@ -2607,9 +2540,7 @@ void STACK_ARGS SV_PlayerPrintf(int level, int player_id, const char *fmt, ...)
 	va_end(argptr);
 
 	client_t* cl = &idplayer(player_id).client;
-	MSG_WriteMarker(&cl->reliablebuf, svc_print);
-	MSG_WriteByte(&cl->reliablebuf, level);
-	MSG_WriteString(&cl->reliablebuf, string);
+	SVCMD_PrintMessageToPlayer(cl, level, string);
 }
 
 void STACK_ARGS SV_TeamPrintf(int level, int who, const char *fmt, ...)
@@ -2642,9 +2573,7 @@ void STACK_ARGS SV_TeamPrintf(int level, int who, const char *fmt, ...)
 		if (cl->allow_rcon) // [mr.crispy -- sept 23 2013] RCON guy already got it when it printed to the console
 			continue;
 
-		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, level);
-		MSG_WriteString(&cl->reliablebuf, string);
+		SVCMD_PrintMessageToPlayer(cl, level, string);
 	}
 }
 
@@ -3655,22 +3584,16 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 
 			// Warn everyone we're not a spectator anymore.
 			player.spectator = false;
-			for (Players::iterator it = players.begin(); it != players.end(); ++it)
-			{
-				MSG_WriteMarker(&it->client.reliablebuf, svc_spectate);
-				MSG_WriteByte(&it->client.reliablebuf, player.id);
-				MSG_WriteByte(&it->client.reliablebuf, player.spectator);
-			}
+			SVCMD_BroadcastSpectatorStatus(player.id, player.spectator);
 
 			if (player.mo)
 				P_KillMobj(NULL, player.mo, NULL, true);
 
 			SV_InitPlayerEnterState(&player);
-			SV_UpdateFrags(player);
+			SVCMD_UpdateScores(player);
 
 			// [AM] Set player unready if we're in warmup mode.
-			if (sv_warmup)
-			{
+			if (sv_warmup) {
 				SV_SetReady(player, false, true);
 				player.timeout_ready = 0;
 			}
@@ -3693,13 +3616,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 		P_PlayerLeavesGame(&player);
 
 		// We want to spectate the player
-		for (Players::iterator it = players.begin(); it != players.end(); ++it)
-		{
-			MSG_WriteMarker(&(it->client.reliablebuf), svc_spectate);
-			MSG_WriteByte(&(it->client.reliablebuf), player.id);
-			MSG_WriteByte(&(it->client.reliablebuf), true);
-		}
-
+		SVCMD_BroadcastSpectatorStatus(player.id, true);
+		
 		// call CTF_CheckFlags _before_ the player becomes a spectator.
 		// Otherwise a flag carrier will drop his flag at (0,0), which
 		// is often right next to one of the bases...
@@ -3822,15 +3740,8 @@ void SV_SetReady(player_t &player, bool setting, bool silent)
 		changed = false;
 	}
 
-	if (changed) {
-		// Broadcast the new ready state to all connected players.
-		for (Players::iterator it = players.begin();it != players.end();++it)
-		{
-			MSG_WriteMarker(&(it->client.reliablebuf), svc_readystate);
-			MSG_WriteByte(&(it->client.reliablebuf), player.id);
-			MSG_WriteBool(&(it->client.reliablebuf), setting);
-		}
-	}
+	if (changed)
+		SVCMD_BroadcastReadyStatus(player.id, setting);	// Broadcast the new ready state to all connected players.
 
 	warmup.readytoggle();
 }
@@ -3914,14 +3825,12 @@ void SV_RConPassword (player_t &player)
 	if (!password.empty() && MD5SUM(password + cl->digest) == challenge)
 	{
 		cl->allow_rcon = true;
-		Printf(PRINT_HIGH, "rcon login from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
+		Printf(PRINT_HIGH, "RCON login from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
 	}
 	else
 	{
-		Printf(PRINT_HIGH, "rcon login failure from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
-		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString (&cl->reliablebuf, "Bad password\n");
+		Printf(PRINT_HIGH, "RCON login failure from %s - %s", player.userinfo.netname.c_str(), NET_AdrToString(cl->address));
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, "Bad password.\n");
 	}
 }
 
@@ -4044,10 +3953,7 @@ void SV_WantWad(player_t &player)
 		MSG_ReadString();
 		MSG_ReadLong();
 
-		MSG_WriteMarker(&cl->reliablebuf, svc_print);
-		MSG_WriteByte(&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString(&cl->reliablebuf, "Server: Downloading is disabled\n");
-
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, "Server: Downloading is disabled\n");
 		SV_DropClient(player);
 		return;
 	}
@@ -4070,25 +3976,19 @@ void SV_WantWad(player_t &player)
 			break;
 	}
 
-	if (i == wadfiles.size())
-	{
-		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
-		MSG_WriteString (&cl->reliablebuf, "Server: Bad wad request\n");
+	if (i == wadfiles.size()) {
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, "Server: Bad wad request\n");
 		SV_DropClient(player);
 		return;
 	}
 
 	// denis - do not download commercial wads
-	if (W_IsIWAD(wadfiles[i]))
-	{
-		MSG_WriteMarker (&cl->reliablebuf, svc_print);
-		MSG_WriteByte (&cl->reliablebuf, PRINT_HIGH);
-		char message[256];	
+	if (W_IsIWAD(wadfiles[i])) {
+		char message[256];
 		sprintf(message, "Server: %s is a commercial wad and will not be downloaded\n",
-				D_CleanseFileName(wadfiles[i]).c_str());
-		MSG_WriteString(&cl->reliablebuf, message);
+			D_CleanseFileName(wadfiles[i]).c_str());
 
+		SVCMD_PrintMessageToPlayer(cl, PRINT_HIGH, message);
 		SV_DropClient(player);
 		return;
 	}
