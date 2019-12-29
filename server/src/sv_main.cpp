@@ -1607,7 +1607,7 @@ void SV_ClientFullUpdate(player_t &pl)
 void SV_UpdateSecret(int sectornum, player_t &player)
 {
 	SV_BroadcastSector(sectornum);
-	SV_UpdateFrags(player);			// I don't like syncing back all the frags aswell, but whatever.
+	SVCMD_UpdateScores(player);			// I don't like syncing back all the frags aswell, but whatever.
 	SV_UpdateSecretCount();
 }
 

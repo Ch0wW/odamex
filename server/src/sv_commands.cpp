@@ -82,12 +82,15 @@ void SVCMD_SetPlayerScores(client_t *cl, player_t &it)
 
 	if (sv_gametype != GM_COOP)
 		MSG_WriteShort(&cl->reliablebuf, it.fragcount);
-	else
+	else {
 		MSG_WriteShort(&cl->reliablebuf, it.killcount);
+		MSG_WriteByte(&cl->reliablebuf, it.secretcount);
+	}
 
 	MSG_WriteShort(&cl->reliablebuf, it.deathcount);
 	MSG_WriteShort(&cl->reliablebuf, it.points);
 }
+
 
 void SVCMD_UpdateScores(player_t &player)
 {
