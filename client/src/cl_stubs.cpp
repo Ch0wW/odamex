@@ -49,7 +49,7 @@ void SV_SendKillMobj(AActor *source, AActor *target, AActor *inflictor, bool joi
 void SV_SendDamagePlayer(player_t *player, int pain) {}
 void SV_SendDamageMobj(AActor *target, int pain) {}
 void SV_CTFEvent(flag_t f, flag_score_t event, player_t &who) {}
-void SV_UpdateFrags(player_t &player) {}
+void SVCMD_UpdateScores(player_t &player) {}
 void SV_ActorTarget(AActor *actor) {}
 void SV_SendDestroyActor(AActor *mo) {}
 void SV_ExplodeMissile(AActor *mo) {}

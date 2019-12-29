@@ -31,10 +31,6 @@
 #include "d_player.h"
 #include "i_net.h"
 
-#define GAME_NORMAL		1
-#define GAME_TEAMPLAY	2
-#define GAME_CTF		3
-
 #include <json/json.h>
 
 extern int shotclock;
@@ -73,7 +69,6 @@ void SV_DisplayTics();
 void SV_RunTics();
 void SV_ParseCommands(player_t &player);
 short SV_FindClientByAddr(void);
-void SV_UpdateFrags (player_t &player);
 void SV_RemoveCorpses (void);
 void SV_DropClient(player_t &who);
 void SV_PlayerTriedToCheat(player_t &player);

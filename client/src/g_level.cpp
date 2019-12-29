@@ -526,17 +526,7 @@ void G_DoLoadLevel (int position)
 			it->playerstate = PST_ENTER;
 		}
 
-		// [AM] If sv_keepkeys is on, players might still be carrying keys, so
-		//      make sure they're gone.
-		for (size_t j = 0; j < NUMCARDS; j++)
-			it->cards[j] = false;
-
-		it->fragcount = 0;
-		it->itemcount = 0;
-		it->secretcount = 0;
-		it->deathcount = 0; // [Toke - Scores - deaths]
-		it->killcount = 0; // [deathz0r] Coop kills
-		it->points = 0;
+		it->ResetPlayerStats();		// Reset all statistics of the player.
 	}
 
 	// initialize the msecnode_t freelist.					phares 3/25/98

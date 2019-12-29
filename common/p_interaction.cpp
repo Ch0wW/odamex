@@ -66,7 +66,7 @@ void AM_Stop(void);
 void SV_SpawnMobj(AActor *mobj);
 void STACK_ARGS SV_BroadcastPrintf(int level, const char *fmt, ...);
 void ClientObituary(AActor *self, AActor *inflictor, AActor *attacker);
-void SV_UpdateFrags(player_t &player);
+void SVCMD_UpdateScores(player_t &player);
 void SV_CTFEvent(flag_t f, flag_score_t event, player_t &who);
 void SV_TouchSpecial(AActor *special, player_t *player);
 ItemEquipVal SV_FlagTouch(player_t &player, flag_t f, bool firstgrab);
@@ -998,14 +998,14 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 					}
 				}
 			}
-			SV_UpdateFrags(*splayer);
+			SVCMD_UpdateScores(*splayer);
 		}
 		// [deathz0r] Stats for co-op scoreboard
 		if (sv_gametype == GM_COOP &&
             ((target->flags & MF_COUNTKILL) || (target->type == MT_SKULL)))
 		{
 			P_GiveKills(splayer, 1);
-			SV_UpdateFrags(*splayer);
+			SVCMD_UpdateScores(*splayer);
 		}
 	}
 
@@ -1037,7 +1037,7 @@ void P_KillMobj(AActor *source, AActor *target, AActor *inflictor, bool joinkill
 		// [Fly] - No, it's not cooler
 		// target->player->cheats = CF_CHASECAM;
 
-		SV_UpdateFrags(*tplayer);
+		SVCMD_UpdateScores(*tplayer);
 
 		target->flags &= ~MF_SOLID;
 		target->player->playerstate = PST_DEAD;

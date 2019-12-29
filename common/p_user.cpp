@@ -1102,5 +1102,29 @@ player_s::~player_s()
 {
 }
 
+//
+// ResetPlayerStats
+// Reset Scores, Statistics, and Powerups of a player.
+//
+void player_s::ResetPlayerStats()
+{
+	int i;
+
+	fragcount = 0;
+	itemcount = 0;
+	secretcount = 0;
+	deathcount = 0;
+	killcount = 0;
+	points = 0;
+
+	for (i = 0; i < NUMPOWERS; i++)
+		powers[i] = false;
+
+	// [AM] If sv_keepkeys is on, players might still be carrying keys, so
+	//      make sure they're gone.
+	for (i = 0; i < NUMCARDS; i++)
+		cards[i] = false;
+}
+
 VERSION_CONTROL (p_user_cpp, "$Id$")
 

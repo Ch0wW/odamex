@@ -124,6 +124,8 @@ public:
 				playerstate == PST_ENTER;
 	}
 
+	void ResetPlayerStats(); // Reset Statistics and a few powerups.
+
 	// player identifier on server
 	byte		id;
 

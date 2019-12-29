@@ -58,6 +58,7 @@
 #include "s_sndseq.h"
 #include "sc_man.h"
 #include "sv_main.h"
+#include "sv_commands.h"
 #include "sv_maplist.h"
 #include "sv_vote.h"
 #include "v_video.h"
@@ -631,15 +632,11 @@ void G_DoResetLevel(bool full_reset)
 		// Clear global goals.
 		for (size_t i = 0; i < NUMTEAMS; i++)
 			TEAMpoints[i] = 0;
+
 		// Clear player information.
 		for (it = players.begin();it != players.end();++it)
 		{
-			it->fragcount = 0;
-			it->itemcount = 0;
-			it->secretcount = 0;
-			it->deathcount = 0;
-			it->killcount = 0;
-			it->points = 0;
+			it->ResetPlayerStats();		
 			it->joinafterspectatortime = level.time;
 
 			// [AM] Only touch ready state if warmup mode is enabled.
@@ -737,31 +734,13 @@ void G_DoLoadLevel (int position)
 		if (it->ingame() && it->playerstate == PST_DEAD)
 			it->playerstate = PST_REBORN;
 
-		// [AM] If sv_keepkeys is on, players might still be carrying keys, so
-		//      make sure they're gone.
-		for (size_t j = 0; j < NUMCARDS; j++)
-			it->cards[j] = false;
-
-		it->fragcount = 0;
-		it->itemcount = 0;
-		it->secretcount = 0;
-		it->deathcount = 0; // [Toke - Scores - deaths]
-		it->killcount = 0; // [deathz0r] Coop kills
-		it->points = 0;
+		it->ResetPlayerStats();	// Reset player statistics.
 
 		// [AM] Only touch ready state if warmup mode is enabled.
-		if (sv_warmup)
-		{
+		if (sv_warmup) {
 			it->ready = false;
 			it->timeout_ready = 0;
-
-			// [AM] Make sure the clients are updated on the new ready state
-			for (Players::iterator pit = players.begin();pit != players.end();++pit)
-			{
-				MSG_WriteMarker(&(pit->client.reliablebuf), svc_readystate);
-				MSG_WriteByte(&(pit->client.reliablebuf), it->id);
-				MSG_WriteBool(&(pit->client.reliablebuf), false);
-			}
+			SVCMD_BroadcastReadyStatus(it->id, it->ready);	// [AM] Make sure the clients are updated on the new ready state
 		}
 	}
 
