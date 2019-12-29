@@ -798,37 +798,9 @@ void SV_Sound (fixed_t x, fixed_t y, byte channel, const char *name, byte attenu
 	}
 }
 
-//
-// SV_SendUserInfo
-//
-void SV_SendUserInfo (player_t &player, client_t* cl)
-{
-	player_t *p = &player;
 
-	MSG_WriteMarker	(&cl->reliablebuf, svc_userinfo);
-	MSG_WriteByte	(&cl->reliablebuf, p->id);
-	MSG_WriteString (&cl->reliablebuf, p->userinfo.netname.c_str());
-	MSG_WriteByte	(&cl->reliablebuf, p->userinfo.team);
-	MSG_WriteLong	(&cl->reliablebuf, p->userinfo.gender);
 
-	for (int i = 3; i >= 0; i--)
-		MSG_WriteByte(&cl->reliablebuf, p->userinfo.color[i]);
 
-	// [SL] place holder for deprecated skins
-	MSG_WriteString	(&cl->reliablebuf, "");
-
-	MSG_WriteShort	(&cl->reliablebuf, time(NULL) - p->JoinTime);
-}
-
-/**
-Spreads a player's userinfo to every client.
-@param player Player to parse info for.
- */
-void SV_BroadcastUserInfo(player_t &player)
-{
-	for (Players::iterator it = players.begin();it != players.end();++it)
-		SV_SendUserInfo(player, &(it->client));
-}
 
 /**
  * Stores a players userinfo.
@@ -1554,7 +1526,7 @@ void SV_ClientFullUpdate(player_t &pl)
 		if (it->mo)
 			SV_AwarenessUpdate(pl, it->mo);
 
-		SV_SendUserInfo(*it, cl);
+		SVCMD_SendUserInfo(*it, cl);
 
 		if (cl->reliablebuf.cursize >= 600)
 			if (!SV_SendPacket(pl))
@@ -1954,7 +1926,7 @@ void SV_ConnectClient()
 		if (sv_waddownload)
 		{
 			player->playerstate = PST_DOWNLOAD;
-			SV_BroadcastUserInfo(*player);
+			SVCMD_BroadcastUserInfo(*player);
 			SV_BroadcastPrintf(PRINT_HIGH, "%s has connected. (downloading)\n", player->userinfo.netname.c_str());
 
 			// send the client the scores and list of other clients
@@ -1978,7 +1950,7 @@ void SV_ConnectClient()
 		return;
 	}
 
-	SV_BroadcastUserInfo(*player);
+	SVCMD_BroadcastUserInfo(*player);
 	player->ResetPlayerStats();		// Reset some player statistics, just in case of.
 	player->playerstate = PST_ENTER;
 
@@ -3998,7 +3970,7 @@ void SV_ParseCommands(player_t &player)
 		case clc_userinfo:
 			if (!SV_SetupUserInfo(player))
 				return;
-			SV_BroadcastUserInfo(player);
+			SVCMD_BroadcastUserInfo(player);
 			break;
 
 		case clc_getplayerinfo:

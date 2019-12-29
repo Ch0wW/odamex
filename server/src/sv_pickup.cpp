@@ -34,6 +34,7 @@
 #include "d_player.h"
 #include "m_random.h"
 #include "sv_main.h"
+#include "sv_commands.h"
 #include "p_local.h"
 
 EXTERN_CVAR(sv_gametype)
@@ -102,9 +103,7 @@ bool Pickup_DistributePlayers(size_t num_players, std::string &error) {
 
 		SV_ForceSetTeam(player, dest_team);
 		SV_CheckTeam(player);
-		for (Players::iterator pit = players.begin();pit != players.end();++pit) {
-			SV_SendUserInfo(player, &(pit->client));
-		}
+		SVCMD_BroadcastUserInfo(player);	// Update the new info to everyone
 
 		if (dest_team == TEAM_BLUE) {
 			dest_team = TEAM_RED;

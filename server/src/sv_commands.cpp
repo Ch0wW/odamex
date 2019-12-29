@@ -63,7 +63,6 @@
 CHAT FUNCTIONS
 =============================
 */
-
 void SVCMD_PrintMessageToPlayer(client_t *cl, int level, std::string message)
 {
 	MSG_WriteMarker(&cl->reliablebuf, svc_print);
@@ -123,7 +122,6 @@ void SVCMD_BroadcastReadyStatus(int playerid, bool newstatus)
 SPECTATOR STATUS FUNCTIONS
 =============================
 */
-
 void SVCMD_SetSpectatorStatus(client_t *cl, int playerid, bool newstatus)
 {
 	MSG_WriteMarker(&cl->reliablebuf, svc_spectate);
@@ -166,7 +164,6 @@ void SVCMD_BroadcastIntermissionReadyStatus(int playerid, bool newstatus)
 PING FUNCTIONS
 =============================
 */
-
 void SVCMD_SendPingRequest(client_t* cl)
 {
 	if (!P_AtInterval((3 * TICRATE) - 5))	// 5 tic less
@@ -190,4 +187,35 @@ void SVCMD_UpdatePlayersPing(client_t* cl)
 		MSG_WriteByte(&cl->reliablebuf, it->id);  // player
 		MSG_WriteLong(&cl->reliablebuf, it->ping);
 	}
+}
+
+
+/*
+=============================
+USERINFO FUNCTIONS
+=============================
+*/
+void SVCMD_SendUserInfo(player_t &player, client_t* cl)
+{
+	player_t *p = &player;
+
+	MSG_WriteMarker(&cl->reliablebuf, svc_userinfo);
+	MSG_WriteByte(&cl->reliablebuf, p->id);
+	MSG_WriteString(&cl->reliablebuf, p->userinfo.netname.c_str());
+	MSG_WriteByte(&cl->reliablebuf, p->userinfo.team);
+	MSG_WriteLong(&cl->reliablebuf, p->userinfo.gender);
+
+	for (int i = 3; i >= 0; i--)
+		MSG_WriteByte(&cl->reliablebuf, p->userinfo.color[i]);
+
+	// [SL] place holder for deprecated skins
+	MSG_WriteString(&cl->reliablebuf, "");
+
+	MSG_WriteShort(&cl->reliablebuf, time(NULL) - p->JoinTime);
+}
+
+void SVCMD_BroadcastUserInfo(player_t &player)
+{
+	for (Players::iterator it = players.begin(); it != players.end(); ++it)
+		SVCMD_SendUserInfo(player, &(it->client));
 }
