@@ -1286,7 +1286,7 @@ void WI_drawStats (void)
     WI_drawTime(cnt_time, 160 - SP_TIMEX, SP_TIMEY);
 
 	// Only draw PAR times if we're sure the mapinfo includes one.
-	if (wbs->partime > 0)	
+	if (wbs->partime > 0)
     {
     	screen->DrawPatchClean(par, SP_TIMEX + 160, SP_TIMEY);
     	WI_drawTime(cnt_par, 320 - SP_TIMEX, SP_TIMEY);
@@ -1612,6 +1612,8 @@ void WI_unloadData (void)
 
 void WI_Drawer (void)
 {
+	C_MidPrint(NULL);	// Don't midprint anything during intermission
+
 	// If the background screen has been freed, then we really shouldn't
 	// be in here. (But it happens anyway.)
 	if (background_surface)
