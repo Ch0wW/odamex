@@ -39,6 +39,7 @@
 enum ELevelFlags
 {
 	LEVEL_NOINTERMISSION 	= 0x00000001u,
+	LEVEL_EPISODEENDHACK	= 0x00000002u,	// Ch0wW : UGLY HACK UNTIL SOMEONE FINDS A WAY NOT TO SKIP THE EPISODES
 	LEVEL_DOUBLESKY			= 0x00000004u,
 	LEVEL_NOSOUNDCLIPPING	= 0x00000008u,
 
@@ -68,7 +69,6 @@ enum ELevelFlags
 	LEVEL_CHANGEMAPCHEAT	= 0x40000000u,	// Don't display cluster messages
 	LEVEL_VISITED			= 0x80000000u,	// Used for intermission map
 };
-
 
 struct acsdefered_s;
 class FBehavior;
