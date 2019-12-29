@@ -1813,14 +1813,6 @@ bool SV_CheckClientVersion(client_t *cl, Players::iterator it)
 	return AllowConnect;
 }
 
-void SV_InitPlayerEnterState(player_s* player)
-{
-	player->fragcount = 0;
-	player->killcount = 0;
-	player->points = 0;
-	player->playerstate = PST_ENTER;
-}
-
 //
 //	SV_ConnectClient
 //
@@ -1987,7 +1979,8 @@ void SV_ConnectClient()
 	}
 
 	SV_BroadcastUserInfo(*player);
-	SV_InitPlayerEnterState(player);
+	player->ResetPlayerStats();		// Reset some player statistics, just in case of.
+	player->playerstate = PST_ENTER;
 
 	if (!step_mode) {
 		player->spectator = true;
@@ -3568,7 +3561,8 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 			if (player.mo)
 				P_KillMobj(NULL, player.mo, NULL, true);
 
-			SV_InitPlayerEnterState(&player);
+			player.ResetPlayerStats();	
+			player.playerstate = PST_ENTER;
 			SVCMD_UpdateScores(player);
 
 			// [AM] Set player unready if we're in warmup mode.

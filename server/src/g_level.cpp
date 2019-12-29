@@ -636,15 +636,11 @@ void G_DoResetLevel(bool full_reset)
 		// Clear global goals.
 		for (size_t i = 0; i < NUMTEAMS; i++)
 			TEAMpoints[i] = 0;
+
 		// Clear player information.
 		for (it = players.begin();it != players.end();++it)
 		{
-			it->fragcount = 0;
-			it->itemcount = 0;
-			it->secretcount = 0;
-			it->deathcount = 0;
-			it->killcount = 0;
-			it->points = 0;
+			it->ResetPlayerStats();		
 			it->joinafterspectatortime = level.time;
 
 			// [AM] Only touch ready state if warmup mode is enabled.
@@ -742,17 +738,7 @@ void G_DoLoadLevel (int position)
 		if (it->ingame() && it->playerstate == PST_DEAD)
 			it->playerstate = PST_REBORN;
 
-		// [AM] If sv_keepkeys is on, players might still be carrying keys, so
-		//      make sure they're gone.
-		for (size_t j = 0; j < NUMCARDS; j++)
-			it->cards[j] = false;
-
-		it->fragcount = 0;
-		it->itemcount = 0;
-		it->secretcount = 0;
-		it->deathcount = 0; // [Toke - Scores - deaths]
-		it->killcount = 0; // [deathz0r] Coop kills
-		it->points = 0;
+		it->ResetPlayerStats();	// Reset player statistics.
 
 		// [AM] Only touch ready state if warmup mode is enabled.
 		if (sv_warmup) {
