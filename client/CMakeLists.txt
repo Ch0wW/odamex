@@ -51,10 +51,16 @@ if (GCONSOLE)
     file(GLOB CLIENT_HEADERS ${CLIENT_HEADERS} psvita/*.h)
     file(GLOB CLIENT_SOURCES ${CLIENT_SOURCES} psvita/*.cpp)
   endif()
+
+#DiscordRPC Library
+if (USE_DISCORDRPC AND NOT GCONSOLE)
+  set(DISCORDRPC_DIR ../libraries/discord-rpc)
+  set(DISCORDRPC_STATIC_LIBRARIES discord-rpc)
+  message(STATUS "Discord-RPC will be statically linked.")
 endif()
 
 # git describe
-set_source_files_properties(${COMMON_DIR}/version.cpp PROPERTIES COMPILE_FLAGS -DGIT_DESCRIBE=\\"${GIT_DESCRIBE}\\")
+set_source_files_properties(${COMMON_DIR}/version.cpp PROPERTIES COMPILE_FLAGS -DGIT_DESCRIBE=${GIT_DESCRIBE})
 
 # Platform definitions
 define_platform()
@@ -72,6 +78,10 @@ if (NOT GCONSOLE)
   include_directories(${TEXTSCREEN_DIR})
   add_library(${TEXTSCREEN_LIBRARY} STATIC ${TEXTSCREEN_SOURCES} ${TEXTSCREEN_HEADERS})
   message(STATUS "Textscreen will be statically linked.")
+endif()
+
+if (USE_DISCORDRPC)
+  add_definitions(-DUSE_DISCORDRPC)
 endif()
 
 # Make sure we don't find libraries that are in Program Files/Odamex
@@ -238,6 +248,10 @@ if(SDL_VERSION)
   if(ENABLE_PORTMIDI)
     target_link_libraries(odamex ${PORTMIDI_LIBRARY})
   endif()
+
+  if (USE_DISCORDRPC)
+  target_link_libraries(odamex ${DISCORDRPC_STATIC_LIBRARIES})
+endif()
 
   if(WIN32)
     target_link_libraries(odamex winmm wsock32 Shlwapi)

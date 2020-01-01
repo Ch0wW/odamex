@@ -68,6 +68,7 @@
 #include "g_warmup.h"
 #include "v_text.h"
 #include "hu_stuff.h"
+#include "discord.h"
 #include "p_acs.h"
 #include "m_cheat.h"
 
@@ -168,6 +169,8 @@ std::set<byte> teleported_players;
 std::map<unsigned short, SectorSnapshotManager> sector_snaps;
 
 EXTERN_CVAR (sv_weaponstay)
+EXTERN_CVAR (sv_maxplayers)
+EXTERN_CVAR (sv_hostname)
 
 EXTERN_CVAR (cl_predictsectors)
 
@@ -189,6 +192,20 @@ EXTERN_CVAR (r_forceteamcolor)
 static argb_t enemycolor, teamcolor;
 
 void P_PlayerLeavesGame(player_s* player);
+
+char *CL_GetGamePlayName()
+{
+	if (sv_gametype == GM_DM)
+		return sv_maxplayers == 2 ? "Duel" : "DM";
+	else if (sv_gametype == GM_TEAMDM)
+		return "TDM";
+	else if (sv_gametype == GM_CTF)
+		return "CTF";
+	else if (sv_gametype == GM_COOP)
+		return "Coop";
+
+	return "Solo";
+}
 
 //
 // CL_ShadePlayerColor
@@ -3551,6 +3568,9 @@ void CL_Spectate()
 
 	if (&player == &consoleplayer())
 	{
+		std::ostringstream details;
+		details << "Playing " << CL_GetGamePlayName();
+
 		R_ForceViewWindowResize();		// toggline spectator mode affects status bar visibility
 
 		if (player.spectator)
@@ -3558,13 +3578,16 @@ void CL_Spectate()
 			player.playerstate = PST_LIVE;				// Resurrect dead spectators
 			player.cheats |= CF_FLY;					// Make players fly by default
 			player.deltaviewheight = 1000 << FRACBITS;	// GhostlyDeath -- Sometimes if the player spectates while he is falling down he squats
-
+			discord.SetIngameState(DiscordRPCStatus::DISCORD_SPECTATING, details.str());
+			
 			movingsectors.clear(); // Clear all moving sectors, otherwise client side prediction will not move active sectors
 		}
 		else
 		{
 			displayplayer_id = consoleplayer_id; // get out of spynext
 			player.cheats &= ~CF_FLY;	// remove flying ability
+
+			discord.SetWarmupState(warmup.get_status(), details.str());	// Instantly updates Discord status according to game and game packets.
 		}
 
 		CL_RebuildAllPlayerTranslations();
@@ -3592,9 +3615,12 @@ void CL_WarmupState()
 	{
 		// Read an extra countdown number off the wire
 		short count = MSG_ReadShort();
-		std::ostringstream buffer;
+		std::ostringstream buffer, details;
 		buffer << "Match begins in " << count << "...";
 		C_GMidPrint(buffer.str().c_str(), CR_GREEN, 0);
+
+		details << CL_GetGamePlayName() << " on " << level.level_name;
+		discord.SetState(buffer.str(), details.str());	// ToDo: improve it with the gamemode.
 	}
 	else
 	{

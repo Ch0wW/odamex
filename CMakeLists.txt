@@ -20,6 +20,7 @@ option(BUILD_MASTER "Build master server target" 1)
 option(BUILD_ODALAUNCH "Build odalaunch target" 1)
 cmake_dependent_option( ENABLE_PORTMIDI "Enable portmidi support" 1 BUILD_CLIENT 0 )
 cmake_dependent_option( USE_MINIUPNP "Build with UPnP support" 1 BUILD_SERVER 0 )
+cmake_dependent_option( USE_DISCORDRPC "Build with Discord RPC support" 1 BUILD_SERVER 0 )
 
 project(Odamex)
 cmake_minimum_required(VERSION 2.8)
@@ -158,6 +159,10 @@ if(SWITCH_LIBNX)
    include_directories("$ENV{DEVKITPRO}/libnx/include")
    include_directories("$ENV{PORTLIBS_PREFIX}/include")
    include_directories("libraries/sse2neon")
+endif()
+
+if (USE_DISCORDRPC)
+  add_subdirectory(libraries/discord-rpc)
 endif()
 
 # Subdirectories for Odamex projects

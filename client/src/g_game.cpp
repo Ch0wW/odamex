@@ -66,6 +66,7 @@
 #include "cl_demo.h"
 #include "gi.h"
 #include "hu_mousegraph.h"
+#include "discord.h"
 
 #ifdef _XBOX
 #include "i_xbox.h"
@@ -943,6 +944,7 @@ void G_Ticker (void)
 
 			gamestate = GS_FULLCONSOLE;
 			C_FullConsole();
+			discord.SetState(DiscordRPCStatus::DISCORD_INMENU, "");
 
 			gameaction = ga_nothing;
 			break;

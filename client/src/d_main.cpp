@@ -90,6 +90,7 @@
 #include "stats.h"
 #include "p_ctf.h"
 #include "cl_main.h"
+#include "discord.h"
 
 #include "res_texture.h"
 #include "w_ident.h"
@@ -974,6 +975,8 @@ void D_DoomMain()
 	{
 		C_HideConsole();
 		D_StartTitle();		// start up intro loop
+
+		discord.SetState(DiscordRPCStatus::DISCORD_INMENU, "");
 
 		if (gamemode == commercial_bfg) // DOOM 2 BFG Edtion
 			AddCommandString("menu_main");
