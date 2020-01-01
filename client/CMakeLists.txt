@@ -51,6 +51,7 @@ if (GCONSOLE)
     file(GLOB CLIENT_HEADERS ${CLIENT_HEADERS} psvita/*.h)
     file(GLOB CLIENT_SOURCES ${CLIENT_SOURCES} psvita/*.cpp)
   endif()
+endif()
 
 #DiscordRPC Library
 if (USE_DISCORDRPC AND NOT GCONSOLE)
