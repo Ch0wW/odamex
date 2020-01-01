@@ -38,7 +38,7 @@ public:
 	void SetState(discord_state_s state, std::string details, discord_logotype_s logotype = DLOGO_LARGEPIC, std::string logoname = "odamex-logo");
 	void SetIngameState(discord_state_s state, std::string details, discord_logotype_s logotype = DLOGO_LARGEPIC, std::string logoname = "odamex-logo");	// Ch0wW: maybe a better way to do it ?
 
-	void DiscordRPCStatus::SetWarmupState(Warmup::status_t, std::string details);
+	void SetWarmupState(Warmup::status_t, std::string details);
 
 private:
 

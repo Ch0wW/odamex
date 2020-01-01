@@ -193,7 +193,7 @@ static argb_t enemycolor, teamcolor;
 
 void P_PlayerLeavesGame(player_s* player);
 
-char *CL_GetGamePlayName()
+const char *CL_GetGamePlayName()
 {
 	if (sv_gametype == GM_DM)
 		return sv_maxplayers == 2 ? "Duel" : "DM";

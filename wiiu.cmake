@@ -30,6 +30,7 @@ set (BUILD_SERVER 0)
 set (BUILD_MASTER 0)
 set (BUILD_ODALAUNCH 0)
 set (USE_MINIUPNP 0)
+set (USE_DISCORDRPC 0)
 set (ENABLE_PORTMIDI 0)
 
 # This is a flag meaning we're compiling for a console
