@@ -1078,16 +1078,7 @@ ISDL20TextureWindowSurfaceManager::ISDL20TextureWindowSurfaceManager(
 			break;
 	}
 
-	uint32_t renderer_flags = SDL_RENDERER_ACCELERATED;
-	if (vsync)
-		renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
-
-#if defined(__WIIU__)
-	renderer_flags = SDL_RENDERER_SOFTWARE;	// Just to make sure...
-#endif
-
-	mSDLRenderer = SDL_CreateRenderer(mWindow->mSDLWindow, -1, renderer_flags);
-
+	mSDLRenderer = createRenderer(vsync);
 	if (mSDLRenderer == NULL)
 		I_FatalError("I_InitVideo: unable to create SDL2 renderer: %s\n", SDL_GetError());
 
@@ -1154,6 +1145,25 @@ ISDL20TextureWindowSurfaceManager::~ISDL20TextureWindowSurfaceManager()
 		SDL_DestroyTexture(mSDLTexture);
 	if (mSDLRenderer)
 		SDL_DestroyRenderer(mSDLRenderer);
+}
+
+
+//
+// ISDL20TextureWindowSurfaceManager::createRenderer
+//
+SDL_Renderer* ISDL20TextureWindowSurfaceManager::createRenderer(bool vsync) const
+{
+	const char* driver = mWindow->getRendererDriver();
+
+	uint32_t renderer_flags = 0;
+	if (strncmp(driver, "software", strlen(driver)) == 0)
+		renderer_flags |= SDL_RENDERER_SOFTWARE;
+	else
+		renderer_flags |= SDL_RENDERER_ACCELERATED;
+	if (vsync)
+		renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
+
+	return SDL_CreateRenderer(mWindow->mSDLWindow, -1, renderer_flags);
 }
 
 
@@ -1236,11 +1246,8 @@ ISDL20Window::ISDL20Window(uint16_t width, uint16_t height, uint8_t bpp, bool fu
 	window_flags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP;	// Always include it for consoles
 #endif
 
-	// Reduce the flickering on start up for the opengl driver on Windows
-	#ifdef _WIN32
-	if (strncmp(driver_name, "opengl", strlen(driver_name)) == 0)
+	if (strncmp(driver_name, "open", 4) == 0)
 		window_flags |= SDL_WINDOW_OPENGL;
-	#endif
 
 	// don't need this on the Switch, we're always fullscreen
 	#if !defined(GCONSOLE)
@@ -1286,19 +1293,36 @@ ISDL20Window::~ISDL20Window()
 //
 void ISDL20Window::setRendererDriver()
 {
-#ifdef __WIIU__
-	const char* drivers[] = {"wiiu", ""};
-#elif __PSVITA__
-	const char* drivers[] = {"vita", "opengl", ""};
-#else
+	// Preferred ordering of drivers
 	const char* drivers[] = {"direct3d", "opengl", "opengles2", "opengles", "software", ""};
-#endif
 
 	for (int i = 0; drivers[i][0] != '\0'; i++)
 	{
-		if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, drivers[i]))
-			break;
+		const char* driver = drivers[i];
+		if (isRendererDriverAvailable(driver))
+		{
+			SDL_SetHint(SDL_HINT_RENDER_DRIVER, driver);
+			return;
+		}
 	}
+}
+
+
+//
+// ISDL20Window::isRendererDriverAvailable
+//
+bool ISDL20Window::isRendererDriverAvailable(const char* driver) const
+{
+	SDL_RendererInfo info;
+	int num_drivers = SDL_GetNumRenderDrivers();
+
+	for (int i = 0; i < num_drivers; i++)
+	{
+		SDL_GetRenderDriverInfo(i, &info);
+		if (strncmp(info.name, driver, strlen(driver)) == 0)
+			return true;
+	}
+	return false;
 }
 
 
