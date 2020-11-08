@@ -45,6 +45,8 @@ if (SWITCH_LIBNX)
 	include("switch.cmake" REQUIRED)  # Nintendo Switch
 elseif(VWII)
   include("wii.cmake" REQUIRED)     # Wii/vWii
+elseif(PSVITA)
+  include("psvita.cmake" REQUIRED)  # PS Vita
 endif()
 
 # identify the target CPU
@@ -167,6 +169,8 @@ macro(define_platform)
     include_directories("$ENV{DEVKITPRO}/libogc/include")
     include_directories("$ENV{DEVKITPRO}/libogc/include/ogc")
     include_directories("$ENV{PORTLIBS_PREFIX}/include")
+  elseif(PSVITA)
+    add_definitions(-D__PSVITA__ -DUNIX -DGCONSOLE)
   elseif(UNIX)
     add_definitions(-DUNIX)
     find_package(X11)
