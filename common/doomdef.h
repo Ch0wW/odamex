@@ -78,6 +78,7 @@ enum gameplatform_t
 	PF_XBOX,
 	PF_WII,			//	Wii/vWii
 	PF_SWITCH,		// 	Nintendo Switch
+	PF_PSVITA,		// 	Playstation Vita
 	PF_UNKNOWN,		//	Unknown platform yet
 };
 

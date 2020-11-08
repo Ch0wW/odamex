@@ -88,6 +88,8 @@
 
 #ifdef GEKKO
 #include "i_wii.h"
+#elif definied(__PSVITA__)
+#include "i_psvita.h"
 #endif
 
 #ifdef _XBOX
@@ -161,6 +163,8 @@ void D_SetPlatform(void)
 		platform = PF_WII;
 	#elif __SWITCH__
 		platform = PF_SWITCH;
+	#elif __PSVITA__
+		platform = PF_PSVITA;
 	#else
 		platform = PF_UNKNOWN;
 	#endif

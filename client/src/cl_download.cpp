@@ -311,6 +311,14 @@ static StringTokens GetDownloadDirs()
 	D_AddSearchDir(dirs, getenv("DOOMWADDIR"), PATHLISTSEPCHAR);
 	D_AddSearchDir(dirs, getenv("DOOMWADPATH"), PATHLISTSEPCHAR);
 	D_AddSearchDir(dirs, waddirs.cstring(), PATHLISTSEPCHAR);
+
+	if (platform == PF_PSVITA) {
+		D_AddSearchDir(dirs, "ux0:/data/odamex/wads", PATHLISTSEPCHAR);
+		D_AddSearchDir(dirs, "ux0:/data/chocolate/pwads", PATHLISTSEPCHAR);
+		D_AddSearchDir(dirs, "ux0:/data/odamex", PATHLISTSEPCHAR);
+	}
+
+
 	dirs.push_back(startdir);
 	dirs.push_back(progdir);
 

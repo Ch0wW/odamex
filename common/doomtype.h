@@ -183,7 +183,7 @@ typedef DWORD				BITFIELD;
 
 typedef uint64_t			dtime_t;
 
-#ifdef _WIN32
+#ifdef _WIN32 || defined __PSVITA__
 	#define PATHSEP "\\"
 	#define PATHSEPCHAR '\\'
 	#define PATHLISTSEP ";"

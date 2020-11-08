@@ -467,7 +467,7 @@ static void D_AddPlatformSearchDirs(std::vector<std::string> &dirs)
 //
 static std::string BaseFileSearch(std::string file, std::string ext = "", std::string hash = "")
 {
-	#ifdef _WIN32
+	#ifdef _WIN32 || defined __PSVITA__
 		// absolute path?
 		if (file.find(':') != std::string::npos)
 			return file;
@@ -497,6 +497,12 @@ static std::string BaseFileSearch(std::string file, std::string ext = "", std::s
 	D_AddSearchDir(dirs, getenv("DOOMWADDIR"), separator);
 	D_AddSearchDir(dirs, getenv("DOOMWADPATH"), separator);
 	D_AddSearchDir(dirs, getenv("HOME"), separator);
+
+	if (platform == PF_PSVITA) {
+		D_AddSearchDir(dirs, "ux0:/data/odamex/wads", separator);
+		D_AddSearchDir(dirs, "ux0:/data/chocolate/pwads", separator);
+		D_AddSearchDir(dirs, "ux0:/data/odamex", separator);
+	}
 
 	//[cSc] Add cl_waddownloaddir as default path
 	D_AddSearchDir(dirs, cl_waddownloaddir.cstring(), separator);

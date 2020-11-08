@@ -559,6 +559,12 @@ void I_SetVideoMode(const IVideoMode& requested_mode)
 
 	IWindow* window = I_GetWindow();
 
+#ifdef __PSVITA__		// TODO : FIXME ASAP !!!!!!!!!!!!!!!!!!!!!!!!!!
+	window->setMode(480, 272, 32, true, vsync);	// Have to scale down for now... :/
+#else
+	window->setMode(mode.getWidth(), mode.getHeight(), mode.getBitsPerPixel(), mode.isFullScreen(), vsync);
+#endif
+
 	window->setMode(validated_mode);
 	I_ForceUpdateGrab();
 

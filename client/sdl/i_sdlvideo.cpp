@@ -29,6 +29,12 @@
 #include <functional>
 #include "doomstat.h"
 
+#if defined(__PSVITA__)
+#include "vita2d.h"
+static vita2d_texture *vitatex_hwscreen = NULL;
+static uint8_t *vitatex_datap = NULL;
+#endif
+
 #include "i_video.h"
 #include "v_video.h"
 
@@ -849,6 +855,7 @@ ISDL12VideoSubsystem::~ISDL12VideoSubsystem()
 //
 static void I_AddSDL20VideoModes(IVideoModeList* modelist, int bpp)
 {
+	#ifndef __PSVITA__
 	int display_index = 0;
 	SDL_DisplayMode mode = { SDL_PIXELFORMAT_UNKNOWN, 0, 0, 0, 0 };
 
@@ -873,6 +880,7 @@ static void I_AddSDL20VideoModes(IVideoModeList* modelist, int bpp)
 		modelist->push_back(IVideoMode(width, height, bpp, WINDOW_DesktopFullscreen));
 		modelist->push_back(IVideoMode(width, height, bpp, WINDOW_Fullscreen));
 	}
+	#endif
 }
 
 #ifdef _WIN32
@@ -1019,6 +1027,14 @@ ISDL20TextureWindowSurfaceManager::ISDL20TextureWindowSurfaceManager(
 	if (mSDLRenderer == NULL)
 		I_FatalError("I_InitVideo: unable to create SDL2 renderer: %s\n", SDL_GetError());
 
+#ifdef __PSVITA__
+	vita2d_texture_set_alloc_memblock_type(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW);
+    vita2d_set_vblank_wait(!!(renderer_flags & SDL_RENDERER_PRESENTVSYNC));
+    vita2d_set_clear_color(RGBA8(0, 0, 0, 255));
+
+	vita2d_texture_set_filters(vitatex_hwscreen, SCE_GXM_TEXTURE_FILTER_POINT, SCE_GXM_TEXTURE_FILTER_POINT);
+#endif
+
 	const IVideoMode& native_mode = I_GetVideoCapabilities()->getNativeMode();
 	if (!vid_widescreen && vid_pillarbox && (3 * native_mode.width > 4 * native_mode.height))
 	{
@@ -1054,7 +1070,11 @@ ISDL20TextureWindowSurfaceManager::ISDL20TextureWindowSurfaceManager(
 
 	mSDLTexture = SDL_CreateTexture(
 				mSDLRenderer,
+				#ifdef __PSVITA__
+				SDL_PIXELFORMAT_ABGR8888,
+				#else
 				sdl_mode.format,
+				#endif
 				texture_flags,
 				mWidth, mHeight);
 
@@ -1221,7 +1241,11 @@ ISDL20Window::~ISDL20Window()
 void ISDL20Window::setRendererDriver()
 {
 	// Preferred ordering of drivers
+#elif __PSVITA__
+	const char* drivers[] = {"vita", "opengl", ""};
+#else
 	const char* drivers[] = {"direct3d", "opengl", "opengles2", "opengles", "software", ""};
+#endif
 
 	for (int i = 0; drivers[i][0] != '\0'; i++)
 	{
@@ -1757,7 +1781,12 @@ ISDL20VideoSubsystem::ISDL20VideoSubsystem() : IVideoSubsystem()
 
 	mVideoCapabilities = new ISDL20VideoCapabilities();
 
-	mWindow = new ISDL20Window(640, 480, 8, WINDOW_Windowed, false);
+
+	#ifdef __PSVITA__
+		mWindow = new ISDL20Window(960, 544, 8, WINDOW_Fullscreen, false);
+	#else
+		mWindow = new ISDL20Window(640, 480, 8, WINDOW_Windowed, false);
+	#endif
 }
 
 

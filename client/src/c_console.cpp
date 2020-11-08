@@ -54,6 +54,11 @@
 #include "nx_io.h"
 #endif
 
+#ifdef __PSVITA__
+#include "debugScreen.h"
+#define printf psvDebugScreenPrintf
+#endif
+
 // These functions are standardized in C++11, POSIX standard otherwise
 #if defined(_WIN32) && (__cplusplus <= 199711L)
 #	define vsnprintf _vsnprintf

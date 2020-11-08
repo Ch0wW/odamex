@@ -96,6 +96,10 @@
 
 #ifdef GEKKO
 	#include "i_wii.h"
+#elif __PSVITA__
+	#include "i_psvita.h"
+	#include "debugScreen.h"
+	#define printf psvDebugScreenPrintf
 #endif
 
 #ifndef GCONSOLE // I will add this back later -- Hyper_Eye
@@ -119,7 +123,7 @@ ticcmd_t *I_BaseTiccmd(void)
 
 /* [Russell] - Modified to accomodate a minimal allowable heap size */
 // These values are in megabytes
-#if defined(GCONSOLE) && !defined(__SWITCH__)
+#if defined(GCONSOLE) && !defined(__SWITCH__) && !defined (__PSVITA__)
 size_t def_heapsize = 16;
 #else
 size_t def_heapsize = 128;
@@ -227,7 +231,7 @@ dtime_t I_GetTime()
 	mach_port_deallocate(mach_task_self(), cclock);
 	return mts.tv_sec * 1000LL * 1000LL * 1000LL + mts.tv_nsec;
 
-#elif defined UNIX && !defined GEKKO
+#elif defined UNIX && !defined GEKKO && !defined(__PSVITA__)
 	timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return ts.tv_sec * 1000LL * 1000LL * 1000LL + ts.tv_nsec;
@@ -416,10 +420,13 @@ std::string I_GetCWD ()
 	char tmp[4096] = {0};
 	std::string ret = "./";
 
+	// PSVita doesn't have getcwd command
+	#ifndef __PSVITA__
 	const char *cwd = getcwd(tmp, sizeof(tmp));
 
 	if(cwd)
 		ret = cwd;
+	#endif
 
 	FixPathSeparator(ret);
 
@@ -494,6 +501,9 @@ std::string I_GetUserFileName (const char *file)
 
 	path += PATHSEP;
 	path += file;
+#elif defined(__PSVITA__)
+	std::string path = "ux0:/data/odamex/";
+	path += file;
 #elif defined(__SWITCH__)
 	std::string path = file;
 #else
@@ -549,6 +559,8 @@ std::string I_GetBinaryDir()
 	ret = "D:\\";
 #elif defined GEKKO
 	ret = "sd:/";
+#elif defined(__PSVITA__)
+	return VITA_DATAPATH;
 #elif defined WIN32
 	char tmp[MAX_PATH]; // denis - todo - make separate function
 	GetModuleFileName (NULL, tmp, sizeof(tmp));

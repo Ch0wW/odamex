@@ -964,7 +964,12 @@ BEGIN_COMMAND (logfile)
 {
 	time_t rawtime;
 	struct tm * timeinfo;
+
+	#ifdef __PSVITA__
+	const char* DEFAULT_LOG_FILE = ("ux0:/data/odamex/odavita.log");
+	#else
 	const char* DEFAULT_LOG_FILE = (serverside ? "odasrv.log" : "odamex.log");
+	#endif
 
 	if (LOG.is_open()) {
 		if ((argc == 1 && LOG_FILE == DEFAULT_LOG_FILE) || (argc > 1 && LOG_FILE == argv[1])) {

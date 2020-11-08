@@ -579,7 +579,9 @@ bool I_OpenMouse()
 //
 bool I_InitInput()
 {
-	if (Args.CheckParm("-nomouse"))
+	// Ch0wW: Current SDL2 library for PSVita had this bug making the player SPIIIIIN forever
+	// by simulating a constant turn. Disable that. 
+	if (Args.CheckParm("-nomouse") || platform == PF_PSVITA)
 		nomouse = true;
 
 	atterm(I_ShutdownInput);

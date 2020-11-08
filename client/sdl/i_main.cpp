@@ -41,6 +41,9 @@
 #ifdef __SWITCH__
 #include "nx_system.h"
 #endif
+#ifdef __PSVITA__
+#include "i_psvita.h"
+#endif
 #endif
 
 #include <new>
