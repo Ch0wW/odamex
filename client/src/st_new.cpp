@@ -47,10 +47,28 @@
 #include "p_ctf.h"
 #include "cl_vote.h"
 
-static const char* medipatches[] = {"MEDIA0", "PSTRA0"};
+typedef enum
+{
+	PATCH_NONE = 0,
+	PATCH_NOTINSHAREWARE = 1,
+} patchflags_t;
+
+typedef struct
+{
+	const char* name;
+	patchflags_t flags;
+} hudpatch_t;
+
+static hudpatch_t medipatches[] = {{"MEDIA0", PATCH_NONE},
+                                   {"PSTRA0", PATCH_NOTINSHAREWARE}};
+
 static const char* armorpatches[] = {"ARM1A0", "ARM2A0"};
-static const char* ammopatches[] = {"CLIPA0", "SHELA0", "CELLA0", "ROCKA0"};
-static const char* bigammopatches[] = {"AMMOA0", "SBOXA0", "CELPA0", "BROKA0"};
+static hudpatch_t ammopatches[] = {{"CLIPA0", PATCH_NONE},
+                                   {"SHELA0", PATCH_NONE},
+                                   {"CELLA0", PATCH_NOTINSHAREWARE},
+                                   {"ROCKA0", PATCH_NONE}};
+
+static hudpatch_t bigammopatches[] = {{"AMMOA0", PATCH_NONE}, {"SBOXA0", PATCH_NONE}, {"CELPA0", PATCH_NOTINSHAREWARE},{"BROKA0", PATCH_NONE}};
 
 static int widest_num, num_height;
 static const patch_t* medi[ARRAY_LENGTH(::medipatches)];
@@ -159,15 +177,31 @@ void ST_initNew()
 	}
 
 	for (size_t i = 0; i < ARRAY_LENGTH(::medipatches); i++)
-		CacheHUDSprite(&::medi[i], ::medipatches[i]);
+	{
+		if (::medipatches[i].flags & PATCH_NOTINSHAREWARE && gamemode == shareware)
+			continue;
+		CacheHUDSprite(&::medi[i], ::medipatches[i].name);
+	}
+		
 
 	for (size_t i = 0; i < ARRAY_LENGTH(::armorpatches); i++)
 		CacheHUDSprite(&::armors[i], ::armorpatches[i]);
 
+	// Cache Ammo icons
 	for (size_t i = 0; i < ARRAY_LENGTH(::ammopatches); i++)
 	{
-		CacheHUDSprite(&::ammos[i], ::ammopatches[i]);
-		CacheHUDSprite(&::bigammos[i], ::bigammopatches[i]);
+		if (::ammopatches[i].flags & PATCH_NOTINSHAREWARE && gamemode == shareware)
+			continue;
+		CacheHUDSprite(&::ammos[i], ::ammopatches[i].name);
+	}
+
+	// Cache BigAmmo icons
+	for (size_t i = 0; i < ARRAY_LENGTH(::bigammopatches); i++)
+	{
+		if (::bigammopatches[i].flags & PATCH_NOTINSHAREWARE && gamemode == shareware)
+			continue;
+
+		CacheHUDSprite(&::bigammos[i], ::bigammopatches[i].name); 
 	}
 
 	CacheHUDPatch(&::flagiconteam, "FLAGIT");
@@ -753,7 +787,7 @@ void ZDoomHUD() {
 		int xPos = 20;
 		int yPos = 2;
 
-		if (plyr->powers[pw_strength])
+		if (plyr->powers[pw_strength] && gamemode != shareware)
 		{
 			curr_powerup = medi[1];
 			xPos -= 1;	// the x position of the Berzerk is 1 pixel to the right compared to the Medikit.
@@ -789,7 +823,7 @@ void ZDoomHUD() {
 	// Draw ammo
 	if (ammotype < NUMAMMO)
 	{
-		const patch_t *ammopatch = ammos[weaponinfo[plyr->readyweapon].ammotype];
+		const patch_t* ammopatch = ammos[weaponinfo[plyr->readyweapon].ammotype];
 
 		if (hud_scale)
 			screen->DrawLucentPatchCleanNoMove(ammopatch,
