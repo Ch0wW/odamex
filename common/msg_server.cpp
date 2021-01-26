@@ -205,6 +205,12 @@ void SVC_PlayerMembers(buf_t& b, player_t& player, byte flags)
 		// [AM] Is there any reason we would ever care about itemcount?
 		MSG_WriteVarint(&b, player.secretcount);
 	}
+
+	if (flags & SVC_PM_READY_INTERMISSION)
+	{
+		Printf_Bold("IS IT???? ====> %d\n", player.intermission_ready);
+		MSG_WriteBool(&b, player.intermission_ready);
+	}
 }
 
 /**

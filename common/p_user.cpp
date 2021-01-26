@@ -1109,7 +1109,8 @@ player_s::player_s() :
 	timeout_callvote(0),
 	timeout_vote(0),
 	ready(false),
-	timeout_ready(0),
+	timeout_ready(0), 
+	intermission_ready(false),
 	blend_color(argb_t(0, 0, 0, 0)),
 	doreborn(false),
 	QueuePosition(0),
@@ -1245,6 +1246,7 @@ player_s &player_s::operator =(const player_s &other)
 
 	ready = other.ready;
 	timeout_ready = other.timeout_ready;
+	intermission_ready = other.intermission_ready;
 
 	memcpy(prefcolor, other.prefcolor, 4);
 

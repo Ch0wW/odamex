@@ -620,6 +620,8 @@ void G_DoResetLevel(bool full_reset)
 		{
 			P_ClearPlayerScores(*it, false);
 		}
+
+		it->intermission_ready = false;
 	}
 
 	// [SL] always reset the time (for now at least)
@@ -729,11 +731,17 @@ void G_DoLoadLevel (int position)
 		{
 			it->ready = false;
 			it->timeout_ready = 0;
+			it->intermission_ready = false;
 
 			// [AM] Make sure the clients are updated on the new ready state
 			for (Players::iterator pit = players.begin();pit != players.end();++pit)
 				SVC_PlayerMembers(pit->client.reliablebuf, *it, SVC_PM_READY);
+
+			// [AM] Make sure the clients are updated on the new intermission_ready state
+			for (Players::iterator pit = players.begin(); pit != players.end(); ++pit)
+				SVC_PlayerMembers(pit->client.reliablebuf, *it, SVC_PM_READY_INTERMISSION);
 		}
+
 	}
 
 	// [deathz0r] It's a smart idea to reset the team points

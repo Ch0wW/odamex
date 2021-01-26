@@ -93,6 +93,11 @@
  */
 #define SVC_PM_SCORE (1 << 3)
 
+/**
+ * @brief svc_playermembers: Ready Intermission status.
+ */
+#define SVC_PM_READY_INTERMISSION (1 << 4)
+
 
 extern int   localport;
 extern int   msg_badread;

@@ -44,6 +44,7 @@
 #include "gi.h"
 
 void WI_unloadData(void);
+void CL_SendReadyIntermission();
 
 //
 // Data needed to add patches to full screen intermission pics.
@@ -1354,6 +1355,14 @@ void WI_Ticker (void)
 	if (cl_autoscreenshot && multiplayer && bcnt == (3 * TICRATE))
 	{
 		AddCommandString("screenshot");
+	}
+
+	if (multiplayer && sv_gametype == GM_COOP)
+	{
+		if (consoleplayer().cmd.buttons & BT_ATTACK || consoleplayer().cmd.buttons & BT_USE)
+		{
+			CL_SendReadyIntermission();
+		}
 	}
 }
 

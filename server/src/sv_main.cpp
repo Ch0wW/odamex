@@ -4097,6 +4097,42 @@ static void ReadyCmd(player_t &player)
 }
 
 /**
+ * @brief Toggle a player as ready/unready.
+ *
+ * @param player Player to toggle.
+ */
+static void ReadyCmd_Intermission(player_t& player)
+{
+	if (!validplayer(player))
+		return;
+
+	// If the player is not ingame, he shouldn't be sending us ready packets.
+	if (!player.ingame())
+		return;
+
+	if (gamestate != GS_INTERMISSION)
+		return;
+
+	// Check to see if warmup will allow us to toggle our ready state.
+	if (sv_gametype != GM_COOP)
+	{
+		SV_PlayerPrintf(PRINT_HIGH, player.id,
+		                "You cannot skip the intermission in PvP gamemodes!\n");
+		return;
+	}
+
+	// No need to get intermission ready once again
+	if (player.intermission_ready)
+		return;
+
+	player.intermission_ready = true;
+
+	// Broadcast the new ready state to all connected players.
+	for (Players::iterator it = players.begin(); it != players.end(); ++it)
+		SVC_PlayerMembers(it->client.reliablebuf, player, SVC_PM_READY_INTERMISSION);
+}
+
+/**
  * @brief Send the player a MOTD on demand.
  * 
  * @param player Player who wants the MOTD.
@@ -4135,6 +4171,10 @@ void SV_NetCmd(player_t& player)
 	else if (netargs.at(0) == "ready")
 	{
 		ReadyCmd(player);
+	}
+	else if (netargs.at(0) == "ready_intermission")
+	{
+		ReadyCmd_Intermission(player);
 	}
 	else if (netargs.at(0) == "vote")
 	{

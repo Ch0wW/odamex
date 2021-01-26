@@ -1078,6 +1078,13 @@ BEGIN_COMMAND(netcmd)
 }
 END_COMMAND(netcmd)
 
+void CL_SendReadyIntermission()
+{
+	MSG_WriteMarker(&net_buffer, clc_netcmd);
+	MSG_WriteString(&net_buffer, "intermission_ready");
+	MSG_WriteByte(&net_buffer, 0);
+}
+
 BEGIN_COMMAND (join)
 {
 	//if (P_NumPlayersInGame() >= sv_maxplayers)
@@ -1532,6 +1539,9 @@ void CL_PlayerMembers()
 
 	if (flags & SVC_PM_READY)
 		p.ready = MSG_ReadBool();
+
+	if (flags & SVC_PM_READY_INTERMISSION)
+		p.intermission_ready = MSG_ReadBool();
 
 	if (flags & SVC_PM_LIVES)
 		p.lives = MSG_ReadVarint();

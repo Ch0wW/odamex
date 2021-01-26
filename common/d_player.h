@@ -248,6 +248,7 @@ public:
 	int			timeout_vote;           // [AM] Tic when a player last voted.
 
 	bool		ready;					// [AM] Player is ready.
+	bool		intermission_ready;		// Ch0wW - Intermission ready
 	int			timeout_ready;          // [AM] Tic when a player last toggled his ready state.
 
     byte		prefcolor[4];			// Nes - Preferred color. Server only.
