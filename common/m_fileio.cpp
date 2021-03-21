@@ -129,7 +129,7 @@ void M_FixPathSep(std::string& path)
  */
 std::string M_GetCWD()
 {
-#ifdef __SWITCH__
+#ifdef GCONSOLE
 	return "./";
 #endif
 

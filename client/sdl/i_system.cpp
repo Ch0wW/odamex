@@ -225,7 +225,7 @@ dtime_t I_GetTime()
 	mach_port_deallocate(mach_task_self(), cclock);
 	return mts.tv_sec * 1000LL * 1000LL * 1000LL + mts.tv_nsec;
 
-#elif defined UNIX && !defined GEKKO
+#elif defined UNIX && !defined GCONSOLE
 	timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return ts.tv_sec * 1000LL * 1000LL * 1000LL + ts.tv_nsec;
@@ -872,6 +872,7 @@ std::string I_ConsoleInput (void)
 
 std::string I_ConsoleInput (void)
 {
+#ifndef GCONSOLE
 	std::string ret;
 	static char	 text[1024] = {0};
 	int			 len;
@@ -911,7 +912,7 @@ std::string I_ConsoleInput (void)
 		memset(text, 0, sizeof(text));
 		return ret;
 	}
-
+#endif
 	return "";
 }
 #endif

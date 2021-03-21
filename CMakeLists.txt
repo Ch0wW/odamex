@@ -46,6 +46,8 @@ if (NSWITCH)
 	include("switch.cmake" REQUIRED)  # Nintendo Switch
 elseif(VWII)
   include("wii.cmake" REQUIRED)     # Wii/vWii
+elseif(BUILD_VITA)
+  include("psvita.cmake" REQUIRED)  # Playstation Vita
 endif()
 
 # Ensure that we can use folders in projects.

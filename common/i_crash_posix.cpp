@@ -229,3 +229,16 @@ void I_SetCrashDir(const char* crashdir)
 }
 
 #endif
+
+
+#if defined (__VITA__)
+
+void I_SetCrashCallbacks()
+{
+}
+
+void I_SetCrashDir(const char* crashdir)
+{
+}
+
+#endif

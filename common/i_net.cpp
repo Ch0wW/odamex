@@ -44,6 +44,8 @@
 #else
 #ifdef GEKKO // Wii/GC
 #	include <network.h>
+#elif __VITA__
+	#include <vitasdk.h>
 #else
 #	include <sys/socket.h>
 #	include <netinet/in.h>
@@ -87,6 +89,10 @@ typedef int SOCKET;
 
 #ifdef GEKKO
 #include "i_wii.h"
+#endif
+
+#ifdef __VITA__
+	#include "vita_common.h"
 #endif
 
 #include "minilzo.h"

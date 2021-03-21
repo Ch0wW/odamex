@@ -49,12 +49,18 @@
 #include "m_ostring.h"
 #include "w_wad.h"
 
+#ifdef __VITA__
+#include "vita_common.h"
+#endif
+
 std::string M_GetBinaryDir()
 {
 #if defined(GEKKO)
 	ret = "sd:/";
 #elif defined(__SWITCH__)
 	return "./";
+#elif defined(__VITA__)
+	return VITA_DATAPATH;
 #else
 	std::string ret;
 
@@ -108,7 +114,7 @@ std::string M_GetHomeDir(const std::string& user)
 	const char* envhome = getenv("HOME");
 	std::string home = (envhome != NULL) ? envhome : "";
 
-#ifndef __SWITCH__
+#ifndef GCONSOLE
 	if (!home.length())
 	{
 		// try the uid way
@@ -273,7 +279,7 @@ std::string M_BaseFileSearchDir(std::string dir, const std::string& file,
 bool M_GetAbsPath(const std::string& path, std::string& out)
 {
 
-#ifdef __SWITCH__
+#ifdef GCONSOLE
 	std::string res;
 	StrFormat(res, "%s", path.c_str());
 	out = res;
