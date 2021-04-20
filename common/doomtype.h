@@ -195,6 +195,11 @@ typedef uint64_t			dtime_t;
 	#define PATHLISTSEPCHAR ':'
 #endif
 
+#ifdef __VITA__
+	#define PATHLISTSEP ";"
+	#define PATHLISTSEPCHAR ';'
+#endif
+
 // [RH] This gets used all over; define it here:
 FORMAT_PRINTF(1, 2) int STACK_ARGS Printf(const char* format, ...);
 FORMAT_PRINTF(2, 3) int STACK_ARGS Printf(int printlevel, const char* format, ...);

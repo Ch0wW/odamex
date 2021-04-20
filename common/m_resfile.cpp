@@ -251,6 +251,15 @@ std::vector<std::string> M_FileSearchDirs()
 	dirs.push_back("./wads");
 	#endif
 
+	#ifdef __VITA__
+	dirs.push_back("ux0:/data/odamex");
+	dirs.push_back("ux0:/data/odamex/wads");
+	dirs.push_back("ux0:/chocolate/iwads");
+	dirs.push_back("ux0:/chocolate/pwads");
+	#endif
+
+
+
 	// [AM] Search additional paths based on platform
 	D_AddPlatformSearchDirs(dirs);
 

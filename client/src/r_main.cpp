@@ -623,7 +623,9 @@ void R_Init()
 	R_InitPlanes();
 	R_InitTranslationTables();
 
+#ifndef __VITA__
 	R_InitParticles();	// [RH] Setup particle engine
+#endif
 
 	framecount = 0;
 }

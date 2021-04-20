@@ -708,7 +708,11 @@ bool ISDL12Window::setMode(const IVideoMode& video_mode)
 	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, video_mode.vsync);
 	#endif
 
+#ifdef __VITA__
+SDL_Surface* sdl_surface = SDL_SetVideoMode(960, 544, 32, SDL_FULLSCREEN);
+#else
 	SDL_Surface* sdl_surface = SDL_SetVideoMode(video_mode.width, video_mode.height, video_mode.bpp, flags);
+#endif
 	if (sdl_surface == NULL)
 	{
 		I_FatalError("I_SetVideoMode: unable to set video mode %ux%ux%u (%s): %s\n",
@@ -929,6 +933,11 @@ ISDL20VideoCapabilities::ISDL20VideoCapabilities() :
 	mModeList.push_back(IVideoMode(640, 400, 8, WINDOW_Fullscreen));
 	mModeList.push_back(IVideoMode(640, 480, 8, WINDOW_Fullscreen));
 	mModeList.push_back(IVideoMode(960, 540, 8, WINDOW_Fullscreen));
+#elif __VITA__
+	mModeList.push_back(IVideoMode(960, 544, 8, WINDOW_Fullscreen));
+	mModeList.push_back(IVideoMode(960, 544, 32, WINDOW_Fullscreen));
+	mModeList.push_back(IVideoMode(480, 272, 8, WINDOW_Fullscreen));
+	mModeList.push_back(IVideoMode(480, 272, 32, WINDOW_Fullscreen));
 #endif
 
 	// always add the following windowed modes (if windowed modes are supported)
@@ -1054,7 +1063,11 @@ ISDL20TextureWindowSurfaceManager::ISDL20TextureWindowSurfaceManager(
 
 	mSDLTexture = SDL_CreateTexture(
 				mSDLRenderer,
+	#ifdef __PSVITA__
+				SDL_PIXELFORMAT_ABGR8888,
+				#else
 				sdl_mode.format,
+				#endif
 				texture_flags,
 				mWidth, mHeight);
 
@@ -1221,7 +1234,11 @@ ISDL20Window::~ISDL20Window()
 void ISDL20Window::setRendererDriver()
 {
 	// Preferred ordering of drivers
+#ifdef __VITA__
+	const char* drivers[] = {"VITA gxm"};
+#else
 	const char* drivers[] = {"direct3d", "opengl", "opengles2", "opengles", "software", ""};
+#endif
 
 	for (int i = 0; drivers[i][0] != '\0'; i++)
 	{

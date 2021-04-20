@@ -125,12 +125,18 @@ int vita_usleep(useconds_t usec)
 int odamex_main (unsigned int argc, void *argv){
 	
 	// Initializing stuff
-/*	scePowerSetArmClockFrequency(444);
-	scePowerSetBusClockFrequency(222);
-	scePowerSetGpuClockFrequency(222);
-	scePowerSetGpuXbarClockFrequency(166);*/
 	sceSysmoduleLoadModule(SCE_SYSMODULE_NET); 
 	sceCtrlSetSamplingMode(SCE_CTRL_MODE_ANALOG_WIDE);
+
+	SceAppUtilInitParam appUtilParam;
+	SceAppUtilBootParam appUtilBootParam;
+	SceCommonDialogConfigParam cmnDlgCfgParam;
+	memset(&appUtilParam, 0, sizeof(SceAppUtilInitParam));
+	memset(&appUtilBootParam, 0, sizeof(SceAppUtilBootParam));
+
+	sceAppUtilInit(&appUtilParam, &appUtilBootParam);
+	sceCommonDialogConfigParamInit(&cmnDlgCfgParam);
+
 	//sceAppUtilInit(&(SceAppUtilInitParam){}, &(SceAppUtilBootParam){});
 
 	/*sceTouchSetSamplingState(SCE_TOUCH_PORT_FRONT, 1);
@@ -148,6 +154,15 @@ int odamex_main (unsigned int argc, void *argv){
 
 int main(int argc, char *argv[])
 {
+
+
+
+	// Setting maximum clocks
+	scePowerSetArmClockFrequency(444);
+	scePowerSetBusClockFrequency(222);
+	scePowerSetGpuClockFrequency(222);
+	scePowerSetGpuXbarClockFrequency(166);
+
     // We need a bigger stack to run Odamex, so we create a new thread with a proper stack size
 	SceUID main_thread = sceKernelCreateThread("odamex", odamex_main, 0x40, 0x200000, 0, 0, NULL);
 	if (main_thread >= 0){

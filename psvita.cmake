@@ -16,7 +16,7 @@ message("")
 message("")
 
 # Build type (Release/Debug)
-set (CMAKE_BUILD_TYPE, "Release")
+set (CMAKE_BUILD_TYPE, "Debug")
 
 # Project Settings
 set(VITA_APP_NAME "Odamex for PSVita")
@@ -36,10 +36,10 @@ set (GCONSOLE 1)
 
 # Since it's C++11...
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 
 function (odamex_target_settings_psvita BLOB)
-    add_definitions("-DUNIX -DGCONSOLE -D__VITA__")
+    add_definitions("-DUNIX -DGCONSOLE -D__VITA__ -fpermissive")
 endfunction()
 
 
@@ -72,6 +72,8 @@ target_link_libraries(${PROJECT}
     SceTouch_stub
     SceHid_stub
     SceMotion_stub 
+    ScePower_stub 
+    SceAppUtil_stub
   
     # CURL
     SceIofilemgr_stub
