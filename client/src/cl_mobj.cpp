@@ -105,7 +105,7 @@ void P_SpawnPlayer(player_t& player, mapthing2_t* mthing)
 	mobj->pitch = 0;
 
 	mobj->player = &player;
-	mobj->health = player.health;
+	mobj->health = deh.StartHealth;
 
 	player.fov = 90.0f;
 	player.mo = player.camera = mobj->ptr();
