@@ -43,8 +43,11 @@ set (APP_TITLE "Odamex for Nintendo Switch")
 set (APP_AUTHOR "The Odamex Team")
 set (APP_VERSION "0.9.1")
 
+set( CMAKE_CXX_EXTENSIONS ON )
+
 # Compiler stuff
 set(NACP_TOOL "${DEVKITPRO}/tools/bin/nacptool"  CACHE PATH "nacp-tool")
+set(ELF_STRIP "${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-strip"  CACHE PATH "aarch64-none-elf-strip")
 set(ELF2NRO_TOOL "${DEVKITPRO}/tools/bin/elf2nro"  CACHE PATH "elf2nro")
 
 function (odamex_target_settings_nx _DIRECTORY _FILES)
@@ -63,10 +66,18 @@ macro(odamex_target_postcompile_nx source)
     DEPENDS ${source}
     COMMENT "Generating NACP info for ${source}"
   )
+
+  # Strip executable
+  add_custom_command(OUTPUT ${source}_stripped
+  COMMAND ${ELF_STRIP} -o ${CMAKE_BINARY_DIR}/client/odamex_stripped ${CMAKE_BINARY_DIR}/client/${source}
+  DEPENDS ${source}
+  COMMENT "Stripping data for ${source}"
+)
+
   # NRO
   add_custom_command(OUTPUT ${source}.nro
-    COMMAND ${ELF2NRO_TOOL} ${source} ${CMAKE_BINARY_DIR}/${source}.nro --icon=${CMAKE_SOURCE_DIR}/client/switch/assets/odamex.jpg --nacp=${source}.nacp
-    DEPENDS ${source}.nacp
+    COMMAND ${ELF2NRO_TOOL} ${source}_stripped ${CMAKE_BINARY_DIR}/${source}.nro --icon=${CMAKE_SOURCE_DIR}/client/switch/assets/odamex.jpg --nacp=${source}.nacp
+    DEPENDS ${source}.nacp ${source}_stripped
     COMMENT "Generating NRO ${source}.nro"
   )
   add_custom_target(NRO ALL DEPENDS ${source}.nacp ${source}.nro)
