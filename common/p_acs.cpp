@@ -39,6 +39,7 @@
 #include "i_system.h"
 #include "m_vectors.h"
 #include "p_inter.h"
+#include "g_gametype.h"
 
 #define CLAMPCOLOR(c)	(EColorRange)((unsigned)(c)>CR_UNTRANSLATED?CR_UNTRANSLATED:(c))
 #define LANGREGIONMASK	MAKE_ID(0,0,0xff,0xff)
@@ -62,6 +63,9 @@ struct FBehavior::ArrayInfo
 	int ArraySize;
 	SDWORD *Elements;
 };
+
+EXTERN_CVAR(g_sides)
+EXTERN_CVAR(g_lives)
 
 // Inventory shim for Doom.
 #include "gi.h"
@@ -3118,17 +3122,42 @@ void DLevelScript::RunScript ()
 			break;
 
 		case PCD_GAMETYPE:
-		    if (sv_gametype == 3)
-                PushToStack (GAME_NET_CTF);
-            else if (sv_gametype == 2)
-                PushToStack (GAME_NET_TEAMDEATHMATCH);
-			else if (sv_gametype == 1)
-				PushToStack (GAME_NET_DEATHMATCH);
-			else if (multiplayer)
-				PushToStack (GAME_NET_COOPERATIVE);
-			else
-				PushToStack (GAME_SINGLE_PLAYER);
-			break;
+		    if (sv_gametype == GM_CTF)
+			{
+				if (g_sides)
+					PushToStack(GAME_NET_ATTACKDEFEND);
+				else if (g_lives)
+					PushToStack(GAME_NET_LMSCTF);
+				else
+					PushToStack(GAME_NET_CTF);
+			}
+
+            else if (sv_gametype == GM_TEAMDM)
+			{
+				if (g_lives)
+					PushToStack(GAME_NET_TEAMLMS);
+				else
+					PushToStack(GAME_NET_TEAMDEATHMATCH);
+			}
+
+			else if (sv_gametype == GM_DM)
+			{
+				if (g_lives)
+					PushToStack(GAME_NET_LMS);
+				else
+					PushToStack(GAME_NET_DEATHMATCH);
+			}
+
+			else if (sv_gametype == GM_COOP)
+			{
+				if (!multiplayer)
+					PushToStack(GAME_SINGLE_PLAYER);
+				else if (g_lives)
+					PushToStack(GAME_NET_SURVIVAL);
+				else
+					PushToStack(GAME_NET_COOPERATIVE);
+			}
+				break;
 
 		case PCD_GAMESKILL:
 			PushToStack (sv_skill);
