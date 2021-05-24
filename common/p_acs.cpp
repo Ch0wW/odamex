@@ -55,7 +55,7 @@ struct CallReturn
 static int Stack[STACK_SIZE];
 
 static bool P_GetScriptGoing (AActor *who, line_t *where, int num, int *code,
-	int lineSide, int arg0, int arg1, int arg2, int always, bool delay);
+	int lineSide, int arg0, int arg1, int arg2, int always);
 AActor* P_FindThingById(uint32_t id);
 
 struct FBehavior::ArrayInfo
@@ -1013,17 +1013,16 @@ void FBehavior::StartTypedScripts (WORD type, AActor *activator, int arg0, int a
 		if (ptr->Type == type)
 		{
 			P_GetScriptGoing (activator, NULL, ptr->Number,
-				(int *)(ptr->Address + Data), 0, arg0, arg1, arg2, always, true);
+				(int *)(ptr->Address + Data), 0, arg0, arg1, arg2, always);
 		}
 	}
 }
 
 //---- The ACS Interpreter ----//
 
-
-
 #define NEXTWORD	(LELONG(*pc++))
-#define NEXTBYTE	(fmt==ACS_LittleEnhanced?getbyte(pc):NEXTWORD)
+#define NEXTBYTE	(fmt == ACS_LittleEnhanced ? getbyte(pc) : NEXTWORD)
+#define NEXTSHORT	(fmt == ACS_LittleEnhanced ? getshort(pc) : NEXTWORD)	// Unused for now...
 #define STACK(a)	(Stack[sp - (a)])
 #define PushToStack(a)	(Stack[sp++] = (a))
 
@@ -2064,6 +2063,13 @@ inline int getbyte (int *&pc)
 {
 	int res = *(BYTE *)pc;
 	pc = (int *)((BYTE *)pc+1);
+	return res;
+}
+
+inline int getshort(int*& pc)
+{
+	int res = LESHORT(*(SWORD*)pc);
+	pc = (int*)((BYTE*)pc + 2);
 	return res;
 }
 
@@ -3704,7 +3710,7 @@ void DLevelScript::RunScript ()
 }
 
 static bool P_GetScriptGoing (AActor *who, line_t *where, int num, int *code,
-	int lineSide, int arg0, int arg1, int arg2, int always, bool delay)
+	int lineSide, int arg0, int arg1, int arg2, int always)
 {
 	DACSThinker *controller = DACSThinker::ActiveThinker;
 
@@ -3718,13 +3724,13 @@ static bool P_GetScriptGoing (AActor *who, line_t *where, int num, int *code,
 		return false;
 	}
 
-	new DLevelScript (who, where, num, code, lineSide, arg0, arg1, arg2, always, delay);
+	new DLevelScript (who, where, num, code, lineSide, arg0, arg1, arg2, always);
 
 	return true;
 }
 
 DLevelScript::DLevelScript (AActor *who, line_t *where, int num, int *code, int lineside,
-							int arg0, int arg1, int arg2, int always, bool delay)
+							int arg0, int arg1, int arg2, int always)
 {
 	if (DACSThinker::ActiveThinker == NULL)
 		new DACSThinker;
@@ -3739,15 +3745,8 @@ DLevelScript::DLevelScript (AActor *who, line_t *where, int num, int *code, int 
 	activator = who;
 	activationline = where;
 	lineSide = lineside;
-	if (delay) {
-		// From Hexen: Give the world some time to set itself up before
-		// running open scripts.
-		//script->state = SCRIPT_Delayed;
-		//script->statedata = TICRATE;
-		state = SCRIPT_Running;
-	} else {
-		state = SCRIPT_Running;
-	}
+
+	state = SCRIPT_Running;
 
 	if (!always)
 		DACSThinker::ActiveThinker->RunningScripts[num] = this;
@@ -3788,7 +3787,7 @@ void P_DoDeferedScripts (void)
 				if ((unsigned)def->playernum < MAXPLAYERS && idplayer(def->playernum).ingame())
 					gomo = idplayer(def->playernum).mo;
 
-				P_GetScriptGoing (gomo, NULL, def->script, scriptdata, 0, def->arg0, def->arg1, def->arg2, def->type == acsdefered_t::defexealways, true);
+				P_GetScriptGoing (gomo, NULL, def->script, scriptdata, 0, def->arg0, def->arg1, def->arg2, def->type == acsdefered_t::defexealways);
 
 			} else
 				Printf (PRINT_HIGH,"P_DoDeferredScripts: Unknown script %d\n", def->script);
@@ -3847,7 +3846,7 @@ bool P_StartScript (AActor *who, line_t *where, int script, char *map, int lineS
 		{
 			return P_GetScriptGoing (who, where, script,
 									 scriptdata,
-									 lineSide, arg0, arg1, arg2, always, false);
+									 lineSide, arg0, arg1, arg2, always);
 		}
 		else
 		{

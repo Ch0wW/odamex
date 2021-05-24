@@ -459,7 +459,7 @@ public:
 	};
 
 	DLevelScript (AActor *who, line_t *where, int num, int *code,
-		int lineSide, int arg0, int arg1, int arg2, int always, bool delay);
+		int lineSide, int arg0, int arg1, int arg2, int always);
 
 	void RunScript ();
 
