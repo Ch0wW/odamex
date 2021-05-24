@@ -579,7 +579,7 @@ FBehavior::FBehavior (BYTE *object, int len)
 	NumArrays = 0;
 	Scripts = NULL;
 	Functions = NULL;
-	Arrays = NULL;
+	ArrayStore = NULL;
 	Chunks = NULL;
 
 	if (object[0] != 'A' || object[1] != 'C' || object[2] != 'S')
@@ -707,14 +707,15 @@ FBehavior::FBehavior (BYTE *object, int len)
 		if (chunk != NULL)
 		{
 			NumArrays = LELONG(chunk[1])/8;
-			Arrays = new ArrayInfo[NumArrays];
-			memset (Arrays, 0, sizeof(*Arrays)*NumArrays);
+			ArrayStore = new ArrayInfo[NumArrays];
+			memset(ArrayStore, 0, sizeof(*ArrayStore) * NumArrays);
 			for (i = 0; i < NumArrays; ++i)
 			{
 				level.vars[LELONG(chunk[2+i*2])] = i;
-				Arrays[i].ArraySize = LELONG(chunk[3+i*2]);
-				Arrays[i].Elements = new SDWORD[Arrays[i].ArraySize];
-				memset(Arrays[i].Elements, 0, Arrays[i].ArraySize*sizeof(DWORD));
+				ArrayStore[i].ArraySize = LELONG(chunk[3 + i * 2]);
+				ArrayStore[i].Elements = new SDWORD[ArrayStore[i].ArraySize];
+				memset(ArrayStore[i].Elements, 0,
+				       ArrayStore[i].ArraySize * sizeof(DWORD));
 			}
 		}
 
@@ -724,8 +725,8 @@ FBehavior::FBehavior (BYTE *object, int len)
 			int arraynum = level.vars[LELONG(chunk[2])];
 			if ((unsigned)arraynum < (unsigned)NumArrays)
 			{
-				int initsize = MIN<int> (Arrays[arraynum].ArraySize, (LELONG(chunk[1])-4)/4);
-				SDWORD *elems = Arrays[arraynum].Elements;
+				int initsize = MIN<int> (ArrayStore[arraynum].ArraySize, (LELONG(chunk[1])-4)/4);
+				SDWORD* elems = ArrayStore[arraynum].Elements;
 				for (i = 0; i < initsize; ++i)
 				{
 					elems[i] = LELONG(chunk[3+i]);
@@ -741,18 +742,18 @@ FBehavior::FBehavior (BYTE *object, int len)
 FBehavior::~FBehavior ()
 {
 	// Object file is freed by the zone heap
-	if(Arrays != NULL)
+	if (ArrayStore != NULL)
 	{
 		for (int i = 0; i < NumArrays; ++i)
 		{
-			if (Arrays[i].Elements != NULL)
+			if (ArrayStore[i].Elements != NULL)
 			{
-				delete[] Arrays[i].Elements;
-				Arrays[i].Elements = NULL;
+				delete[] ArrayStore[i].Elements;
+				ArrayStore[i].Elements = NULL;
 			}
 		}
-		delete[] Arrays;
-		Arrays = NULL;
+		delete[] ArrayStore;
+		ArrayStore = NULL;
 	}
 }
 
@@ -789,7 +790,7 @@ int FBehavior::GetArrayVal (int arraynum, int index) const
 {
 	if ((unsigned)arraynum >= (unsigned)NumArrays)
 		return 0;
-	const ArrayInfo *array = &Arrays[arraynum];
+	const ArrayInfo* array = &ArrayStore[arraynum];
 	if ((unsigned)index >= (unsigned)array->ArraySize)
 		return 0;
 	return array->Elements[index];
@@ -799,7 +800,7 @@ void FBehavior::SetArrayVal (int arraynum, int index, int value)
 {
 	if ((unsigned)arraynum >= (unsigned)NumArrays)
 		return;
-	const ArrayInfo *array = &Arrays[arraynum];
+	const ArrayInfo* array = &ArrayStore[arraynum];
 	if ((unsigned)index >= (unsigned)array->ArraySize)
 		return;
 	array->Elements[index] = value;
@@ -3157,7 +3158,8 @@ void DLevelScript::RunScript ()
 				else
 					PushToStack(GAME_NET_COOPERATIVE);
 			}
-				break;
+
+			break;
 
 		case PCD_GAMESKILL:
 			PushToStack (sv_skill);

@@ -92,7 +92,7 @@ private:
 	int NumScripts;
 	BYTE *Functions;
 	int NumFunctions;
-	ArrayInfo *Arrays;
+	ArrayInfo *ArrayStore;
 	int NumArrays;
 	DWORD LanguageNeutral;
 	DWORD Localized;
