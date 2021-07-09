@@ -659,6 +659,21 @@ void G_FragsCheckEndGame()
 	}
 }
 
+EXTERN_CVAR(g_exitrun)
+
+void G_ExitRunEndGame(player_t &player)
+{
+	if (!::serverside)
+		return;
+
+	if (!g_exitrun)
+		return;
+
+	GiveWins(player, 1);
+	::levelstate.setWinner(WinInfo::WIN_PLAYER, player.id);
+	::levelstate.endRound();
+}
+
 /**
  * @brief Check for an endgame condition on team frags.
  */

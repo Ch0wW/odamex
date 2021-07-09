@@ -280,6 +280,8 @@ void LevelState::readyToggle()
 	}
 }
 
+EXTERN_CVAR(g_exitrun)
+
 /**
  * @brief Depending on if we're using rounds or not, either kick us to an
  *        "end of round" state or just end the game right here.
@@ -296,6 +298,10 @@ void LevelState::endRound()
 	}
 	else if (sv_gametype == GM_COOP)
 	{
+
+		if (g_exitrun)
+			setState(LevelState::ENDGAME_COUNTDOWN);
+		else
 		// A normal coop exit bypasses LevelState completely, so if we're
 		// here, the mission was a failure and needs to be restarted.
 		setState(LevelState::WARMUP);

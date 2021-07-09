@@ -240,6 +240,9 @@ CVAR_RANGE(g_coopthingfilter, "0", "Removes cooperative things of the map. Value
            CVARTYPE_BYTE, CVAR_SERVERARCHIVE | CVAR_SERVERINFO | CVAR_NOENABLEDISABLE | CVAR_LATCH,
            0.0f, 2.0f)
 
+CVAR(g_exitrun, "1", "After a match winners stay in the game, losers get spectated.",
+     CVARTYPE_BOOL, CVAR_SERVERARCHIVE | CVAR_SERVERINFO | CVAR_LATCH)
+
 // Game mode options commonized from the server
 //     At some point, replace "sv_" with "g_"
 // -------------------------------------------------------------------------

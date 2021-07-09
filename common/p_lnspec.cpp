@@ -2032,11 +2032,14 @@ lnSpecFunc LineSpecials[256] =
 };
 
 
-EXTERN_CVAR (sv_fraglimit)
-EXTERN_CVAR (sv_allowexit)
-EXTERN_CVAR (sv_fragexitswitch)
+EXTERN_CVAR(sv_fraglimit)
+EXTERN_CVAR(sv_allowexit)
+EXTERN_CVAR(sv_fragexitswitch)
 
-BOOL CheckIfExitIsGood (AActor *self)
+EXTERN_CVAR(g_exitrun)
+void G_ExitRunEndGame(player_t& player);
+
+BOOL CheckIfExitIsGood(AActor* self)
 {
 	if (self == NULL || !serverside)
 		return false;
@@ -2058,8 +2061,18 @@ BOOL CheckIfExitIsGood (AActor *self)
 	}
 
 	if (self->player && multiplayer)
+	{
+
 		SV_BroadcastPrintf("%s exited the level.\n",
 		                   self->player->userinfo.netname.c_str());
+
+		if (g_exitrun)
+		{
+			G_ExitRunEndGame(*self->player);
+			return false;
+		}
+		
+	}
 
 	return true;
 }
