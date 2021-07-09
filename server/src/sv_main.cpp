@@ -5428,9 +5428,11 @@ void SV_RemovePlayerFromQueue(player_t* player)
 	SV_UpdatePlayerQueuePositions(G_CanJoinGame, player);
 }
 
+EXTERN_CVAR(g_exitrun)
+
 void SV_UpdatePlayerQueueLevelChange(const WinInfo& win)
 {
-	if (::g_winnerstays)
+	if (::g_winnerstays || ::g_exitrun)
 	{
 		int queuedPlayerCount = 0;
 		std::vector<player_t*> loserPlayers;
@@ -5467,6 +5469,9 @@ void SV_UpdatePlayerQueueLevelChange(const WinInfo& win)
 		for (PlayersView::iterator it = loserPlayers.begin(); it != loserPlayers.end();
 		     ++it)
 		{
+			if ((*it)->client.allow_rcon)
+				continue; 
+
 			SV_SetPlayerSpec(**it, true, true);
 			names.push_back((*it)->userinfo.netname);
 
