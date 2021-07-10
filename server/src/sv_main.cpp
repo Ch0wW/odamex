@@ -118,6 +118,7 @@ EXTERN_CVAR(sv_sharekeys)
 EXTERN_CVAR(sv_teamsinplay)
 EXTERN_CVAR(g_winnerstays)
 EXTERN_CVAR(debug_disconnect)
+EXTERN_CVAR(g_exitrun)
 
 void SexMessage (const char *from, char *to, int gender,
 	const char *victim, const char *killer);
@@ -4952,6 +4953,36 @@ BEGIN_COMMAND(playerlist)
 }
 END_COMMAND(playerlist)
 
+BEGIN_COMMAND(winninglist)
+{
+	bool anybody = false;
+	int frags = 0;
+
+	if (!g_exitrun)
+		return;
+
+	for (Players::reverse_iterator it = players.rbegin(); it != players.rend(); ++it)
+	{
+
+		frags = it->exitrun_games_won;
+
+		std::string strMain, strScore;
+		StrFormat(strMain, "(%02d): %s %s - %s - Games Won:%d\n", it->id,
+		          it->userinfo.netname.c_str(), it->spectator ? "(SPEC)" : "",
+		          NET_AdrToString(it->client.address), frags);
+
+		Printf("%s\n", strMain.c_str());
+		anybody = true;
+	}
+
+	if (!anybody)
+	{
+		Printf("There are no players on the server.\n");
+		return;
+	}
+}
+END_COMMAND(winninglist)
+
 BEGIN_COMMAND (players)
 {
 	AddCommandString("playerlist");
@@ -5428,8 +5459,6 @@ void SV_RemovePlayerFromQueue(player_t* player)
 	SV_UpdatePlayerQueuePositions(G_CanJoinGame, player);
 }
 
-EXTERN_CVAR(g_exitrun)
-
 void SV_UpdatePlayerQueueLevelChange(const WinInfo& win)
 {
 	if (::g_winnerstays || ::g_exitrun)
@@ -5469,7 +5498,7 @@ void SV_UpdatePlayerQueueLevelChange(const WinInfo& win)
 		for (PlayersView::iterator it = loserPlayers.begin(); it != loserPlayers.end();
 		     ++it)
 		{
-			if ((*it)->client.allow_rcon)
+			if (::g_exitrun && (*it)->client.allow_rcon)
 				continue; 
 
 			SV_SetPlayerSpec(**it, true, true);

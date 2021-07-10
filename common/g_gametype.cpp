@@ -670,6 +670,7 @@ void G_ExitRunEndGame(player_t &player)
 		return;
 
 	GiveWins(player, 1);
+	player.exitrun_games_won += 1;
 	::levelstate.setWinner(WinInfo::WIN_PLAYER, player.id);
 	::levelstate.endRound();
 }

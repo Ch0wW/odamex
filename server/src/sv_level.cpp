@@ -327,6 +327,8 @@ EXTERN_CVAR (sv_maxplayers)
 void G_PlayerReborn (player_t &player);
 void SV_ServerSettingChange();
 
+extern bool bAlreadyExited;
+
 void G_InitNew (const char *mapname)
 {
 	size_t i;
@@ -436,6 +438,8 @@ void G_InitNew (const char *mapname)
 
 	if (::serverside && !(previousLevelFlags & LEVEL_LOBBYSPECIAL))
 		SV_UpdatePlayerQueueLevelChange(info);
+
+	bAlreadyExited = false;
 
 	// [AM] Start the WDL log on new level.
 	M_StartWDLLog();

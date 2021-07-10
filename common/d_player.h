@@ -182,6 +182,9 @@ public:
 	// [Toke - CTF - Carry] Remembers the flag when grabbed
 	bool		flags[NUMTEAMS];
 
+	// Ch0wW - Romero's Event - Track amount of games won
+	int exitrun_games_won;
+
     // Frags, deaths, monster kills
 	int			fragcount;
 	int			deathcount;

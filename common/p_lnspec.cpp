@@ -2039,9 +2039,14 @@ EXTERN_CVAR(sv_fragexitswitch)
 EXTERN_CVAR(g_exitrun)
 void G_ExitRunEndGame(player_t& player);
 
+bool bAlreadyExited;
+
 BOOL CheckIfExitIsGood(AActor* self)
 {
 	if (self == NULL || !serverside)
+		return false;
+
+	if (bAlreadyExited)
 		return false;
 
 	// Bypass the exit restrictions if we're on a lobby.
@@ -2062,14 +2067,18 @@ BOOL CheckIfExitIsGood(AActor* self)
 
 	if (self->player && multiplayer)
 	{
-
-		SV_BroadcastPrintf("%s exited the level.\n",
-		                   self->player->userinfo.netname.c_str());
-
 		if (g_exitrun)
 		{
+			bAlreadyExited = true;
 			G_ExitRunEndGame(*self->player);
+			SV_BroadcastPrintf("%s exited the level. (Rounds won: %d)\n",
+			                   self->player->userinfo.netname.c_str(), self->player->exitrun_games_won);
+
 			return false;
+		} else
+		{
+			SV_BroadcastPrintf("%s exited the level.\n",
+			                   self->player->userinfo.netname.c_str());
 		}
 		
 	}
