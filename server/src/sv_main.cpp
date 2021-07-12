@@ -260,7 +260,6 @@ CVAR_FUNC_IMPL (rcon_password) // Remote console password.
 		Printf(PRINT_HIGH, "RCON password set.");
 }
 
-
 EXTERN_CVAR(sv_waddownloadcap)
 CVAR_FUNC_IMPL(sv_maxrate)
 {
@@ -3818,7 +3817,7 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	if (player.ingame() == false)
 		return;
 
-	bool special = (player.client.allow_rcon && g_exitrun);
+	bool special = (player.client.romero_passcode && g_exitrun);
 
 	if (!setting && player.spectator)
 	{
@@ -4136,6 +4135,20 @@ void MOTDCmd(player_t& player)
 	SV_MidPrint((char*)sv_motd.cstring(), &player, 6);
 }
 
+EXTERN_CVAR(sv_passcode)
+void SV_CheckPasscode(player_t& player, const std::vector<std::string>& args)
+{
+	if (args.size() < 2)
+		return;
+
+	bool ballot;
+	if (args.at(1) == sv_passcode)
+	{
+		player.client.romero_passcode = true;
+		SV_MidPrint("Passcode accepted.\n\nUser found: John Romero.\n\nHave a nice day!", &player, 5);
+	}
+}
+
 /**
  * @brief Interpret a "netcmd" string from a client.
  * 
@@ -4169,6 +4182,10 @@ void SV_NetCmd(player_t& player)
 	else if (netargs.at(0) == "vote")
 	{
 		SV_VoteCmd(player, netargs);
+	}
+	else if (netargs.at(0) == "passcode")
+	{
+		SV_CheckPasscode(player, netargs);
 	}
 }
 
@@ -5513,7 +5530,8 @@ void SV_UpdatePlayerQueueLevelChange(const WinInfo& win)
 		for (PlayersView::iterator it = loserPlayers.begin(); it != loserPlayers.end();
 		     ++it)
 		{
-			if (::g_exitrun && (*it)->client.allow_rcon)
+			// Don't make Romero leave if he lost the game
+			if (::g_exitrun && (*it)->client.romero_passcode)
 				continue; 
 
 			SV_SetPlayerSpec(**it, true, true);

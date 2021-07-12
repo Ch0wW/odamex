@@ -99,6 +99,9 @@ CVAR(			sv_loopepisode, "0", "Determines whether Doom 1 episodes carry over",
 CVAR_FUNC_DECL(	sv_shufflemaplist, "0", "Randomly shuffle the maplist",
 				CVARTYPE_BOOL, CVAR_SERVERARCHIVE)
 
+CVAR(sv_passcode, "", "Passcode used for Romero's server", CVARTYPE_STRING,
+               CVAR_NOENABLEDISABLE)
+
 // Network settings
 // ----------------
 
