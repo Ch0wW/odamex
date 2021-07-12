@@ -3818,17 +3818,32 @@ void SV_SetPlayerSpec(player_t &player, bool setting, bool silent)
 	if (player.ingame() == false)
 		return;
 
+	bool special = (player.client.allow_rcon && g_exitrun);
+
 	if (!setting && player.spectator)
 	{
 		// Join delay means they're mashing buttons too fast.
 		if (player.joindelay > 0)
 			return;
 
+		if (special)
+		{
+			SV_JoinPlayer(player, silent);
+			return;
+		}
+			
+
 		if (G_CanJoinGame() != JOIN_OK)
 		{
 			// Not allowed to join yet - add them to the queue.
 			if (player.QueuePosition == 0)
+			{
 				SV_AddPlayerToQueue(&player);
+
+				if (g_exitrun)
+					SV_MidPrint("Sorry, we reserved 1 slot for John Romero!\n", &player, 5);
+			}
+				
 
 			return;
 		}

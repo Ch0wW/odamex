@@ -138,8 +138,16 @@ JoinResult G_CanJoinGame()
  *        This function ignores the join timer which is usually a bad idea,
  *        but is vital for the join queue to work.
  */
+
+EXTERN_CVAR(g_exitrun)
+
 JoinResult G_CanJoinGameStart()
 {
+
+	int dedicated = 0;
+	if (g_exitrun)
+		dedicated = 1;
+
 	// Can't join anytime that's not ingame.
 	if (::gamestate != GS_LEVEL)
 		return JOIN_ENDGAME;
@@ -149,7 +157,7 @@ JoinResult G_CanJoinGameStart()
 		return JOIN_ENDGAME;
 
 	// Too many people in the game.
-	if (P_NumPlayersInGame() >= sv_maxplayers)
+	if (P_NumPlayersInGame() >= (sv_maxplayers - dedicated))
 		return JOIN_GAMEFULL;
 
 	// Too many people on either team.
